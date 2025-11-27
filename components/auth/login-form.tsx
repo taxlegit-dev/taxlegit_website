@@ -40,15 +40,16 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
       const result = await signIn("credentials", {
         ...values,
         redirect: false,
-        callbackUrl: redirectTo ?? "/admin",
+        callbackUrl: redirectTo,
       });
 
       if (result?.error) {
-        setError("Invalid credentials. Please try again.");
+        setError("Invalid credentials or access denied. US users cannot login. Only India users can access the portal.");
         return;
       }
 
-      router.push(result?.url ?? redirectTo ?? "/admin");
+      // The redirect will be handled by the login page based on user role
+      router.push(result?.url ?? redirectTo ?? "/");
       router.refresh();
     });
   });

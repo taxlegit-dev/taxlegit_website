@@ -8,7 +8,9 @@ const globalForPrisma = globalThis as unknown as {
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
-  throw new Error("DATABASE_URL is not set. Please add it to your environment.");
+  throw new Error(
+    "DATABASE_URL is not set. Please add it to your environment."
+  );
 }
 
 const adapter = new PrismaPg({
@@ -19,10 +21,10 @@ export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     adapter,
-    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+    // ⛔ query logs removed to stop spam
+    log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
   });
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
 }
-

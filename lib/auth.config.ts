@@ -47,6 +47,23 @@ export const authConfig: NextAuthConfig = {
           return null;
         }
 
+        // Restrict USER login to India only - US users cannot login
+        if (user.role === "USER" && user.region === Region.US) {
+          return null; // Block US users from logging in
+        }
+
+        // Ensure USER role is only for India
+        if (user.role === "USER") {
+          // Force region to INDIA for users
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            region: Region.INDIA,
+          };
+        }
+
         return {
           id: user.id,
           email: user.email,

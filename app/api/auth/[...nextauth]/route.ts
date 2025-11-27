@@ -1,3 +1,7 @@
 export const runtime = "nodejs";
 
-export { handlers as GET, handlers as POST } from "@/lib/auth";
+import { handlers } from "@/lib/auth";
+
+// NextAuth v5 beta: Export handlers directly
+// handlers should be an object with GET and POST properties
+export const { GET, POST } = handlers;

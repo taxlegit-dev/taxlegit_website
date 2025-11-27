@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { signOut } from "@/lib/auth";
 
 const navItems = [
   { label: "Overview", href: "/admin" },
@@ -15,6 +16,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   if (!session?.user) {
     redirect("/login");
+  }
+
+  if (session.user.role !== "ADMIN") {
+    redirect("/");
   }
 
   return (
@@ -34,9 +39,24 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             </Link>
           ))}
         </nav>
-        <div className="mt-auto space-y-1 text-xs text-slate-500">
-          <p>{session.user.email}</p>
-          <p className="font-semibold text-slate-700">{session.user.role}</p>
+        <div className="mt-auto space-y-3">
+          <div className="space-y-1 text-xs text-slate-500">
+            <p>{session.user.email}</p>
+            <p className="font-semibold text-slate-700">{session.user.role}</p>
+          </div>
+          <form
+            action={async () => {
+              "use server";
+              await signOut({ redirectTo: "/" });
+            }}
+          >
+            <button
+              type="submit"
+              className="w-full rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-500"
+            >
+              Sign Out
+            </button>
+          </form>
         </div>
       </aside>
       <main className="flex-1 px-4 py-8 md:px-10">{children}</main>
