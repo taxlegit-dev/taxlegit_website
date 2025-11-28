@@ -2,14 +2,13 @@ import Link from "next/link";
 import { Region, PageKey } from "@prisma/client";
 import { NavbarServer } from "@/components/navigation/navbar-server";
 import { RichContent } from "@/components/rich-text/rich-content";
-import { getBlogs, getServiceCategories, getStaticPage } from "@/lib/queries";
+import { getBlogs, getStaticPage } from "@/lib/queries";
 import type { RichTextDocument } from "@/types/rich-text";
 
 export default async function IndiaHomePage() {
   const region = Region.INDIA;
-  const [page, categories, blogs] = await Promise.all([
+  const [page, blogs] = await Promise.all([
     getStaticPage(region, PageKey.HOME),
-    getServiceCategories(region),
     getBlogs(region),
   ]);
   const heroContent = page?.content as RichTextDocument | null;
@@ -32,14 +31,8 @@ export default async function IndiaHomePage() {
               )}
               <div className="flex flex-wrap gap-3">
                 <Link
-                  href="/services"
-                  className="rounded-full bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500"
-                >
-                  Explore services
-                </Link>
-                <Link
                   href="/blog"
-                  className="rounded-full border border-zinc-200 px-5 py-2 text-sm font-semibold text-zinc-700 transition hover:border-indigo-200 hover:text-indigo-600"
+                  className="rounded-full bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500"
                 >
                   Read insights
                 </Link>
@@ -48,16 +41,6 @@ export default async function IndiaHomePage() {
             <div className="flex w-full max-w-sm flex-col gap-3 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
               <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Snapshot</p>
               <div className="grid grid-cols-2 gap-3 text-sm font-medium text-zinc-700">
-                <div className="rounded-2xl bg-indigo-50 p-4">
-                  <p className="text-3xl font-semibold text-indigo-600">{categories.length}</p>
-                  <p className="text-xs text-zinc-500">Service categories</p>
-                </div>
-                <div className="rounded-2xl bg-slate-50 p-4">
-                  <p className="text-3xl font-semibold text-slate-700">
-                    {categories.reduce((acc, cat) => acc + cat.services.length, 0)}
-                  </p>
-                  <p className="text-xs text-zinc-500">Service pages</p>
-                </div>
                 <div className="rounded-2xl bg-emerald-50 p-4">
                   <p className="text-3xl font-semibold text-emerald-600">{blogs.length}</p>
                   <p className="text-xs text-zinc-500">Live blogs</p>
@@ -68,47 +51,6 @@ export default async function IndiaHomePage() {
                 </div>
               </div>
             </div>
-          </div>
-        </section>
-        <section className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">Dynamic services</p>
-              <h2 className="text-2xl font-semibold text-zinc-900">Categories managed in admin</h2>
-            </div>
-            <Link href="/admin/services" className="text-sm font-semibold text-indigo-600">
-              Manage services →
-            </Link>
-          </div>
-          <div className="grid gap-6 md:grid-cols-2">
-            {categories.map((category) => (
-              <div key={category.id} className="rounded-2xl border border-zinc-100 p-5 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.25em] text-zinc-400">{category.slug}</p>
-                    <h3 className="mt-1 text-xl font-semibold text-zinc-900">{category.title}</h3>
-                  </div>
-                  <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-500">
-                    {category.services.length} services
-                  </span>
-                </div>
-                <p className="mt-3 text-sm text-zinc-600">{category.summary}</p>
-                <div className="mt-4 space-y-2">
-                  {category.services.slice(0, 3).map((service) => (
-                    <Link
-                      key={service.id}
-                      href={`/services/${category.slug}/${service.slug}`}
-                      className="flex items-center justify-between rounded-xl border border-zinc-100 px-4 py-3 text-sm font-medium text-zinc-700 transition hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600"
-                    >
-                      {service.title}
-                      <span aria-hidden className="text-lg">
-                        →
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ))}
           </div>
         </section>
         <section className="space-y-6">

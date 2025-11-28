@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Region, ContentStatus } from "@prisma/client";
+import { Region } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { RegionSwitcher } from "@/components/navigation/region-switcher";
 import { toSupportedRegion } from "@/lib/regions";
@@ -9,29 +9,10 @@ type NavbarProps = {
 };
 
 export async function Navbar({ region }: NavbarProps) {
-  const [navItems, categories] = await Promise.all([
-    prisma.navbarItem.findMany({
-      where: { region, isActive: true },
-      orderBy: { order: "asc" },
-    }),
-    prisma.serviceCategory.findMany({
-      where: { region },
-      orderBy: { order: "asc" },
-      include: {
-        services: {
-          where: {
-            status: ContentStatus.PUBLISHED,
-          },
-          select: {
-            id: true,
-            title: true,
-            slug: true,
-          },
-          orderBy: { title: "asc" },
-        },
-      },
-    }),
-  ]);
+  const navItems = await prisma.navbarItem.findMany({
+    where: { region, isActive: true },
+    orderBy: { order: "asc" },
+  });
 
   const mappedRegion = toSupportedRegion(region);
   const regionPrefix = region === Region.US ? "/us" : "";
@@ -64,32 +45,6 @@ export async function Navbar({ region }: NavbarProps) {
                       />
                     </svg>
                   </button>
-                  <div className="invisible absolute left-1/2 top-full z-20 mt-4 w-[320px] -translate-x-1/2 rounded-2xl border border-zinc-100 bg-white p-4 opacity-0 shadow-xl transition group-hover:visible group-hover:opacity-100">
-                    <div className="space-y-4">
-                      {categories.map((category) => (
-                        <div key={category.id}>
-                          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400">{category.title}</p>
-                          <div className="mt-2 space-y-1">
-                            {category.services.slice(0, 4).map((service) => (
-                              <Link
-                                key={service.id}
-                                href={`${regionPrefix}/services/${category.slug}/${service.slug}`}
-                                className="block rounded-lg px-2 py-1 text-sm text-zinc-600 transition hover:bg-indigo-50 hover:text-zinc-900"
-                              >
-                                {service.title}
-                              </Link>
-                            ))}
-                            <Link
-                              href={`${regionPrefix}/services/${category.slug}`}
-                              className="block text-xs font-medium text-indigo-600"
-                            >
-                              View all
-                            </Link>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
                 </div>
               );
             }

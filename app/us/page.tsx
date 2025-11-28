@@ -2,14 +2,13 @@ import Link from "next/link";
 import { Region, PageKey } from "@prisma/client";
 import { NavbarServer } from "@/components/navigation/navbar-server";
 import { RichContent } from "@/components/rich-text/rich-content";
-import { getBlogs, getServiceCategories, getStaticPage } from "@/lib/queries";
+import { getBlogs, getStaticPage } from "@/lib/queries";
 import type { RichTextDocument } from "@/types/rich-text";
 
 export default async function UsHomePage() {
   const region = Region.US;
-  const [page, categories, blogs] = await Promise.all([
+  const [page, blogs] = await Promise.all([
     getStaticPage(region, PageKey.HOME),
-    getServiceCategories(region),
     getBlogs(region),
   ]);
   const heroContent = page?.content as RichTextDocument | null;
@@ -28,42 +27,10 @@ export default async function UsHomePage() {
               </div>
             )}
             <div className="flex flex-wrap gap-3">
-              <Link href="/us/services" className="rounded-full bg-emerald-400 px-5 py-2 text-sm font-semibold text-slate-900">
-                Explore US services
-              </Link>
-              <Link href="/us/about" className="rounded-full border border-white/20 px-5 py-2 text-sm font-semibold">
+              <Link href="/us/about" className="rounded-full bg-emerald-400 px-5 py-2 text-sm font-semibold text-slate-900">
                 About region
               </Link>
             </div>
-          </div>
-        </section>
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold">Launch-ready services</h2>
-            <Link href="/admin/services?region=US" className="text-sm font-semibold text-emerald-300">
-              Manage region →
-            </Link>
-          </div>
-          <div className="grid gap-6 md:grid-cols-2">
-            {categories.map((category) => (
-              <div key={category.id} className="rounded-2xl border border-white/10 p-5">
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">{category.slug}</p>
-                <h3 className="mt-2 text-xl font-semibold">{category.title}</h3>
-                <p className="mt-2 text-sm text-slate-300">{category.summary}</p>
-                <div className="mt-4 space-y-2">
-                  {category.services.slice(0, 3).map((service) => (
-                    <Link
-                      key={service.id}
-                      href={`/us/services/${category.slug}/${service.slug}`}
-                      className="flex items-center justify-between rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/10"
-                    >
-                      {service.title}
-                      <span aria-hidden>→</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ))}
           </div>
         </section>
         <section className="space-y-4">

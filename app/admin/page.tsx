@@ -10,9 +10,7 @@ export default async function AdminDashboard({ searchParams }: AdminPageProps) {
   const params = await searchParams;
   const selectedRegion = params?.region === "US" ? Region.US : Region.INDIA;
 
-  const [categoryCount, serviceCount, blogCount, navCount] = await Promise.all([
-    prisma.serviceCategory.count({ where: { region: selectedRegion } }),
-    prisma.service.count({ where: { region: selectedRegion } }),
+  const [blogCount, navCount] = await Promise.all([
     prisma.blog.count({ where: { region: selectedRegion } }),
     prisma.navbarItem.count({ where: { region: selectedRegion } }),
   ]);
@@ -27,10 +25,8 @@ export default async function AdminDashboard({ searchParams }: AdminPageProps) {
         </div>
         <RegionFilter value={selectedRegion === Region.US ? "US" : "INDIA"} />
       </div>
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2">
         {[
-          { label: "Categories", value: categoryCount },
-          { label: "Services", value: serviceCount },
           { label: "Blogs", value: blogCount },
           { label: "Navbar links", value: navCount },
         ].map((card) => (

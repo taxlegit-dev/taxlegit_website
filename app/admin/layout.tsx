@@ -6,7 +6,7 @@ import { signOut } from "@/lib/auth";
 const navItems = [
   { label: "Overview", href: "/admin" },
   { label: "Navigation", href: "/admin/navigation" },
-  { label: "Services", href: "/admin/services" },
+  { label: "Create Hero Section", href: "/admin/hero" },
   { label: "Blogs", href: "/admin/blogs" },
   { label: "Pages", href: "/admin/pages" },
 ];

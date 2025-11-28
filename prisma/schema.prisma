@@ -109,48 +109,6 @@ model NavbarItem {
   @@index([region, parentId, order])
 }
 
-model ServiceCategory {
-  id          String    @id @default(cuid())
-  title       String
-  slug        String
-  summary     String?
-  region      Region    @default(INDIA)
-  order       Int       @default(0)
-  isFeatured  Boolean   @default(false)
-  icon        String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  services Service[]
-
-  @@unique([slug, region])
-}
-
-model Service {
-  id             String        @id @default(cuid())
-  categoryId     String
-  title          String
-  slug           String
-  excerpt        String?
-  heroImageUrl   String?
-  gallery        Json?
-  content        Json
-  faq            Json?
-  additionalInfo Json?
-  seoMeta        Json?
-  region         Region        @default(INDIA)
-  status         ContentStatus @default(DRAFT)
-  publishedAt    DateTime?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-
-  category ServiceCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-
-  @@unique([categoryId, slug])
-  @@unique([slug, region])
-  @@index([region, status])
-}
-
 model Blog {
   id           String        @id @default(cuid())
   title        String
@@ -197,4 +155,20 @@ model MediaAsset {
   uploadedBy String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+}
+
+model PageHero {
+  id          String   @id @default(cuid())
+  navbarItemId String  @unique // Links to NavbarItem via href
+  region      Region   @default(INDIA)
+  title       String
+  subtitle    String?
+  description String?
+  content     Json     // Flexible JSON for region-specific content (benefits, CTAs, etc.)
+  status      ContentStatus @default(DRAFT)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([navbarItemId, region])
+  @@index([region, status])
 }

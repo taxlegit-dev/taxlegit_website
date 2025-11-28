@@ -3,23 +3,6 @@ import { supportedRegions, SupportedRegion } from "@/lib/regions";
 
 const regionEnum = z.enum(supportedRegions.map((region) => region.value) as [SupportedRegion, ...SupportedRegion[]]);
 
-export const createCategorySchema = z.object({
-  title: z.string().min(3),
-  slug: z.string().min(3).regex(/^[a-z0-9-]+$/, "Use lowercase letters, numbers and dashes"),
-  summary: z.string().min(10).optional(),
-  region: regionEnum,
-  order: z.number().int().min(0).default(0),
-});
-
-export const createServiceSchema = z.object({
-  categorySlug: z.string().min(3),
-  title: z.string().min(3),
-  slug: z.string().min(3).regex(/^[a-z0-9-]+$/),
-  excerpt: z.string().min(10),
-  content: z.any(),
-  region: regionEnum,
-});
-
 export const createBlogSchema = z.object({
   title: z.string().min(3),
   slug: z.string().min(3).regex(/^[a-z0-9-]+$/),
@@ -60,5 +43,19 @@ export const updateStaticPageSchema = z.object({
   title: z.string().min(3),
   content: z.any(),
   region: regionEnum,
+});
+
+export const createPageHeroSchema = z.object({
+  navbarItemId: z.string().min(1),
+  region: regionEnum,
+  title: z.string().min(3),
+  subtitle: z.string().optional(),
+  description: z.string().optional(),
+  content: z.any(), // JSON for flexible region-specific content
+  status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]).default("DRAFT"),
+});
+
+export const updatePageHeroSchema = createPageHeroSchema.extend({
+  id: z.string().min(1),
 });
 
