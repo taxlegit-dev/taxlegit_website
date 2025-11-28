@@ -172,3 +172,31 @@ model PageHero {
   @@unique([navbarItemId, region])
   @@index([region, status])
 }
+
+model ServicePage {
+  id          String   @id @default(cuid())
+  navbarItemId String  @unique // Links to NavbarItem
+  region      Region   @default(INDIA)
+  status      ContentStatus @default(DRAFT)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  sections    ServicePageSection[]
+
+  @@unique([navbarItemId, region])
+  @@index([region, status])
+}
+
+model ServicePageSection {
+  id            String   @id @default(cuid())
+  servicePageId String
+  title         String   // Used for TOC
+  content       String   // Quill HTML content
+  order         Int      @default(1) // Order 1-10
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  servicePage   ServicePage @relation(fields: [servicePageId], references: [id], onDelete: Cascade)
+
+  @@index([servicePageId, order])
+}

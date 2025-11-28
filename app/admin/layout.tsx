@@ -7,6 +7,7 @@ const navItems = [
   { label: "Overview", href: "/admin" },
   { label: "Navigation", href: "/admin/navigation" },
   { label: "Create Hero Section", href: "/admin/hero" },
+  { label: "Add Service Pages", href: "/admin/service-pages" },
   { label: "Blogs", href: "/admin/blogs" },
   { label: "Pages", href: "/admin/pages" },
 ];

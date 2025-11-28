@@ -4,6 +4,7 @@ import { Region } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { NavbarServer } from "@/components/navigation/navbar-server";
 import { IndiaHero } from "@/components/hero/india-hero";
+import { ServicePageView } from "@/components/service-page/service-page-view";
 
 type DynamicPageProps = {
   params: Promise<{ slug: string }>;
@@ -56,13 +57,24 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
     where: { navbarItemId: navbarItem.id },
   });
 
+  // Fetch service page if exists
+  const servicePage = await prisma.servicePage.findUnique({
+    where: { navbarItemId: navbarItem.id },
+    include: {
+      sections: {
+        orderBy: { order: "asc" },
+      },
+    },
+  });
+
   return (
     <div className="min-h-screen bg-white text-black">
       <NavbarServer region={region} />
       <main>
-        {hero && hero.status === "PUBLISHED" ? (
-          <IndiaHero hero={hero} />
-        ) : (
+        {hero && hero.status === "PUBLISHED" && <IndiaHero hero={hero} />}
+        {servicePage && servicePage.status === "PUBLISHED" && servicePage.sections.length > 0 ? (
+          <ServicePageView sections={servicePage.sections} region="INDIA" />
+        ) : !hero ? (
           <section className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-12">
             <div className="rounded-3xl border border-zinc-100 bg-gradient-to-br from-indigo-50 via-white to-slate-50 p-10 shadow-sm">
               <div className="space-y-6">
@@ -70,13 +82,13 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
                 <h1 className="text-4xl font-semibold leading-tight text-zinc-900">{navbarItem.label}</h1>
                 <div className="max-w-2xl">
                   <p className="text-lg text-zinc-600">
-                    This is a dynamic page for <strong>{navbarItem.label}</strong>. Create a hero section in admin panel to customize this page.
+                    This is a dynamic page for <strong>{navbarItem.label}</strong>. Create a hero section or service page in admin panel to customize this page.
                   </p>
                 </div>
               </div>
             </div>
           </section>
-        )}
+        ) : null}
       </main>
       <footer className="border-t border-zinc-100 bg-white">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-8 text-sm text-zinc-500">
