@@ -225,6 +225,54 @@ function renderBlock(block: OutputData["blocks"][0], theme: "light" | "dark"): R
         </figure>
       );
 
+    case "column":
+      const columnData = block.data as {
+        imageUrl?: string;
+        imagePosition?: "left" | "right";
+        heading?: string;
+        description?: string;
+        points?: string[];
+      };
+
+      const flexDirection = columnData.imagePosition === "right" ? "flex-row-reverse" : "flex-row";
+
+      return (
+        <div key={block.id} className={`mb-6 flex gap-6 items-start ${flexDirection} flex-wrap`}>
+          {/* Image Column */}
+          <div className="flex-1 min-w-[250px]">
+            {columnData.imageUrl && (
+              <img
+                src={columnData.imageUrl}
+                alt={columnData.heading || "Column image"}
+                className="w-full h-auto rounded-lg object-cover"
+                style={{ maxHeight: "400px" }}
+              />
+            )}
+          </div>
+
+          {/* Text Column */}
+          <div className="flex-1 min-w-[250px]">
+            {columnData.heading && (
+              <h3 className={`text-xl font-semibold mb-3 ${headingColor}`}>
+                {columnData.heading}
+              </h3>
+            )}
+            {columnData.description && (
+              <p className={`mb-4 ${textColor}`}>
+                {columnData.description}
+              </p>
+            )}
+            {columnData.points && columnData.points.length > 0 && (
+              <ul className={`list-disc pl-6 space-y-2 ${textColor}`}>
+                {columnData.points.map((point, idx) => (
+                  <li key={idx}>{point}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      );
+
     default:
       return null;
   }

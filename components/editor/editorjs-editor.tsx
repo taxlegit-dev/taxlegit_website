@@ -9,11 +9,17 @@ import Header from "@editorjs/header";
 import List from "@editorjs/list";
 import Table from "@editorjs/table";
 import ImageTool from "@editorjs/image";
+import Paragraph from "@editorjs/paragraph";
 
 // Custom blocks
-import ColumnsBlock from "./editorjs-blocks/columns-block";
+// import ColumnsBlock from "./editorjs-blocks/columns-block";
 import YouTubeVideoBlock from "./editorjs-blocks/youtube-video-block";
+import ColumnBlock from "./editorjs-blocks/column-block";
 import ImageLinkTune from "./editorjs-blocks/image-link-tune";
+
+// Custom inline tools
+import FontSizeInlineTool from "./editorjs-blocks/font-size-inline-tool";
+import TextColorInlineTool from "./editorjs-blocks/text-color-inline-tool";
 
 type EditorJsEditorProps = {
   value?: OutputData | null;
@@ -37,6 +43,7 @@ export function EditorJsEditor({
   const editorRef = useRef<EditorJS | null>(null);
   const holderRef = useRef<HTMLDivElement>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [editorId] = useState(() => `editorjs-${Math.random().toString(36).substr(2, 9)}`);
 
   useEffect(() => {
     setIsMounted(true);
@@ -64,9 +71,13 @@ export function EditorJsEditor({
       data: value && typeof value === 'object' && 'blocks' in value ? value : undefined,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       tools: {
+        paragraph: {
+          class: Paragraph as any,
+          inlineToolbar: ["bold", "italic", "link", "fontSize", "textColor"],
+        },
         header: {
           class: Header as any,
-          inlineToolbar: ["bold", "italic", "link"],
+          inlineToolbar: ["bold", "italic", "link", "fontSize", "textColor"],
           config: {
             placeholder: "Section title",
             levels: [2, 3, 4],
@@ -75,15 +86,21 @@ export function EditorJsEditor({
         },
         list: {
           class: List as any,
-          inlineToolbar: true,
+          inlineToolbar: ["bold", "italic", "link", "fontSize", "textColor"],
         },
         table: {
           class: Table as any,
-          inlineToolbar: true,
+          inlineToolbar: ["bold", "italic", "link", "fontSize", "textColor"],
           config: {
             rows: 2,
             cols: 3,
           },
+        },
+        fontSize: {
+          class: FontSizeInlineTool as any,
+        },
+        textColor: {
+          class: TextColorInlineTool as any,
         },
         image: {
           class: ImageTool as any,
@@ -116,11 +133,16 @@ export function EditorJsEditor({
         imageLink: {
           class: ImageLinkTune as any,
         },
-        columns: {
-          class: ColumnsBlock as any,
-        },
         youtube: {
           class: YouTubeVideoBlock as any,
+        },
+        column: {
+          class: ColumnBlock as any,
+          config: onImageUpload
+            ? {
+                imageUploadHandler: handleImageUpload,
+              }
+            : undefined,
         },
       } as any,
       onChange: async () => {
@@ -208,7 +230,7 @@ export function EditorJsEditor({
   return (
     <div className="space-y-2">
       <div className="rounded-xl border border-slate-200 bg-white p-3 min-h-[300px]">
-        <div ref={holderRef} id={`editorjs-${Math.random().toString(36).substr(2, 9)}`} />
+        <div ref={holderRef} id={editorId} />
       </div>
       <style jsx global>{`
         /* Editor.js base styles */
@@ -248,20 +270,6 @@ export function EditorJsEditor({
         .image-controls {
           margin-top: 10px;
         }
-        .columns-block-wrapper {
-          margin: 15px 0;
-        }
-        .columns-container {
-          display: grid;
-          gap: 15px;
-        }
-        .column-left,
-        .column-right {
-          padding: 15px;
-          border: 1px solid #e5e7eb;
-          border-radius: 6px;
-          background: #f9fafb;
-        }
         /* Image resize and alignment styles */
         .cdx-image {
           position: relative;
@@ -287,6 +295,28 @@ export function EditorJsEditor({
           border: 1px solid #e5e7eb;
           padding: 8px;
           min-width: 100px;
+        }
+        /* Column block styles */
+        .column-block {
+          border: 1px solid #e0e0e0;
+          border-radius: 8px;
+          padding: 15px;
+          margin: 10px 0;
+        }
+        .column-layout {
+          display: flex;
+          gap: 20px;
+          align-items: flex-start;
+        }
+        .column-layout .image-column,
+        .column-layout .text-column {
+          flex: 1;
+          min-width: 0;
+        }
+        @media (max-width: 768px) {
+          .column-layout {
+            flex-direction: column !important;
+          }
         }
       `}</style>
     </div>

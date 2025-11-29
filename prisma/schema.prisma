@@ -191,7 +191,7 @@ model ServicePageSection {
   id            String   @id @default(cuid())
   servicePageId String
   title         String   // Used for TOC
-  content       String   // Quill HTML content
+  content       String   
   order         Int      @default(1) // Order 1-10
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
