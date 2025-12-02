@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { Region } from "@prisma/client";
 import { RegionSwitcher } from "@/components/navigation/region-switcher";
 import { toSupportedRegion } from "@/lib/regions";
+import Image from "next/image";
 
 type NavbarItem = {
   id: string;
@@ -35,7 +36,6 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
   const [openMobileItem, setOpenMobileItem] = useState<string | null>(null);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
-  // Fetch navbar items on mount and when region changes
   useEffect(() => {
     const fetchNavbar = async () => {
       try {
@@ -62,18 +62,23 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-100 bg-white/95 backdrop-blur-md shadow-sm">
-      <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 lg:px-6 py-3 lg:py-4">
+    <header className="w-full border-b border-gray-200 bg-white">
+      <div className="mx-auto flex h-[72px] max-w-[1400px] items-center justify-between px-6">
         {/* Logo */}
         <Link
           href={region === Region.US ? "/us" : "/"}
-          className="text-xl font-bold tracking-tight text-zinc-900 hover:text-indigo-600 transition"
+          className="flex items-center gap-2.5"
         >
-          Taxlegit
+          <Image
+            src="/logo/taxlegitlogo.webp"
+            alt="My Logo"
+            width={80}
+            height={80}
+          />
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-1">
+        <nav className="hidden items-center gap-[42px] lg:flex">
           {items.map((item) => {
             if (item.type === "DROPDOWN" && item.groups.length > 0) {
               return (
@@ -83,37 +88,70 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
                   onMouseEnter={() => setHoveredItem(item.id)}
                   onMouseLeave={() => setHoveredItem(null)}
                 >
-                  <button className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-zinc-700 hover:text-indigo-600 transition rounded-lg hover:bg-indigo-50">
+                  <button className="flex items-center gap-x-1.5 text-[18px] font-medium tracking-normal text-[#333333] transition-colors hover:text-black py-6 cursor-pointer">
                     {item.label}
                     <svg
-                      className={`h-4 w-4 transition-transform ${hoveredItem === item.id ? "rotate-180" : ""}`}
+                      className={`h-3.5 w-3.5 transition-transform ${hoveredItem === item.id ? "rotate-180" : ""}`}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
+                      strokeWidth={2.5}
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
 
                   {/* Mega Menu Dropdown */}
                   {hoveredItem === item.id && (
-                    <div className="absolute left-1/2 top-full mt-2 w-[600px] -translate-x-1/2 rounded-2xl border border-zinc-200 bg-white p-6 shadow-xl">
-                      <div className="grid grid-cols-2 gap-6">
+                    <div
+                      className="
+      absolute left-1/2 top-full w-[650px]
+      -translate-x-1/2 
+      rounded-xl 
+      border border-zinc-100
+      bg-white/95 
+      backdrop-blur-sm
+      shadow-[0_8px_30px_rgba(0,0,0,0.08)]
+      p-8 
+      animate-fadeIn
+      transition-all
+    "
+                    >
+                      <div className="grid grid-cols-2 gap-10">
                         {item.groups.map((group, groupIndex) => (
-                          <div key={groupIndex} className="space-y-3">
+                          <div key={groupIndex} className="space-y-4">
+
+                            {/* Group Label */}
                             {group.label && (
-                              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-500 border-b border-zinc-100 pb-2">
+                              <h3 className="border-b border-zinc-100 pb-2 text-[13px] font-semibold uppercase tracking-wider text-zinc-500">
                                 {group.label}
                               </h3>
                             )}
+
                             <ul className="space-y-1.5">
                               {group.items.map((subItem) => (
                                 <li key={subItem.id}>
                                   <Link
                                     href={subItem.href ? `${regionPrefix}${subItem.href}` : "#"}
-                                    className="block rounded-lg px-3 py-2 text-sm text-zinc-700 hover:bg-indigo-50 hover:text-indigo-600 transition"
+                                    className="
+                    group 
+                    block rounded-lg px-3 py-1
+                    text-[14px] font-medium text-zinc-700
+                    hover:bg-zinc-100 
+                    hover:text-black
+                    transition-all duration-150
+                    flex items-center justify-between
+                  "
                                   >
-                                    {subItem.label}
+                                    {/* Left: Name */}
+                                    <span className="group-hover:translate-x-1 transition-transform">
+                                      {subItem.label}
+                                    </span>
+
+                                    {/* Right: Chevron Indicator */}
+                                    <span className="opacity-0 group-hover:opacity-100 transition-opacity text-zinc-400 group-hover:text-zinc-600 text-xl">
+                                      →
+                                    </span>
                                   </Link>
                                 </li>
                               ))}
@@ -123,6 +161,7 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
                       </div>
                     </div>
                   )}
+
                 </div>
               );
             }
@@ -131,11 +170,7 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
               <Link
                 key={item.id}
                 href={item.href ? `${regionPrefix}${item.href}` : "#"}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition ${
-                  item.isLoginLink
-                    ? "bg-indigo-600 text-white hover:bg-indigo-700"
-                    : "text-zinc-700 hover:text-indigo-600 hover:bg-indigo-50"
-                }`}
+                className="text-[18px] font-medium tracking-normal text-[#333333] transition-colors hover:text-black"
               >
                 {item.label}
               </Link>
@@ -143,22 +178,30 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
           })}
         </nav>
 
-        {/* Right Side Actions */}
+        {/* Right Section - Country Selector & Phone */}
         <div className="flex items-center gap-3">
-          <div className="hidden md:block">
+          <div className="hidden lg:block">
             <RegionSwitcher currentRegion={mappedRegion} />
           </div>
+
           <Link
-            href="/login"
-            className="hidden md:block rounded-full border border-zinc-200 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-zinc-700 transition hover:border-indigo-500 hover:text-indigo-600"
+            href="tel:+918929218091"
+            className="hidden h-[44px] items-center gap-2.5 rounded-[6px] bg-[#EF4444] px-5 text-[15px] font-semibold text-white shadow-sm transition-all hover:bg-[#DC2626] lg:flex"
           >
-            Login
+            <svg
+              className="h-[18px] w-[18px]"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+            </svg>
+            <span className="whitespace-nowrap">+91-8929218091</span>
           </Link>
 
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2 text-zinc-700 hover:text-indigo-600 transition"
+            className="rounded-md p-2 text-gray-700 hover:bg-gray-100 lg:hidden"
             aria-label="Toggle menu"
           >
             {isMobileMenuOpen ? (
@@ -176,15 +219,15 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden border-t border-zinc-100 bg-white">
-          <div className="mx-auto max-w-7xl px-4 py-4 space-y-2">
+        <div className="border-t border-gray-200 bg-white lg:hidden">
+          <div className="mx-auto max-w-[1400px] space-y-2 px-6 py-4">
             {items.map((item) => {
               if (item.type === "DROPDOWN" && item.groups.length > 0) {
                 return (
-                  <div key={item.id} className="border-b border-zinc-100 last:border-0">
+                  <div key={item.id} className="border-b border-gray-100 last:border-0">
                     <button
                       onClick={() => toggleMobileItem(item.id)}
-                      className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-zinc-700 hover:text-indigo-600 transition"
+                      className="flex w-full items-center justify-between px-4 py-3 text-[15px] font-medium text-[#333333] transition hover:text-black"
                     >
                       <span>{item.label}</span>
                       <svg
@@ -192,17 +235,18 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
+                        strokeWidth={2.5}
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                       </svg>
                     </button>
 
                     {openMobileItem === item.id && (
-                      <div className="px-4 pb-4 space-y-4">
+                      <div className="space-y-4 px-4 pb-4">
                         {item.groups.map((group, groupIndex) => (
                           <div key={groupIndex} className="space-y-2">
                             {group.label && (
-                              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-500 pt-2">
+                              <h3 className="border-b border-gray-100 pb-2 pt-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
                                 {group.label}
                               </h3>
                             )}
@@ -212,7 +256,7 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
                                   <Link
                                     href={subItem.href ? `${regionPrefix}${subItem.href}` : "#"}
                                     onClick={() => setIsMobileMenuOpen(false)}
-                                    className="block rounded-lg px-3 py-2 text-sm text-zinc-600 hover:bg-indigo-50 hover:text-indigo-600 transition"
+                                    className="block rounded-md px-3 py-2.5 text-[14px] text-[#333333] transition hover:bg-gray-50 hover:text-black"
                                   >
                                     {subItem.label}
                                   </Link>
@@ -232,20 +276,29 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
                   key={item.id}
                   href={item.href ? `${regionPrefix}${item.href}` : "#"}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`block px-4 py-3 text-sm font-medium rounded-lg transition ${
-                    item.isLoginLink
-                      ? "bg-indigo-600 text-white hover:bg-indigo-700"
-                      : "text-zinc-700 hover:text-indigo-600 hover:bg-indigo-50"
-                  }`}
+                  className="block rounded-md px-4 py-3 text-[15px] font-medium text-[#333333] transition hover:bg-gray-50 hover:text-black"
                 >
                   {item.label}
                 </Link>
               );
             })}
 
-            {/* Mobile Region Switcher */}
-            <div className="pt-4 border-t border-zinc-100">
+            {/* Mobile Region Switcher & Phone */}
+            <div className="space-y-3 border-t border-gray-100 pt-4">
               <RegionSwitcher currentRegion={mappedRegion} />
+              <Link
+                href="tel:+918929218091"
+                className="flex h-[44px] w-full items-center justify-center gap-2.5 rounded-[6px] bg-[#EF4444] px-5 text-[15px] font-semibold text-white shadow-sm transition-all hover:bg-[#DC2626]"
+              >
+                <svg
+                  className="h-[18px] w-[18px]"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                </svg>
+                <span className="whitespace-nowrap">+91-8929218091</span>
+              </Link>
             </div>
           </div>
         </div>
@@ -253,4 +306,3 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
     </header>
   );
 }
-

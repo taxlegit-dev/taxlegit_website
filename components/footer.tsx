@@ -1,0 +1,321 @@
+'use client';
+
+import {
+    FaInstagram,
+    FaTwitter,
+    FaFacebookF,
+    FaYoutube,
+    FaLinkedinIn,
+    FaPhoneAlt,
+    FaMapMarkerAlt,
+    FaWhatsapp,
+    FaChevronRight,
+    FaEnvelope,
+    FaArrowRight
+} from 'react-icons/fa';
+import { MdPhone } from 'react-icons/md';
+import { useState } from 'react';
+
+const Footer = () => {
+    const [email, setEmail] = useState('');
+
+    const popularRegistration = [
+        { name: 'Private Limited Company', href: '#pvt-ltd' },
+        { name: 'GST Registration', href: '#gst' },
+        { name: 'Public Limited Company', href: '#public-ltd' },
+        { name: 'One Person Company', href: '#opc' },
+        { name: 'FSSAI Registration', href: '#fssai' },
+    ];
+
+    const popularLicenses = [
+        { name: 'Trademark Registration', href: '#trademark' },
+        { name: 'ISO Certification', href: '#iso' },
+        { name: 'LLP Registration', href: '#llp' },
+        { name: 'GEM Registration', href: '#gem' },
+        { name: 'Digital Signature', href: '#dsc' },
+    ];
+
+    const companyLinks = [
+        { name: 'About Us', href: '#about' },
+        { name: 'Blog', href: '#blog' },
+        { name: 'Careers', href: '#careers' },
+        { name: 'Contact Us', href: '#contact' },
+    ];
+
+    const legalLinks = [
+        { name: 'Privacy Policy', href: '#privacy' },
+        { name: 'Terms of Service', href: '#terms' },
+        { name: 'Cookie Policy', href: '#cookies' },
+        { name: 'Disclaimer', href: '#disclaimer' },
+    ];
+
+    const socialLinks = [
+        { icon: <FaInstagram />, href: '#', label: 'Instagram', color: 'hover:bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500' },
+        { icon: <FaTwitter />, href: '#', label: 'Twitter', color: 'hover:bg-[#1DA1F2]' },
+        { icon: <FaFacebookF />, href: '#', label: 'Facebook', color: 'hover:bg-[#1877F2]' },
+        { icon: <FaLinkedinIn />, href: '#', label: 'LinkedIn', color: 'hover:bg-[#0A66C2]' },
+        { icon: <FaYoutube />, href: '#', label: 'YouTube', color: 'hover:bg-[#FF0000]' },
+    ];
+
+    const handleNewsletter = (e: React.FormEvent) => {
+        e.preventDefault();
+        // Handle newsletter subscription
+        console.log('Subscribed:', email);
+        setEmail('');
+    };
+
+    return (
+        <>
+            {/* Main Footer */}
+            <footer className="bg-gray-900 text-gray-300">
+                {/* Top CTA Section */}
+                {/* <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <div className="container mx-auto px-4 py-8">
+                        <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+                            <div>
+                                <h3 className="text-2xl font-bold mb-2">Stay Updated with Taxlegit</h3>
+                                <p className="text-blue-100">Get the latest compliance updates & business insights</p>
+                            </div>
+                            <form onSubmit={handleNewsletter} className="flex gap-2 w-full lg:w-auto">
+                                <div className="relative flex-1 lg:flex-none">
+                                    <input
+                                        type="email"
+                                        placeholder="Enter your email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="w-full lg:w-80 px-4 py-3 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/30"
+                                        required
+                                    />
+                                    <FaEnvelope className="absolute right-3 top-3.5 text-gray-400" />
+                                </div>
+                                <button
+                                    type="submit"
+                                    className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors flex items-center gap-2"
+                                >
+                                    Subscribe <FaArrowRight className="text-sm" />
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div> */}
+
+                {/* Main Footer Content */}
+                <div className="container mx-auto px-4 pt-12 pb-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
+                        {/* Company Info */}
+                        <div className="lg:col-span-2 space-y-6">
+                            <div>
+                                <h2 className="text-2xl font-bold text-white mb-4">
+                                    Tax<span className="text-blue-400">legit</span>
+                                </h2>
+                                <p className="text-gray-400 leading-relaxed max-w-md">
+                                    Your trusted partner for business registrations, compliance, and legal services.
+                                    Simplifying entrepreneurship since 2015.
+                                </p>
+                            </div>
+
+                            {/* Contact Info */}
+                            <div className="space-y-4">
+
+                                <div className="space-y-2">
+                                    <a
+                                        href="tel:+918929218091"
+                                        className="flex items-center gap-3 text-white hover:text-blue-400 transition-colors"
+                                    >
+                                        <FaPhoneAlt className="text-blue-400" />
+                                        <span>+91 89292 18091</span>
+                                    </a>
+                                    <a
+                                        href="https://mail.google.com/mail/?view=cm&fs=1&to=info@taxlegit.com"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-3 text-white hover:text-blue-400 transition-colors"
+                                    >
+                                        <FaEnvelope className="text-blue-400" />
+                                        <span>info@taxlegit.com</span>
+                                    </a>
+
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <FaMapMarkerAlt className="text-blue-400 mt-1 flex-shrink-0" />
+                                    <div>
+                                        <p className="font-medium text-white">Registered Office</p>
+                                        <p className="text-gray-400 text-sm">
+                                            Supertech Astralis, Sector-94,<br />
+                                            Noida, Uttar Pradesh - 201301
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Social Links */}
+                            <div>
+                                <p className="font-medium text-white mb-4">Follow Us</p>
+                                <div className="flex gap-3">
+                                    {socialLinks.map((social, index) => (
+                                        <a
+                                            key={index}
+                                            href={social.href}
+                                            aria-label={social.label}
+                                            className={`w-10 h-10 rounded-lg bg-gray-800 flex items-center justify-center text-white transition-all duration-300 hover:-translate-y-1 ${social.color}`}
+                                        >
+                                            {social.icon}
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Popular Registration */}
+                        <div className="space-y-6">
+                            <h3 className="text-lg font-semibold text-white border-l-4 border-blue-500 pl-3">
+                                Popular Registration
+                            </h3>
+                            <ul className="space-y-3">
+                                {popularRegistration.map((item, index) => (
+                                    <li key={index}>
+                                        <a
+                                            href={item.href}
+                                            className="group flex items-center text-gray-400 hover:text-white transition-colors duration-300"
+                                        >
+                                            <FaChevronRight className="mr-2 text-blue-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity" />
+                                            <span>{item.name}</span>
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Popular Licenses */}
+                        <div className="space-y-6">
+                            <h3 className="text-lg font-semibold text-white border-l-4 border-teal-500 pl-3">
+                                Popular Licenses
+                            </h3>
+                            <ul className="space-y-3">
+                                {popularLicenses.map((item, index) => (
+                                    <li key={index}>
+                                        <a
+                                            href={item.href}
+                                            className="group flex items-center text-gray-400 hover:text-white transition-colors duration-300"
+                                        >
+                                            <FaChevronRight className="mr-2 text-teal-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity" />
+                                            <span>{item.name}</span>
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Quick Links */}
+                        <div className="space-y-8">
+                            <div>
+                                <h3 className="text-lg font-semibold text-white border-l-4 border-purple-500 pl-3">
+                                    Company
+                                </h3>
+                                <ul className="space-y-3 mt-4">
+                                    {companyLinks.map((item, index) => (
+                                        <li key={index}>
+                                            <a
+                                                href={item.href}
+                                                className="group flex items-center text-gray-400 hover:text-white transition-colors duration-300"
+                                            >
+                                                <FaChevronRight className="mr-2 text-purple-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                <span>{item.name}</span>
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            <div>
+                                <h3 className="text-lg font-semibold text-white border-l-4 border-gray-500 pl-3">
+                                    Legal
+                                </h3>
+                                <ul className="space-y-3 mt-4">
+                                    {legalLinks.map((item, index) => (
+                                        <li key={index}>
+                                            <a
+                                                href={item.href}
+                                                className="group flex items-center text-gray-400 hover:text-white transition-colors duration-300"
+                                            >
+                                                <FaChevronRight className="mr-2 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                <span>{item.name}</span>
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="border-t border-gray-800 mt-8 mb-4"></div>
+
+                    <div>
+                        <p className="text-gray-400 text-sm text-center">
+                            <span className="text-gray-500 font-medium">Disclaimer:</span> Our portal provides consultancy services for business registrations and compliance. We are not affiliated with any government authority.
+                        </p>
+                    </div>
+
+                    <div className="border-t border-gray-800 my-4"></div>
+
+                    {/* Bottom Bar */}
+                    <div className="flex flex-col items-center justify-center py-2">
+                        <p className="text-gray-500 text-sm text-center">
+                            © {new Date().getFullYear()} Taxlegit. All rights reserved.
+                        </p>
+                    </div>
+
+                </div>
+            </footer>
+
+            {/* Floating Action Buttons */}
+            <div className="fixed right-6 bottom-6 z-50 flex flex-col gap-4">
+                {/* WhatsApp */}
+                <a
+                    href="https://wa.me/918929218091"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group relative flex items-center justify-center w-14 h-14 lg:w-16 lg:h-16 bg-green-500 rounded-full text-white shadow-xl hover:shadow-2xl transform hover:scale-110 transition-all duration-300"
+                    aria-label="Chat on WhatsApp"
+                >
+                    <FaWhatsapp className="text-2xl" />
+                    <span className="absolute right-full mr-3 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap shadow-lg">
+                        Chat on WhatsApp
+                        <div className="absolute top-1/2 right-0 transform translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
+                    </span>
+                </a>
+
+                {/* Phone Call */}
+                <a
+                    href="tel:+918929218091"
+                    className="group relative flex items-center justify-center w-14 h-14 lg:w-16 lg:h-16 bg-blue-500 rounded-full text-white shadow-xl hover:shadow-2xl transform hover:scale-110 transition-all duration-300"
+                    aria-label="Call Us"
+                >
+                    <MdPhone className="text-2xl" />
+                    <span className="absolute right-full mr-3 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap shadow-lg">
+                        Call Now
+                        <div className="absolute top-1/2 right-0 transform translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
+                    </span>
+                </a>
+
+                {/* Back to Top */}
+                <button
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    className="group relative flex items-center justify-center w-14 h-14 lg:w-16 lg:h-16 bg-gray-800 rounded-full text-white shadow-xl hover:shadow-2xl transform hover:scale-110 transition-all duration-300"
+                    aria-label="Back to top"
+                >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                    </svg>
+                    <span className="absolute right-full mr-3 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap shadow-lg">
+                        Back to Top
+                        <div className="absolute top-1/2 right-0 transform translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
+                    </span>
+                </button>
+            </div>
+        </>
+    );
+};
+
+export default Footer;
