@@ -109,41 +109,6 @@ model NavbarItem {
   @@index([region, parentId, order])
 }
 
-model Blog {
-  id           String        @id @default(cuid())
-  title        String
-  slug         String
-  excerpt      String?
-  coverImage   String?
-  tags         String[]
-  content      Json
-  seoMeta      Json?
-  region       Region        @default(INDIA)
-  status       ContentStatus @default(DRAFT)
-  publishedAt  DateTime?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-
-  @@unique([slug, region])
-  @@index([region, status])
-}
-
-model StaticPage {
-  id          String        @id @default(cuid())
-  key         PageKey
-  region      Region        @default(INDIA)
-  title       String
-  heroImage   String?
-  content     Json
-  seoMeta     Json?
-  publishedAt DateTime?
-  status      ContentStatus @default(DRAFT)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-
-  @@unique([key, region])
-}
-
 model MediaAsset {
   id        String   @id @default(cuid())
   url       String
@@ -201,6 +166,9 @@ model ServicePageSection {
   @@index([servicePageId, order])
 }
 
+/// This model represents the FAQ section for a specific service page.
+/// Example: "Pvt Ltd Registration FAQ Section"
+
 model ServicePageFAQ {
   id            String   @id @default(cuid())
   navbarItemId  String   @unique // Links to NavbarItem
@@ -215,6 +183,7 @@ model ServicePageFAQ {
   @@index([region, status])
 }
 
+/// This model represents a single FAQ question-answer item.
 model ServicePageFAQItem {
   id            String   @id @default(cuid())
   faqId         String

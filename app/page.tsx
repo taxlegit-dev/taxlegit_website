@@ -1,6 +1,5 @@
-import { Region, PageKey } from "@prisma/client";
+import { Region } from "@prisma/client";
 import { NavbarServer } from "@/components/navigation/navbar-server";
-import { getBlogs, getStaticPage } from "@/lib/queries";
 import Footer from "@/components/footer";
 import TaxLegitHero from "@/components/pages/home/hero";
 import ServicesSection from "@/components/pages/home/serviceSection";
@@ -10,10 +9,6 @@ import WhyChooseTaxLegitMinimal from "@/components/pages/home/WhyTaxlegit";
 
 export default async function IndiaHomePage() {
   const region = Region.INDIA;
-  const [] = await Promise.all([
-    getStaticPage(region, PageKey.HOME),
-    getBlogs(region),
-  ]);
 
   return (
     <div className="min-h-screen bg-white text-black">

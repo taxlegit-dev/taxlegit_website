@@ -1,16 +1,12 @@
 import { z } from "zod";
 import { supportedRegions, SupportedRegion } from "@/lib/regions";
 
-const regionEnum = z.enum(supportedRegions.map((region) => region.value) as [SupportedRegion, ...SupportedRegion[]]);
-
-export const createBlogSchema = z.object({
-  title: z.string().min(3),
-  slug: z.string().min(3).regex(/^[a-z0-9-]+$/),
-  excerpt: z.string().min(10),
-  tags: z.array(z.string()).default([]),
-  content: z.any(),
-  region: regionEnum,
-});
+const regionEnum = z.enum(
+  supportedRegions.map((region) => region.value) as [
+    SupportedRegion,
+    ...SupportedRegion[]
+  ]
+);
 
 export const createNavItemSchema = z.object({
   label: z.string().min(2),
@@ -63,16 +59,17 @@ export const createServicePageFAQSchema = z.object({
   navbarItemId: z.string().min(1),
   region: regionEnum,
   status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]).default("DRAFT"),
-  questions: z.array(
-    z.object({
-      question: z.string().min(3),
-      answer: z.string().min(10),
-      order: z.number().int().min(0).default(0),
-    })
-  ).min(1),
+  questions: z
+    .array(
+      z.object({
+        question: z.string().min(3),
+        answer: z.string().min(10),
+        order: z.number().int().min(0).default(0),
+      })
+    )
+    .min(1),
 });
 
 export const updateServicePageFAQSchema = createServicePageFAQSchema.extend({
   id: z.string().min(1),
 });
-

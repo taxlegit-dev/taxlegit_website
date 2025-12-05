@@ -1,4 +1,4 @@
-import { ContentStatus, PageKey, Region } from "@prisma/client";
+import { PageKey, Region } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 export async function getStaticPage(region: Region, key: PageKey) {
@@ -11,24 +11,3 @@ export async function getStaticPage(region: Region, key: PageKey) {
     },
   });
 }
-
-export async function getBlogs(region: Region) {
-  return prisma.blog.findMany({
-    where: { region, status: ContentStatus.PUBLISHED },
-    orderBy: {
-      publishedAt: "desc",
-    },
-  });
-}
-
-export async function getBlogBySlug(region: Region, slug: string) {
-  return prisma.blog.findUnique({
-    where: {
-      slug_region: {
-        slug,
-        region,
-      },
-    },
-  });
-}
-

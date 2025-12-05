@@ -84,41 +84,6 @@ CREATE TABLE "NavbarItem" (
     CONSTRAINT "NavbarItem_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "Blog" (
-    "id" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
-    "slug" TEXT NOT NULL,
-    "excerpt" TEXT,
-    "coverImage" TEXT,
-    "tags" TEXT[],
-    "content" JSONB NOT NULL,
-    "seoMeta" JSONB,
-    "region" "Region" NOT NULL DEFAULT 'INDIA',
-    "status" "ContentStatus" NOT NULL DEFAULT 'DRAFT',
-    "publishedAt" TIMESTAMP(3),
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Blog_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "StaticPage" (
-    "id" TEXT NOT NULL,
-    "key" "PageKey" NOT NULL,
-    "region" "Region" NOT NULL DEFAULT 'INDIA',
-    "title" TEXT NOT NULL,
-    "heroImage" TEXT,
-    "content" JSONB NOT NULL,
-    "seoMeta" JSONB,
-    "publishedAt" TIMESTAMP(3),
-    "status" "ContentStatus" NOT NULL DEFAULT 'DRAFT',
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "StaticPage_pkey" PRIMARY KEY ("id")
-);
 
 -- CreateTable
 CREATE TABLE "MediaAsset" (
@@ -199,10 +164,8 @@ CREATE INDEX "NavbarItem_region_parentId_order_idx" ON "NavbarItem"("region", "p
 CREATE UNIQUE INDEX "NavbarItem_region_label_unique" ON "NavbarItem"("region", "label");
 
 -- CreateIndex
-CREATE INDEX "Blog_region_status_idx" ON "Blog"("region", "status");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Blog_slug_region_key" ON "Blog"("slug", "region");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "StaticPage_key_region_key" ON "StaticPage"("key", "region");

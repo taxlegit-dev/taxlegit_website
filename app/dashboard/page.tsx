@@ -69,19 +69,6 @@ export default async function UserDashboard() {
               View Services →
             </Link>
           </div>
-
-          <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-zinc-900">Blogs</h2>
-            <p className="mt-2 text-sm text-zinc-600">
-              Read latest tax updates and articles
-            </p>
-            <Link
-              href="/blog"
-              className="mt-4 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-500"
-            >
-              Read Blogs →
-            </Link>
-          </div>
         </div>
       </div>
     </div>

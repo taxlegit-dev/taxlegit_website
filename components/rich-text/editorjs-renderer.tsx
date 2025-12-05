@@ -130,32 +130,15 @@ function renderBlock(
       const linkUrl = tuneData?.url;
 
       const imageUrl = imageData.file?.url || imageData.url || "";
-      const alignment = imageData.alignment || "center";
-      const width = imageData.width || undefined;
-
       if (!imageUrl) return null;
-
-      const imageStyle: React.CSSProperties = {
-        maxWidth: width ? `${width}px` : "100%",
-        height: "auto",
-        margin:
-          alignment === "center"
-            ? "0 auto"
-            : alignment === "left"
-            ? "0 auto 0 0"
-            : "0 0 0 auto",
-        display: "block",
-        border: imageData.withBorder ? "2px solid #e5e7eb" : "none",
-        backgroundColor: imageData.withBackground ? "#f3f4f6" : "transparent",
-        width: imageData.stretched ? "100%" : width ? `${width}px` : "auto",
-        cursor: linkUrl ? "pointer" : "default",
-      };
 
       const imageElement = (
         <Image
           src={imageUrl}
           alt={imageData.caption || ""}
-          style={imageStyle}
+          // style={imageStyle}
+          height={100}
+          width={100}
         />
       );
 
@@ -279,8 +262,9 @@ function renderBlock(
               <Image
                 src={columnData.imageUrl}
                 alt={columnData.heading || "Column image"}
+                width={800} // required by Next.js (actual number)
+                height={600} // required by Next.js
                 className="w-full h-auto rounded-lg object-cover"
-                style={{ maxHeight: "400px" }}
               />
             )}
           </div>

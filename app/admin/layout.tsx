@@ -9,11 +9,13 @@ const navItems = [
   { label: "Create Hero Section", href: "/admin/hero" },
   { label: "Add FAQ", href: "/admin/faq" },
   { label: "Add Service Pages", href: "/admin/service-pages" },
-  { label: "Blogs", href: "/admin/blogs" },
-  { label: "Pages", href: "/admin/pages" },
 ];
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const session = await auth();
 
   if (!session?.user) {
@@ -65,4 +67,3 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     </div>
   );
 }
-

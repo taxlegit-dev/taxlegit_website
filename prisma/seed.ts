@@ -1,5 +1,12 @@
 import "dotenv/config";
-import { PrismaClient, Region, Role, ContentStatus, PageKey, NavbarItemType } from "@prisma/client";
+import {
+  PrismaClient,
+  Region,
+  Role,
+  ContentStatus,
+  PageKey,
+  NavbarItemType,
+} from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -80,7 +87,8 @@ async function seedStaticPages() {
               {
                 type: "hero",
                 attrs: {
-                  eyebrow: page.region === Region.INDIA ? "India" : "United States",
+                  eyebrow:
+                    page.region === Region.INDIA ? "India" : "United States",
                   heading: page.title,
                   subheading:
                     page.region === Region.INDIA
@@ -93,8 +101,8 @@ async function seedStaticPages() {
           },
           status: ContentStatus.PUBLISHED,
         },
-      }),
-    ),
+      })
+    )
   );
 }
 
@@ -115,11 +123,31 @@ async function seedNavigation() {
 
   // Company Registration Group
   const companyRegGroup = [
-    { label: "Private Limited Company Registration", href: "/services/company-registration/private-limited-registration", order: 0 },
-    { label: "LLP Registration", href: "/services/company-registration/llp-registration", order: 1 },
-    { label: "OPC Registration", href: "/services/company-registration/opc-registration", order: 2 },
-    { label: "Section 8 Registration", href: "/services/company-registration/section-8-registration", order: 3 },
-    { label: "Sole Proprietorship Registration", href: "/services/company-registration/sole-proprietorship-registration", order: 4 },
+    {
+      label: "Private Limited Company Registration",
+      href: "/services/company-registration/private-limited-registration",
+      order: 0,
+    },
+    {
+      label: "LLP Registration",
+      href: "/services/company-registration/llp-registration",
+      order: 1,
+    },
+    {
+      label: "OPC Registration",
+      href: "/services/company-registration/opc-registration",
+      order: 2,
+    },
+    {
+      label: "Section 8 Registration",
+      href: "/services/company-registration/section-8-registration",
+      order: 3,
+    },
+    {
+      label: "Sole Proprietorship Registration",
+      href: "/services/company-registration/sole-proprietorship-registration",
+      order: 4,
+    },
   ];
 
   for (const item of companyRegGroup) {
@@ -138,9 +166,21 @@ async function seedNavigation() {
 
   // Compliance and Licensing Group
   const complianceGroup = [
-    { label: "ISO Registration", href: "/services/compliance/iso-registration", order: 0 },
-    { label: "FSSAI Registration", href: "/services/compliance/fssai-registration", order: 1 },
-    { label: "ISP License Registration", href: "/services/compliance/isp-license-registration", order: 2 },
+    {
+      label: "ISO Registration",
+      href: "/services/compliance/iso-registration",
+      order: 0,
+    },
+    {
+      label: "FSSAI Registration",
+      href: "/services/compliance/fssai-registration",
+      order: 1,
+    },
+    {
+      label: "ISP License Registration",
+      href: "/services/compliance/isp-license-registration",
+      order: 2,
+    },
   ];
 
   for (const item of complianceGroup) {
@@ -163,16 +203,6 @@ async function seedNavigation() {
       label: "Home",
       href: "/",
       order: 1,
-      type: NavbarItemType.LINK,
-      region: Region.INDIA,
-    },
-  });
-
-  await prisma.navbarItem.create({
-    data: {
-      label: "Blog",
-      href: "/blog",
-      order: 2,
       type: NavbarItemType.LINK,
       region: Region.INDIA,
     },
@@ -212,9 +242,21 @@ async function seedNavigation() {
 
   // US Company Formation Group
   const usCompanyGroup = [
-    { label: "Delaware C-Corp Formation", href: "/us/services/incorporation/delaware-c-corp", order: 0 },
-    { label: "LLC Formation", href: "/us/services/incorporation/llc-formation", order: 1 },
-    { label: "S-Corp Election", href: "/us/services/incorporation/s-corp-election", order: 2 },
+    {
+      label: "Delaware C-Corp Formation",
+      href: "/us/services/incorporation/delaware-c-corp",
+      order: 0,
+    },
+    {
+      label: "LLC Formation",
+      href: "/us/services/incorporation/llc-formation",
+      order: 1,
+    },
+    {
+      label: "S-Corp Election",
+      href: "/us/services/incorporation/s-corp-election",
+      order: 2,
+    },
   ];
 
   for (const item of usCompanyGroup) {
@@ -233,9 +275,21 @@ async function seedNavigation() {
 
   // US Compliance Group
   const usComplianceGroup = [
-    { label: "EIN Registration", href: "/us/services/compliance/ein-registration", order: 0 },
-    { label: "State Tax Registration", href: "/us/services/compliance/state-tax-registration", order: 1 },
-    { label: "Business License", href: "/us/services/compliance/business-license", order: 2 },
+    {
+      label: "EIN Registration",
+      href: "/us/services/compliance/ein-registration",
+      order: 0,
+    },
+    {
+      label: "State Tax Registration",
+      href: "/us/services/compliance/state-tax-registration",
+      order: 1,
+    },
+    {
+      label: "Business License",
+      href: "/us/services/compliance/business-license",
+      order: 2,
+    },
   ];
 
   for (const item of usComplianceGroup) {
@@ -285,81 +339,10 @@ async function seedNavigation() {
   });
 }
 
-async function seedBlogs() {
-  const posts = [
-    {
-      region: Region.INDIA,
-      title: "How to choose the right entity in India",
-      slug: "choose-right-entity-india",
-      excerpt: "Pvt Ltd vs LLP vs OPC — a founder-first guide.",
-    },
-    {
-      region: Region.US,
-      title: "Incorporating in Delaware from India",
-      slug: "delaware-from-india",
-      excerpt: "Why YC companies still pick Delaware and how to stay compliant.",
-    },
-  ];
-
-  for (const post of posts) {
-    await prisma.blog.upsert({
-      where: {
-        slug_region: {
-          slug: post.slug,
-          region: post.region,
-        },
-      },
-      update: {
-        title: post.title,
-        excerpt: post.excerpt,
-        content: {
-          type: "doc",
-          content: [
-            {
-              type: "paragraph",
-              content: [
-                {
-                  type: "text",
-                  text: post.excerpt,
-                },
-              ],
-            },
-          ],
-        },
-        status: ContentStatus.PUBLISHED,
-      },
-      create: {
-        title: post.title,
-        slug: post.slug,
-        excerpt: post.excerpt,
-        content: {
-          type: "doc",
-          content: [
-            {
-              type: "paragraph",
-              content: [
-                {
-                  type: "text",
-                  text: post.excerpt,
-                },
-              ],
-            },
-          ],
-        },
-        tags: [],
-        region: post.region,
-        status: ContentStatus.PUBLISHED,
-        publishedAt: new Date(),
-      },
-    });
-  }
-}
-
 async function main() {
   await seedUsers();
   await seedStaticPages();
   await seedNavigation();
-  await seedBlogs();
 }
 
 main()
@@ -371,4 +354,3 @@ main()
     await prisma.$disconnect();
     process.exit(1);
   });
-
