@@ -40,34 +40,79 @@ export function EditorJsEditor({
 }: EditorJsEditorProps) {
   const editorRef = useRef<EditorJS | null>(null);
   const holderRef = useRef<HTMLDivElement>(null);
-  // Fix: Use useState(true) instead of useEffect to set mounted state
   const [isMounted] = useState(true);
   const [editorId] = useState(
     () => `editorjs-${Math.random().toString(36).substr(2, 9)}`
   );
 
-  const handleImageUpload = useCallback(
-    async (file: File): Promise<string> => {
-      if (!onImageUpload) {
-        throw new Error("Image upload handler not provided");
-      }
-      return onImageUpload(file);
-    },
-    [onImageUpload]
-  );
+  // Store initial value in a ref to avoid re-initialization
+  // Only set once on first mount, ignore subsequent value changes
+  const initialValueRef = useRef<OutputData | null | undefined>(value);
+  const hasInitializedRef = useRef(false);
+  
+  // Update initial value only before first initialization (in useEffect, not during render)
+  useEffect(() => {
+    if (!hasInitializedRef.current && value !== undefined) {
+      initialValueRef.current = value;
+    }
+  }, [value]);
+
+  // Store callbacks in refs to prevent re-initialization
+  const onChangeRef = useRef(onChange);
+  const onImageUploadRef = useRef(onImageUpload);
+
+  // Update refs when props change
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
   useEffect(() => {
-    if (!isMounted || !holderRef.current || editorRef.current) {
+    onImageUploadRef.current = onImageUpload;
+  }, [onImageUpload]);
+
+  const handleImageUpload = useCallback(async (file: File): Promise<string> => {
+    if (!onImageUploadRef.current) {
+      throw new Error("Image upload handler not provided");
+    }
+    return onImageUploadRef.current(file);
+  }, []);
+
+  // Track if we're initializing to prevent double initialization
+  const isInitializingRef = useRef(false);
+
+  // Initialize editor only once
+  useEffect(() => {
+    console.log("🔵 Editor useEffect triggered", {
+      isMounted,
+      hasHolder: !!holderRef.current,
+      hasEditor: !!editorRef.current,
+      isInitializing: isInitializingRef.current,
+    });
+
+    if (!isMounted || !holderRef.current || editorRef.current || isInitializingRef.current || hasInitializedRef.current) {
+      console.log("🔴 Skipping editor initialization", {
+        isMounted,
+        hasHolder: !!holderRef.current,
+        hasEditor: !!editorRef.current,
+        isInitializing: isInitializingRef.current,
+        hasInitialized: hasInitializedRef.current,
+      });
       return;
     }
+
+    isInitializingRef.current = true;
+    hasInitializedRef.current = true;
+    console.log("🟢 Initializing editor with value:", initialValueRef.current);
 
     // Initialize Editor.js
     const editor = new EditorJS({
       holder: holderRef.current,
       placeholder: placeholder,
       data:
-        value && typeof value === "object" && "blocks" in value
-          ? value
+        initialValueRef.current &&
+        typeof initialValueRef.current === "object" &&
+        "blocks" in initialValueRef.current
+          ? initialValueRef.current
           : undefined,
       tools: {
         paragraph: {
@@ -104,7 +149,7 @@ export function EditorJsEditor({
         image: {
           class: ImageTool as unknown as never,
           tunes: ["imageLink"],
-          config: onImageUpload
+          config: onImageUploadRef.current
             ? {
                 uploader: {
                   async uploadByFile(file: File) {
@@ -137,7 +182,7 @@ export function EditorJsEditor({
         },
         column: {
           class: ColumnBlock as unknown as never,
-          config: onImageUpload
+          config: onImageUploadRef.current
             ? {
                 imageUploadHandler: handleImageUpload,
               }
@@ -150,7 +195,7 @@ export function EditorJsEditor({
             // Wait for editor to be ready
             await editor.isReady;
             const outputData = await editor.save();
-            onChange(outputData);
+            onChangeRef.current(outputData);
           } catch (error) {
             console.error("Error saving editor data:", error);
           }
@@ -161,26 +206,26 @@ export function EditorJsEditor({
     // Wait for editor to be ready
     editor.isReady
       .then(() => {
+        console.log("✅ Editor ready!");
         editorRef.current = editor;
+        isInitializingRef.current = false;
       })
       .catch((error) => {
-        console.error("Editor initialization error:", error);
+        console.error("❌ Editor initialization error:", error);
+        isInitializingRef.current = false;
       });
 
     return () => {
+      console.log("🧹 Cleaning up editor");
+      isInitializingRef.current = false;
+      hasInitializedRef.current = false;
       if (editorRef.current && editorRef.current.destroy) {
         editorRef.current.destroy();
         editorRef.current = null;
       }
     };
-  }, [
-    isMounted,
-    placeholder,
-    onChange,
-    handleImageUpload,
-    onImageUpload,
-    value,
-  ]);
+    // FIXED: Only depend on stable values - callbacks stored in refs
+  }, [isMounted, placeholder]);
 
   // Update editor content when value changes externally
   useEffect(() => {
@@ -212,6 +257,7 @@ export function EditorJsEditor({
         const currentJson = JSON.stringify(currentData);
         const newJson = JSON.stringify(value);
 
+        // Only update if content is different
         if (currentJson !== newJson) {
           editor.render(value);
         }

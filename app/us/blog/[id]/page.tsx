@@ -82,17 +82,17 @@ export default async function UsBlogDetailPage({ params }: UsBlogDetailPageProps
           </div>
 
           {blog.image && (
-  <div className="w-full h-48 overflow-hidden">
-    <Image
-      src={blog.image}
-      alt={blog.title}
-      width={800}
-      height={500}
-      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-    />
-  </div>
-)}
-
+            <div className="relative w-full h-96 mb-8 rounded-lg overflow-hidden">
+              <Image
+                src={blog.image}
+                alt={blog.title}
+                fill
+                className="object-cover"
+                height={80}
+                width={50}
+              />
+            </div>
+          )}
 
           <div className="prose prose-lg max-w-none prose-invert prose-slate prose-headings:text-white prose-p:text-slate-300">
             {editorData ? (

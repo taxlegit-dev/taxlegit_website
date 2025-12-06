@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useTransition, useEffect} from "react";
+import React, { useState, useTransition, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,8 +8,9 @@ import { z } from "zod";
 import dynamic from "next/dynamic";
 import type { OutputData } from "@editorjs/editorjs";
 import { EditorJsRenderer } from "@/components/rich-text/editorjs-renderer";
+import Image from "next/image";
 
-// Types - will be available after Prisma generate
+// Types
 type Blog = {
   id: string;
   title: string;
@@ -30,7 +31,6 @@ type BlogGroup = {
   createdAt: Date;
   updatedAt: Date;
 };
-import Image from "next/image";
 
 // Dynamically import EditorJsEditor to avoid SSR issues
 const EditorJsEditor = dynamic(
@@ -89,12 +89,16 @@ const blogSchema = z.object({
 type BlogGroupForm = z.infer<typeof blogGroupSchema>;
 type BlogForm = z.infer<typeof blogSchema>;
 
-export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManagerProps) {
+export function BlogManager({
+  region,
+  blogGroups: initialBlogGroups,
+}: BlogManagerProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
-  const [blogGroups, setBlogGroups] = useState<BlogGroupWithBlogs[]>(initialBlogGroups);
+  const [blogGroups, setBlogGroups] =
+    useState<BlogGroupWithBlogs[]>(initialBlogGroups);
   const [selectedBlogGroupId, setSelectedBlogGroupId] = useState<string | null>(
     searchParams?.get("blogGroupId") || null
   );
@@ -105,6 +109,7 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
   const [showBlogForm, setShowBlogForm] = useState(false);
   const [editingGroup, setEditingGroup] = useState<BlogGroup | null>(null);
   const [editingBlog, setEditingBlog] = useState<BlogWithGroup | null>(null);
+  const [isEditorReady, setIsEditorReady] = useState(false);
 
   const groupForm = useForm<BlogGroupForm>({
     resolver: zodResolver(blogGroupSchema),
@@ -142,9 +147,21 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [region]);
 
-  // Update blog form when editing
+  // Memoize editor value - must be at top level (not conditional)
+  const editorValue = useMemo(() => {
+    if (!isEditorReady || !showBlogForm) return undefined;
+    const content = blogForm.getValues("content");
+    if (!content) return undefined;
+    const parsed = tryParseEditorJson(content);
+    return parsed || undefined;
+  }, [blogForm.watch("content"), editingBlog?.id, isEditorReady, showBlogForm]);
+
+  // Update blog form when editing - WITH PROPER EDITOR INITIALIZATION
   useEffect(() => {
     if (editingBlog && showBlogForm) {
+      // Reset editor ready state first
+      setIsEditorReady(false);
+
       // Reset form with editing blog data
       blogForm.reset({
         title: editingBlog.title,
@@ -153,7 +170,14 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
         blogGroupId: editingBlog.blogGroupId,
         status: editingBlog.status,
       });
+
+      // Small delay to ensure clean editor mount
+      const timer = setTimeout(() => setIsEditorReady(true), 50);
+      return () => clearTimeout(timer);
     } else if (!editingBlog && showBlogForm) {
+      // Reset editor ready state first
+      setIsEditorReady(false);
+
       // Reset form for new blog
       blogForm.reset({
         title: "",
@@ -162,6 +186,12 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
         blogGroupId: selectedBlogGroupId || "",
         status: "DRAFT",
       });
+
+      // Small delay to ensure clean editor mount
+      const timer = setTimeout(() => setIsEditorReady(true), 50);
+      return () => clearTimeout(timer);
+    } else {
+      setIsEditorReady(false);
     }
   }, [editingBlog, showBlogForm, blogForm, selectedBlogGroupId]);
 
@@ -178,7 +208,9 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
     startTransition(async () => {
       setMessage(null);
       try {
-        const url = editingGroup ? "/api/admin/blog-groups" : "/api/admin/blog-groups";
+        const url = editingGroup
+          ? "/api/admin/blog-groups"
+          : "/api/admin/blog-groups";
         const method = editingGroup ? "PUT" : "POST";
         const payload = editingGroup
           ? { ...data, id: editingGroup.id, region }
@@ -236,6 +268,7 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
         setShowBlogForm(false);
         setEditingBlog(null);
         setSelectedBlogId(null);
+        setIsEditorReady(false);
         blogForm.reset();
         await fetchData();
       } catch (error) {
@@ -246,7 +279,11 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
   });
 
   const handleDeleteGroup = async (groupId: string) => {
-    if (!confirm("Are you sure you want to delete this blog group? All blogs in this group will also be deleted.")) {
+    if (
+      !confirm(
+        "Are you sure you want to delete this blog group? All blogs in this group will also be deleted."
+      )
+    ) {
       return;
     }
 
@@ -337,7 +374,11 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
           >
             <div className="flex items-center gap-2">
               {message.includes("success") ? (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <svg
+                  className="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
                   <path
                     fillRule="evenodd"
                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -345,7 +386,11 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
                   />
                 </svg>
               ) : (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <svg
+                  className="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
                   <path
                     fillRule="evenodd"
                     d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -363,9 +408,13 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
             <button
               onClick={() => {
                 setSelectedBlogId(null);
-                const next = new URLSearchParams(searchParams?.toString() ?? "");
+                const next = new URLSearchParams(
+                  searchParams?.toString() ?? ""
+                );
                 next.delete("blogId");
-                router.push(`/admin/blog?${next.toString()}`);
+                router.replace(`/admin/blog?${next.toString()}`, {
+                  scroll: false,
+                });
               }}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition mb-4"
             >
@@ -386,7 +435,9 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
             </button>
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-slate-900">{selectedBlog.title}</h2>
+                <h2 className="text-xl font-semibold text-slate-900">
+                  {selectedBlog.title}
+                </h2>
                 <p className="text-sm text-slate-600 mt-1">
                   Group: {selectedBlog.blogGroup.name} |{" "}
                   {new Date(selectedBlog.createdAt).toLocaleDateString()}
@@ -399,9 +450,13 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
                     setShowBlogForm(true);
                     // Clear selected blog ID so detail view doesn't show
                     setSelectedBlogId(null);
-                    const next = new URLSearchParams(searchParams?.toString() ?? "");
+                    const next = new URLSearchParams(
+                      searchParams?.toString() ?? ""
+                    );
                     next.delete("blogId");
-                    router.push(`/admin/blog?${next.toString()}`);
+                    router.replace(`/admin/blog?${next.toString()}`, {
+                      scroll: false,
+                    });
                   }}
                   className="px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg"
                 >
@@ -423,8 +478,8 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
                 src={selectedBlog.image}
                 alt={selectedBlog.title}
                 className="w-full h-64 object-cover rounded-lg"
-                height={80}
-                width={50}
+                height={256}
+                width={800}
               />
             </div>
           )}
@@ -473,6 +528,7 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
               onClick={() => {
                 setShowBlogForm(false);
                 setEditingBlog(null);
+                setIsEditorReady(false);
                 blogForm.reset();
               }}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition mb-4"
@@ -570,26 +626,29 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
               <label className="block text-sm font-semibold text-slate-900 mb-2">
                 Content <span className="text-red-500">*</span>
               </label>
-              <EditorJsEditor
-                key={editingBlog ? `blog-edit-${editingBlog.id}` : `blog-new-${showBlogForm ? Date.now() : ''}`}
-                value={
-                  (() => {
-                    const content = blogForm.getValues("content");
-                    if (!content) return undefined;
-                    const parsed = tryParseEditorJson(content);
-                    return parsed;
-                  })()
-                }
-                onChange={(value) => {
-                  blogForm.setValue("content", JSON.stringify(value), {
-                    shouldDirty: true,
-                    shouldValidate: false,
-                  });
-                }}
-                placeholder=""
-                onImageUpload={handleImageUpload}
-                region={region}
-              />
+              {isEditorReady ? (
+                <EditorJsEditor
+                  key={
+                    editingBlog
+                      ? `blog-edit-${editingBlog.id}`
+                      : `blog-new`
+                  }
+                  value={editorValue}
+                  onChange={(value) => {
+                    blogForm.setValue("content", JSON.stringify(value), {
+                      shouldDirty: true,
+                      shouldValidate: false,
+                    });
+                  }}
+                  placeholder=""
+                  onImageUpload={handleImageUpload}
+                  region={region}
+                />
+              ) : (
+                <div className="rounded-xl border border-slate-200 bg-white p-8 min-h-[300px] flex items-center justify-center text-slate-400">
+                  Preparing editor...
+                </div>
+              )}
               {blogForm.formState.errors.content && (
                 <p className="text-xs text-red-600 mt-1">
                   {blogForm.formState.errors.content.message}
@@ -602,7 +661,11 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
               disabled={isPending}
               className="w-full rounded-lg bg-indigo-600 px-4 py-3 text-white font-semibold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isPending ? "Saving..." : editingBlog ? "Update Blog" : "Create Blog"}
+              {isPending
+                ? "Saving..."
+                : editingBlog
+                ? "Update Blog"
+                : "Create Blog"}
             </button>
           </form>
         </div>
@@ -628,7 +691,9 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
       )}
 
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-slate-900">Blog Management</h2>
+        <h2 className="text-2xl font-semibold text-slate-900">
+          Blog Management
+        </h2>
         <div className="flex gap-2">
           <button
             onClick={() => {
@@ -701,13 +766,20 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
       <div className="space-y-8">
         {blogGroups.length === 0 ? (
           <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm text-center">
-            <p className="text-slate-600">No blog groups found. Create one to get started.</p>
+            <p className="text-slate-600">
+              No blog groups found. Create one to get started.
+            </p>
           </div>
         ) : (
           blogGroups.map((group) => (
-            <div key={group.id} className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+            <div
+              key={group.id}
+              className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm"
+            >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-semibold text-slate-900">{group.name}</h3>
+                <h3 className="text-xl font-semibold text-slate-900">
+                  {group.name}
+                </h3>
                 <div className="flex gap-2">
                   <button
                     onClick={() => {
@@ -728,7 +800,9 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
               </div>
 
               {group.blogs.length === 0 ? (
-                <p className="text-slate-500 text-sm">No blogs in this group yet.</p>
+                <p className="text-slate-500 text-sm">
+                  No blogs in this group yet.
+                </p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {group.blogs.map((blog) => (
@@ -736,9 +810,13 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
                       key={blog.id}
                       onClick={() => {
                         setSelectedBlogId(blog.id);
-                        const next = new URLSearchParams(searchParams?.toString() ?? "");
+                        const next = new URLSearchParams(
+                          searchParams?.toString() ?? ""
+                        );
                         next.set("blogId", blog.id);
-                        router.push(`/admin/blog?${next.toString()}`);
+                        router.replace(`/admin/blog?${next.toString()}`, {
+                          scroll: false,
+                        });
                       }}
                       className="rounded-lg border border-slate-200 p-4 hover:shadow-md transition cursor-pointer"
                     >
@@ -751,14 +829,20 @@ export function BlogManager({ region, blogGroups: initialBlogGroups }: BlogManag
                           width={50}
                         />
                       )}
-                      <h4 className="font-semibold text-slate-900 mb-2">{blog.title}</h4>
+                      <h4 className="font-semibold text-slate-900 mb-2">
+                        {blog.title}
+                      </h4>
                       <div className="flex items-center justify-between text-xs text-slate-500">
-                        <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
+                        <span>
+                          {new Date(blog.createdAt).toLocaleDateString()}
+                        </span>
                         <span className="px-2 py-1 rounded-full bg-slate-100">
                           {blog.status}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-600 mt-2">{group.name}</p>
+                      <p className="text-xs text-slate-600 mt-2">
+                        {group.name}
+                      </p>
                     </div>
                   ))}
                 </div>

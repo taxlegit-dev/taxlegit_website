@@ -132,24 +132,43 @@ function renderBlock(
       const imageUrl = imageData.file?.url || imageData.url || "";
       if (!imageUrl) return null;
 
+      // Determine image alignment and styling
+      const alignmentClass = imageData.alignment === "left" 
+        ? "float-left mr-4" 
+        : imageData.alignment === "right" 
+        ? "float-right ml-4" 
+        : "mx-auto";
+      
+      const containerClass = imageData.stretched 
+        ? "w-full" 
+        : imageData.alignment === "center" || !imageData.alignment
+        ? "flex justify-center"
+        : "";
+
       const imageElement = (
-        <Image
-          src={imageUrl}
-          alt={imageData.caption || ""}
-          // style={imageStyle}
-          height={100}
-          width={100}
-        />
+        <div className={`relative ${containerClass} ${imageData.stretched ? '' : 'max-w-4xl'} mb-4`}>
+          <Image
+            src={imageUrl}
+            alt={imageData.caption || ""}
+            width={1200}
+            height={800}
+            className={`rounded-lg ${imageData.stretched ? 'w-full' : 'w-full max-w-full'} ${imageData.withBorder ? 'border-2 border-slate-300' : ''} ${imageData.withBackground ? 'bg-slate-100 p-2' : ''}`}
+            style={{
+              objectFit: 'cover',
+            }}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+          />
+        </div>
       );
 
       return (
-        <figure key={block.id} className="mb-4">
+        <figure key={block.id} className={`mb-6 ${alignmentClass} ${imageData.stretched ? 'w-full' : ''}`}>
           {linkUrl ? (
             <a
               href={linkUrl}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ display: "inline-block", textDecoration: "none" }}
+              className="block"
             >
               {imageElement}
             </a>
