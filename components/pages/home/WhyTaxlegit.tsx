@@ -1,84 +1,90 @@
 "use client";
 
-import {
-  Users,
-  Eye,
-  Handshake,
-  BadgeCheck,
-} from "lucide-react";
+import { Users, Eye, Briefcase, Clock } from "lucide-react";
 
-const features = [
-  {
-    title: "Experienced Professionals",
-    icon: BadgeCheck,
-  },
-  {
-    title: "Transparency",
-    icon: Eye,
-  },
-  {
-    title: "Strong Clientele Base",
-    icon: Users,
-  },
-  {
-    title: "Punctuality",
-    icon: Handshake,
-  },
-];
+export default function WhyChooseTaxlegit() {
+  const features = [
+    {
+      title: "Experienced Professionals",
+      desc: "Our qualified experts bring years of industry experience and practical knowledge.",
+      icon: <Users className="w-6 h-6 text-white" />,
+    },
+    {
+      title: "Transparency",
+      desc: "Clear communication, no hidden fees, and complete process transparency.",
+      icon: <Eye className="w-6 h-6 text-white" />,
+    },
+    {
+      title: "Strong Clientele Base",
+      desc: "Trusted by startups, SMEs, corporates, and global clients across industries.",
+      icon: <Briefcase className="w-6 h-6 text-white" />,
+    },
+    {
+      title: "Punctuality",
+      desc: "We value your time — every project is delivered on schedule.",
+      icon: <Clock className="w-6 h-6 text-white" />,
+    },
+  ];
 
-export default function WhyChooseTaxLegit() {
   return (
-    <section className="py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Heading */}
-        <h2 className="text-center text-4xl md:text-5xl font-bold text-gray-900">
-          Why Choose <span className="text-blue-700">Taxlegit?</span>
-        </h2>
+    <div className="relative w-full bg-gradient-to-br from-blue-100 to-blue-200 py-20 px-6 overflow-hidden">
+      {/* CURVED DARK PANEL */}
+      <div
+        className="
+        absolute right-0 top-0 h-full w-[55%]
+        bg-gradient-to-br from-blue-800 to-blue-700
+        shadow-2xl
+        "
+        style={{
+          clipPath: "path('M0,0 C50,250 220,450 0,700 L1000,700 L1000,1 Z')",
+        }}
+      ></div>
 
-        {/* Subtitle */}
-        <p className="text-center text-gray-600 mt-4 text-lg md:text-xl">
-          Let&apos;s do great work together
-        </p>
+      <div className="relative max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+        {/* LEFT SIDE TEXT */}
+        <div className="">
+          <span className="text-sm font-medium px-3 py-1 rounded-full inline-block bg-blue-200 text-indigo-700">
+            Frequently asked questions
+          </span>
+          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight font-[Gilroy]">
+            Why Choose Taxlegit?
+          </h2>
 
-        {/* Features */}
-        <div className="mt-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
-          {features.map((item, index) => {
-            const Icon = item.icon;
+          <p className="mt-4 text-lg text-slate-700">
+            Let&apos;s do great work together
+          </p>
+        </div>
 
-            return (
+        {/* RIGHT SIDE LIST */}
+        <div className="z-10 flex flex-col gap-6">
+          {features.map((item, i) => (
+            <div
+              key={i}
+              className="
+                flex items-center gap-5 p-5 rounded-xl
+                bg-white/10 backdrop-blur-xl
+                border border-white/20 shadow-xl
+                text-white
+              "
+            >
               <div
-                key={index}
                 className="
-                  p-8
-                  bg-white
-                  rounded-2xl
-                  border border-gray-200
-                  shadow-sm
-                  hover:shadow-md
-                  transition-all duration-300
-                  flex flex-col items-center text-center
+                  w-14 h-14 rounded-full flex items-center justify-center
+                  bg-gradient-to-br from-blue-700 to-blue-500
+                  shadow-xl
                 "
               >
-                {/* Icon container */}
-                <div className="w-20 h-20 flex items-center justify-center rounded-full bg-gray-50 border border-gray-200">
-                  <Icon
-                    className="w-11 h-11 text-blue-600"
-                    strokeWidth={1.5}
-                  />
-                </div>
-
-                {/* Title */}
-                <h3 className="mt-6 text-lg font-semibold text-gray-900">
-                  {item.title}
-                </h3>
-
-                {/* Accent line */}
-                <div className="mt-4 w-12 h-1 bg-blue-600/20 rounded-full"></div>
+                {item.icon}
               </div>
-            );
-          })}
+
+              <div>
+                <h3 className="text-lg font-semibold">{item.title}</h3>
+                <p className="text-blue-100 text-sm mt-1">{item.desc}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

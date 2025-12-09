@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Region } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { NavbarServer } from "@/components/navigation/navbar-server";
-import { UsHero } from "@/components/hero/us-hero";
+import { UsHero } from "@/components/ServiceHeroSection/us-hero";
 import { ServicePageView } from "@/components/service-page/service-page-view";
 import { FAQSection } from "@/components/faq/faq-section";
 
@@ -11,7 +11,9 @@ type DynamicPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export async function generateMetadata({ params }: DynamicPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: DynamicPageProps): Promise<Metadata> {
   const { slug } = await params;
   const region = Region.US;
 
@@ -83,17 +85,25 @@ export default async function UsDynamicPage({ params }: DynamicPageProps) {
       <NavbarServer region={region} />
       <main>
         {hero && hero.status === "PUBLISHED" && <UsHero hero={hero} />}
-        {servicePage && servicePage.status === "PUBLISHED" && servicePage.sections.length > 0 ? (
+        {servicePage &&
+        servicePage.status === "PUBLISHED" &&
+        servicePage.sections.length > 0 ? (
           <ServicePageView sections={servicePage.sections} region="US" />
         ) : !hero ? (
           <section className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-12">
             <div className="rounded-3xl border border-white/10 bg-slate-900 p-10 shadow-2xl">
               <div className="space-y-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-emerald-300">United States</p>
-                <h1 className="text-4xl font-semibold leading-tight">{navbarItem.label}</h1>
+                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-emerald-300">
+                  United States
+                </p>
+                <h1 className="text-4xl font-semibold leading-tight">
+                  {navbarItem.label}
+                </h1>
                 <div className="max-w-2xl text-slate-200">
                   <p className="text-lg">
-                    This is a dynamic page for <strong>{navbarItem.label}</strong>. Create a hero section or service page in admin panel to customize this page.
+                    This is a dynamic page for{" "}
+                    <strong>{navbarItem.label}</strong>. Create a hero section
+                    or service page in admin panel to customize this page.
                   </p>
                 </div>
               </div>
@@ -113,4 +123,3 @@ export default async function UsDynamicPage({ params }: DynamicPageProps) {
     </div>
   );
 }
-

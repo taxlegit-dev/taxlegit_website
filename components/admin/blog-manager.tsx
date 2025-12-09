@@ -477,9 +477,9 @@ export function BlogManager({
               <Image
                 src={selectedBlog.image}
                 alt={selectedBlog.title}
-                className="w-full h-64 object-cover rounded-lg"
-                height={256}
                 width={800}
+                height={500}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
             </div>
           )}
@@ -628,11 +628,7 @@ export function BlogManager({
               </label>
               {isEditorReady ? (
                 <EditorJsEditor
-                  key={
-                    editingBlog
-                      ? `blog-edit-${editingBlog.id}`
-                      : `blog-new`
-                  }
+                  key={editingBlog ? `blog-edit-${editingBlog.id}` : `blog-new`}
                   value={editorValue}
                   onChange={(value) => {
                     blogForm.setValue("content", JSON.stringify(value), {
@@ -821,14 +817,17 @@ export function BlogManager({
                       className="rounded-lg border border-slate-200 p-4 hover:shadow-md transition cursor-pointer"
                     >
                       {blog.image && (
-                        <Image
-                          src={blog.image}
-                          alt={blog.title}
-                          className="w-full h-40 object-cover rounded-lg mb-3"
-                          height={80}
-                          width={50}
-                        />
+                        <div className="w-full h-48 overflow-hidden">
+                          <Image
+                            src={blog.image}
+                            alt={blog.title}
+                            width={800}
+                            height={500}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
                       )}
+
                       <h4 className="font-semibold text-slate-900 mb-2">
                         {blog.title}
                       </h4>

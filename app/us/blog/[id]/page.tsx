@@ -11,7 +11,9 @@ type UsBlogDetailPageProps = {
   params: Promise<{ id: string }>;
 };
 
-export default async function UsBlogDetailPage({ params }: UsBlogDetailPageProps) {
+export default async function UsBlogDetailPage({
+  params,
+}: UsBlogDetailPageProps) {
   const { id } = await params;
   const region = Region.US;
 
@@ -73,23 +75,24 @@ export default async function UsBlogDetailPage({ params }: UsBlogDetailPageProps
             </span>
             <h1 className="text-4xl font-semibold mb-4">{blog.title}</h1>
             <div className="flex items-center gap-4 text-sm text-slate-400">
-              <span>{new Date(blog.createdAt).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}</span>
+              <span>
+                {new Date(blog.createdAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </span>
             </div>
           </div>
 
           {blog.image && (
-            <div className="relative w-full h-96 mb-8 rounded-lg overflow-hidden">
+            <div className="w-full h-48 overflow-hidden">
               <Image
                 src={blog.image}
                 alt={blog.title}
-                fill
-                className="object-cover"
-                height={80}
-                width={50}
+                width={800}
+                height={500}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
             </div>
           )}
@@ -114,4 +117,3 @@ export default async function UsBlogDetailPage({ params }: UsBlogDetailPageProps
     </div>
   );
 }
-

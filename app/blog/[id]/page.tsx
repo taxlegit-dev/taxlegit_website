@@ -87,14 +87,13 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
           </div>
 
           {blog.image && (
-            <div className="relative w-full h-96 mb-8 rounded-lg overflow-hidden">
+            <div className="w-full h-48 overflow-hidden">
               <Image
                 src={blog.image}
                 alt={blog.title}
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1024px"
-                className="object-cover"
-                priority
+                width={800}
+                height={500}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
             </div>
           )}

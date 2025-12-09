@@ -17,96 +17,120 @@ export function FAQSection({ questions, region }: FAQSectionProps) {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  if (!questions || questions.length === 0) {
-    return null;
-  }
+  if (!questions || questions.length === 0) return null;
 
   return (
     <section
       className={`${
         isIndia
-          ? "bg-gradient-to-br from-slate-50 via-white to-indigo-50"
+          ? "bg-gradient-to-br from-indigo-50 via-white to-indigo-100"
           : "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
-      } py-16 md:py-24`}
+      } py-20`}
     >
-      <div className="mx-auto max-w-4xl px-6">
-        <div className="text-center mb-12">
+      <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+        {/* LEFT STATIC SECTION */}
+        <div className="space-y-4">
+          {/* Small Badge */}
+          <span
+            className={`text-sm font-medium px-3 py-1 rounded-full inline-block
+            ${
+              isIndia
+                ? "bg-indigo-100 text-indigo-700"
+                : "bg-slate-700 text-indigo-300"
+            }`}
+          >
+            Frequently asked questions
+          </span>
+
+          {/* Big Heading */}
           <h2
-            className={`text-3xl md:text-4xl font-bold mb-4 ${
+            className={`text-4xl font-extrabold leading-snug ${
               isIndia ? "text-slate-900" : "text-white"
             }`}
           >
-            Frequently Asked Questions
+            Frequently asked <br />
+            <span className="text-indigo-600">questions</span>
           </h2>
+
+          {/* Small Description */}
           <p
-            className={`text-lg ${
+            className={`text-md ${
               isIndia ? "text-slate-600" : "text-slate-300"
-            }`}
+            } max-w-sm`}
           >
-            Find answers to common questions about our services
+            Choose a plan that fits your business needs and budget. No hidden
+            fees—just straightforward answers to common questions.
           </p>
         </div>
 
+        {/* RIGHT SIDE FAQ ACCORDIONS */}
         <div className="space-y-4">
           {questions.map((item, index) => {
             const isOpen = openIndex === index;
+
             return (
               <div
                 key={item.id}
-                className={`rounded-xl border transition-all duration-300 ${
-                  isIndia
-                    ? isOpen
-                      ? "border-indigo-300 bg-white shadow-lg"
-                      : "border-slate-200 bg-white hover:border-indigo-200 hover:shadow-md"
-                    : isOpen
-                    ? "border-slate-600 bg-slate-800 shadow-xl"
-                    : "border-slate-700 bg-slate-800/50 hover:border-slate-600 hover:bg-slate-800"
-                }`}
+                className={`rounded-2xl border transition-all duration-300 overflow-hidden shadow-lg
+                  ${
+                    isIndia
+                      ? "bg-white border-slate-200"
+                      : "bg-white/5 backdrop-blur-xl border-slate-700"
+                  }
+                  ${isOpen ? "shadow-xl scale-[1.01]" : "opacity-90"}
+                `}
               >
+                {/* Question row */}
                 <button
                   onClick={() => toggleQuestion(index)}
-                  className={`w-full px-6 py-5 text-left flex items-center justify-between gap-4 transition-colors ${
-                    isIndia
-                      ? "hover:bg-slate-50"
-                      : "hover:bg-slate-700/50"
-                  }`}
+                  className="w-full flex justify-between items-center py-5 px-6 text-left"
                 >
                   <span
-                    className={`text-lg font-semibold flex-1 ${
+                    className={`text-lg font-semibold ${
                       isIndia ? "text-slate-900" : "text-white"
                     }`}
                   >
                     {item.question}
                   </span>
-                  <svg
-                    className={`w-6 h-6 flex-shrink-0 transition-transform duration-300 ${
-                      isOpen ? "rotate-180" : ""
-                    } ${
-                      isIndia ? "text-indigo-600" : "text-indigo-400"
-                    }`}
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
+
+                  {/* Toggle Icon */}
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300
+                      ${
+                        isIndia
+                          ? "bg-indigo-100 text-indigo-600"
+                          : "bg-indigo-400/20 text-indigo-300"
+                      }
+                      ${isOpen ? "rotate-180" : ""}
+                    `}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
                 </button>
 
+                {/* ANSWER SECTION */}
                 <div
-                  className={`overflow-hidden transition-all duration-300 ${
+                  className={`transition-all duration-300 ${
                     isOpen ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
                   }`}
                 >
                   <div
-                    className={`px-6 pb-5 pt-0 ${
+                    className={`px-6 pb-5 prose max-w-none ${
                       isIndia
-                        ? "text-slate-700 prose prose-slate max-w-none"
-                        : "text-slate-300 prose prose-invert prose-slate max-w-none"
+                        ? "prose-slate text-slate-700"
+                        : "prose-invert prose-slate text-slate-300"
                     }`}
                     dangerouslySetInnerHTML={{ __html: item.answer }}
                   />
@@ -115,29 +139,26 @@ export function FAQSection({ questions, region }: FAQSectionProps) {
             );
           })}
         </div>
+      </div>
 
-        {/* Decorative elements */}
-        <div className="mt-12 text-center">
-          <p
-            className={`text-sm ${
-              isIndia ? "text-slate-500" : "text-slate-400"
+      {/* Footer Line */}
+      <div className="mt-12 text-center">
+        <p
+          className={`text-sm ${isIndia ? "text-slate-500" : "text-slate-400"}`}
+        >
+          Still have questions?{" "}
+          <a
+            href="tel:+918929218091"
+            className={`font-semibold underline hover:no-underline transition ${
+              isIndia
+                ? "text-indigo-600 hover:text-indigo-700"
+                : "text-indigo-400 hover:text-indigo-300"
             }`}
           >
-            Still have questions?{" "}
-            <a
-              href="tel:+918929218091"
-              className={`font-semibold underline hover:no-underline transition ${
-                isIndia
-                  ? "text-indigo-600 hover:text-indigo-700"
-                  : "text-indigo-400 hover:text-indigo-300"
-              }`}
-            >
-              Contact us
-            </a>
-          </p>
-        </div>
+            Contact us
+          </a>
+        </p>
       </div>
     </section>
   );
 }
-

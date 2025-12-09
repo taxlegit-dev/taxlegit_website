@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { Region, Prisma } from "@prisma/client";
+import { Region } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
@@ -120,8 +120,6 @@ export async function PUT(request: Request) {
       );
     }
 
-    const region = parsed.data.region === "US" ? Region.US : Region.INDIA;
-
     const blogGroup = await prisma.blogGroup.update({
       where: { id: parsed.data.id },
       data: {
@@ -176,4 +174,3 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
-

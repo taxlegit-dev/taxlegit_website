@@ -59,17 +59,18 @@ export default async function BlogListingPage() {
                       href={`/blog/${blog.id}`}
                       className="group rounded-lg border border-slate-200 overflow-hidden hover:shadow-lg transition"
                     >
-                      {blog.image && (
-                        <div className="relative w-full h-48 overflow-hidden">
-                          <Image
-                            src={blog.image}
-                            alt={blog.title}
-                            fill
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        </div>
-                      )}
+{blog.image && (
+  <div className="w-full h-48 overflow-hidden">
+    <Image
+      src={blog.image}
+      alt={blog.title}
+      width={800}
+      height={500}
+      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+    />
+  </div>
+)}
+
                       <div className="p-6">
                         <h3 className="text-xl font-semibold text-slate-900 mb-2 group-hover:text-indigo-600 transition">
                           {blog.title}

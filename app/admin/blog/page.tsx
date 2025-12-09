@@ -4,14 +4,18 @@ import { RegionFilter } from "@/components/admin/region-filter";
 import { BlogManager } from "@/components/admin/blog-manager";
 
 type AdminBlogPageProps = {
-  searchParams?: Promise<{ region?: string; blogGroupId?: string; blogId?: string }>;
+  searchParams?: Promise<{
+    region?: string;
+    blogGroupId?: string;
+    blogId?: string;
+  }>;
 };
 
-export default async function AdminBlogPage({ searchParams }: AdminBlogPageProps) {
+export default async function AdminBlogPage({
+  searchParams,
+}: AdminBlogPageProps) {
   const params = await searchParams;
   const selectedRegion = params?.region === "US" ? Region.US : Region.INDIA;
-  const selectedBlogGroupId = params?.blogGroupId;
-  const selectedBlogId = params?.blogId;
 
   // Fetch all blog groups with their blogs for the selected region
   const blogGroups = await prisma.blogGroup.findMany({
@@ -30,10 +34,15 @@ export default async function AdminBlogPage({ searchParams }: AdminBlogPageProps
     <div className="space-y-8 text-black">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">Blog Management</p>
-          <h1 className="text-3xl font-semibold text-slate-900">Manage Blogs</h1>
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">
+            Blog Management
+          </p>
+          <h1 className="text-3xl font-semibold text-slate-900">
+            Manage Blogs
+          </h1>
           <p className="mt-2 text-sm text-slate-600">
-            Create and manage blog posts organized by groups for {selectedRegion === Region.US ? "US" : "India"} region
+            Create and manage blog posts organized by groups for{" "}
+            {selectedRegion === Region.US ? "US" : "India"} region
           </p>
         </div>
         <RegionFilter value={selectedRegion === Region.US ? "US" : "INDIA"} />
@@ -45,4 +54,3 @@ export default async function AdminBlogPage({ searchParams }: AdminBlogPageProps
     </div>
   );
 }
-

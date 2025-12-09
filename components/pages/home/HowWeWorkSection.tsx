@@ -1,122 +1,160 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
+import { FileSpreadsheet, Users, FileCheck, CheckCircle2 } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
 
-export default function HowDoWeWork() {
-  const [active, setActive] = useState(0);
-
-  const images = [
-    "https://taxlegit.com/wp_images/1.jpg",
-    "https://taxlegit.com/wp_images/2.jpg",
-    "https://taxlegit.com/wp_images/3.jpg",
-    "https://taxlegit.com/wp_images/4.jpg",
-  ];
+export default function WorkTimeline() {
+  const [activeStep, setActiveStep] = useState(0);
+  const timelineRef = useRef(null);
 
   const steps = [
     {
       title: "Step 1 : Fill the Form",
-      text: "Once you submitted the above form, you will be qualified to get a Free Expert Consultation Session & you will be receiving a call from our representative instantly.",
+      desc: "Once you submit the form, you qualify for a FREE Expert Consultation. You will receive a call & instant quotation.",
+      image: "/step1.png",
+      icon: <FileSpreadsheet className="w-8 h-8 text-blue-700" />,
     },
     {
       title: "Step 2 : Evaluation With Our Professionals",
-      text: "We will evaluate your start-up requirements and help you identify the most accurate business structure.",
+      desc: "We evaluate your startup requirements and identify the most accurate business structure.",
+      image: "/step2.png",
+      icon: <Users className="w-8 h-8 text-blue-700" />,
     },
     {
       title: "Step 3 : Online Documentation",
-      text: "Our experts will collect all required documents online securely and quickly.",
+      desc: "Our experts collect the required documents online quickly and effortlessly.",
+      image: "/step3.png",
+      icon: <FileCheck className="w-8 h-8 text-blue-700" />,
     },
     {
-      title: "Step 4 : Finalising and Filing of All Forms",
-      text: "Our experts verify all your documents and file the required applications with 100% accuracy.",
+      title: "Step 4 : Finalising & Filing of All Forms",
+      desc: "After verification, we prepare and file all applications with 100% accuracy for company registration.",
+      image: "/step4.png",
+      icon: <CheckCircle2 className="w-8 h-8 text-blue-700" />,
     },
   ];
 
+  // Intersection Observer for step animations
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.3,
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const stepIndex = parseInt(
+            entry.target.getAttribute("data-step-index") || "0"
+          );
+          setActiveStep(stepIndex);
+        }
+      });
+    }, observerOptions);
+
+    // Observe all step elements
+    const stepElements = document.querySelectorAll("[data-step-index]");
+    stepElements.forEach((el) => observer.observe(el));
+
+    return () => {
+      stepElements.forEach((el) => observer.unobserve(el));
+    };
+  }, []);
+
+  // Calculate line height based on active step
+  const getLineHeight = () => {
+    return `${(activeStep / (steps.length - 1)) * 100}%`;
+  };
+
   return (
-    <section className="py-24 bg-white" id="how-we-work">
-      <div className="max-w-7xl mx-auto px-6">
+    <div className="w-full max-w-6xl mx-auto py-16 px-4 bg-white">
+      <h2 className="text-center text-3xl md:text-5xl font-bold mb-12 text-slate-700 font-[Gilroy]">
+        How Do We Work?
+      </h2>
 
-        {/* Section Title */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-            How Do We <span className="text-blue-600">Work?</span>
-          </h2>
-          <p className="text-gray-600 mt-3 text-lg">
-            A simple, guided process from start to finish
-          </p>
-        </div>
+      <div className="relative" ref={timelineRef}>
+        {/* Static Gray Background Line */}
+        <div
+          className="absolute left-1/2 top-0 h-full w-[4px] 
+          bg-gray-200 transform -translate-x-1/2 rounded-full"
+        />
 
-        {/* Layout */}
-        <div className="grid md:grid-cols-2 gap-14 items-start">
+        {/* Animated Blue Line */}
+        <div
+          className="absolute left-1/2 top-0 w-[4px] 
+          bg-gradient-to-b from-blue-700 via-blue-600 to-sky-500
+          transform -translate-x-1/2 rounded-full transition-all duration-700 ease-out"
+          style={{ height: getLineHeight() }}
+        />
 
-          {/* LEFT — Perfect Crossfade Images */}
-          <div className="flex justify-center">
-            <div className="rounded-3xl overflow-hidden shadow-2xl w-full max-w-lg relative h-[650px] bg-gray-100">
+        <div className="flex flex-col gap-20">
+          {steps.map((step, i) => (
+            <div
+              key={i}
+              data-step-index={i}
+              className={`
+                flex flex-col md:flex-row items-center gap-10
+                ${i % 2 === 1 ? "md:flex-row-reverse" : ""}
+                transition-all duration-300
+                ${
+                  activeStep >= i
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-40 translate-y-4"
+                }
+              `}
+            >
+              {/* IMAGE BLOCK */}
+              <div className="w-full md:w-1/2 flex justify-center">
+                <div className="rounded-xl overflow-hidden shadow-lg bg-white">
+                  <Image
+                    src={step.image}
+                    alt={step.title}
+                    width={500}
+                    height={300}
+                    className="object-cover w-full h-60"
+                  />
+                </div>
+              </div>
 
-              {images.map((img, i) => (
-                <Image
-                  key={i}
-                  src={img}
-                  alt="How We Work"
-                  width={600}
-                  height={700}
+              {/* TIMELINE DOT */}
+              <div className="absolute left-1/2 transform -translate-x-1/2">
+                <div
                   className={`
-                    object-cover w-full h-full absolute inset-0 transition-opacity duration-700 
-                    ${active === i ? "opacity-100" : "opacity-0"}
-                  `}
-                />
-              ))}
-
-            </div>
-          </div>
-
-          {/* Right side steps unchanged */}
-          <div className="space-y-6">
-            {steps.map((step, index) => {
-              const isActive = active === index;
-
-              return (
-                <button
-                  key={index}
-                  onClick={() => setActive(index)}
-                  className={`
-                    w-full text-left p-6 rounded-2xl border transition-all duration-300 group
+                    w-7 h-7 rounded-full border-[4px] shadow-lg transition-all duration-500
                     ${
-                      isActive
-                        ? "bg-blue-50 border-blue-400 shadow-lg scale-[1.02]"
-                        : "bg-white border-gray-200 shadow-sm hover:shadow-md hover:scale-[1.01]"
+                      activeStep >= i
+                        ? "bg-white border-blue-700 scale-110"
+                        : "bg-gray-100 border-gray-300 scale-100"
                     }
                   `}
                 >
-                  <div className="flex">
-                    <div
-                      className={`
-                        w-1 rounded-full mr-4 transition-all
-                        ${isActive ? "bg-blue-600" : "bg-gray-200 group-hover:bg-blue-300"}
-                      `}
-                    ></div>
-
-                    <div>
-                      <h3
-                        className={`
-                          text-xl font-semibold transition-colors
-                          ${isActive ? "text-blue-700" : "text-gray-900 group-hover:text-blue-600"}
-                        `}
-                      >
-                        {step.title}
-                      </h3>
-                      <p className="text-gray-600 mt-2 text-[15px] leading-relaxed">
-                        {step.text}
-                      </p>
+                  {/* Inner dot animation */}
+                  {activeStep >= i && (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div className="w-2 h-2 bg-blue-700 rounded-full animate-pulse" />
                     </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+                  )}
+                </div>
+              </div>
 
+              {/* CONTENT BLOCK */}
+              <div className="w-full md:w-1/2 p-6 rounded-xl bg-white shadow-md border border-gray-100 transition-all duration-300 hover:shadow-lg hover:border-blue-100">
+                {/* ICON */}
+                <div className={`mb-3 transition-transform duration-300 `}>
+                  {step.icon}
+                </div>
+
+                <h3 className="text-xl font-bold text-gray-900 mb-3">
+                  {step.title}
+                </h3>
+                <p className="text-gray-700 leading-relaxed">{step.desc}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

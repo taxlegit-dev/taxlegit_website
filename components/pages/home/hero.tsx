@@ -1,116 +1,152 @@
-import { Building2 } from "lucide-react";
+"use client";
+import Image from "next/image";
+import { useState, useEffect } from "react";
+import { MessageCircle } from "lucide-react";
 
-export default function TaxLegitHero() {
+export default function IndiaHero() {
+  const sentences = [
+    "Tax Risk Advisory",
+    "International Tax Planning",
+    "Audit & Assurance Services",
+    "Regulatory & Compliance Support",
+  ];
+
+  const [text, setText] = useState("");
+  const [sentenceIndex, setSentenceIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Check if mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  useEffect(() => {
+    const currentSentence = sentences[sentenceIndex];
+    const typingSpeed = isMobile ? 150 : 120; // Slower on mobile for better readability
+
+    const timeout = setTimeout(() => {
+      if (charIndex < currentSentence.length) {
+        setText(currentSentence.slice(0, charIndex + 1));
+        setCharIndex(charIndex + 1);
+      } else {
+        setTimeout(() => {
+          setSentenceIndex((sentenceIndex + 1) % sentences.length);
+          setCharIndex(0);
+          setText("");
+        }, 1200);
+      }
+    }, typingSpeed);
+
+    return () => clearTimeout(timeout);
+  }, [charIndex, sentenceIndex, isMobile]);
+
   return (
-    <div className="relative bg-white px-4 sm:px-6 lg:px-8  grid items-center">
-      {/* Background Decorative Elements */}
-      <div className="absolute top-0 left-0 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
-      <div className="absolute bottom-0 right-0 w-72 h-72 bg-indigo-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
+    <div className="relative min-h-[60vh] md:min-h-[80vh] bg-white flex items-center justify-center text-center px-4 sm:px-6 lg:px-8 py-10 md:py-16 overflow-hidden">
+      {/* Responsive Background Circle */}
+      <div
+        className="absolute inset-x-0 top-0 mx-auto 
+             w-full max-w-[1000px] h-[300px] sm:h-[400px] md:h-[520px]
+             bg-gray-50
+             rounded-b-full"
+      ></div>
 
-      <div className="max-w-7xl mx-auto relative h-full flex items-center">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Content */}
-          <div className="space-y-8">
-            {/* Main Heading */}
-            <div>
-              <h1 className="text-5xl lg:text-6xl font-bold text-slate-800 leading-tight mb-4">
-                Launch Your Business
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
-                  with Confidence
-                </span>
-              </h1>
-              <p className="text-lg text-gray-600 leading-relaxed">
-                Expert business registration, tax compliance, and NGO setup
-                services. Your trusted partner for hassle-free company
-                incorporation and complete legal solutions.
-              </p>
+      {/* Decorative elements */}
+      <div className="absolute top-10 left-4 sm:left-10 w-20 h-20 sm:w-32 sm:h-32 bg-blue-50 rounded-full opacity-50 blur-xl"></div>
+      <div className="absolute bottom-10 right-4 sm:right-10 w-20 h-20 sm:w-32 sm:h-32 bg-blue-50 rounded-full opacity-50 blur-xl"></div>
+
+      {/* MAIN CONTENT */}
+      <div className="relative z-[10] max-w-4xl mx-auto w-full px-4">
+        {/* FLAGS */}
+        <div className="flex items-center justify-center mt-4 md:mt-0">
+          <div className="relative h-5 w-7 sm:h-6 sm:w-9 md:h-7 md:w-10">
+            <Image
+              src="https://flagcdn.com/w20/in.png"
+              alt="Indian Flag"
+              fill
+              className="rounded shadow object-cover"
+              sizes="(max-width: 640px) 28px, (max-width: 768px) 36px, 40px"
+            />
+          </div>
+          <span className="text-xs sm:text-sm md:text-base text-black font-medium pl-2">
+            Welcome to <strong className="text-blue-600">Taxlegit</strong>.
+          </span>
+        </div>
+
+        {/* TYPING TEXT - GRADIENT TEXT */}
+        <div className="min-h-[60px] sm:min-h-[72px] md:min-h-[80px] flex items-center justify-center">
+          <h2
+            className="text-2xl sm:text-3xl md:text-4xl font-bold mt-2 sm:mt-4
+                     bg-gradient-to-r from-blue-800 via-blue-400 to-blue-800
+                     bg-clip-text text-transparent leading-tight"
+          >
+            {text}
+            <span className="border-r-2 border-sky-400 ml-1 animate-pulse inline-block h-6 sm:h-8 md:h-10 align-middle"></span>
+          </h2>
+        </div>
+
+        {/* MAIN TITLE */}
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight mt-1 sm:mt-3 px-2 sm:px-0">
+          Taxlegit: Your Trusted Partner
+        </h1>
+
+        {/* DESCRIPTION */}
+        <p className="text-sm sm:text-base md:text-lg text-gray-700 mt-4 sm:mt-6 px-2 sm:px-4 md:px-0">
+          At Taxlegit, we provide innovative, tech-driven solutions that ensure
+          sustainable results for your business needs. Our services include
+          audit and assurance, advisory, consulting.
+        </p>
+
+        {/* CTA BUTTONS */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mt-4 sm:mt-6 md:mt-8">
+          <a
+            href="https://wa.me/919711765911"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 bg-green-600 text-white hover:bg-blue-700 font-semibold px-6 py-3 sm:px-8 sm:py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 min-w-[180px] sm:min-w-[200px] text-sm sm:text-base"
+          >
+            <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+            WhatsApp Us
+          </a>
+
+          <a
+            href="#services"
+            className="inline-flex items-center justify-center gap-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold px-6 py-3 sm:px-8 sm:py-3 rounded-lg shadow-sm hover:shadow transition-all duration-300 min-w-[180px] sm:min-w-[200px] text-sm sm:text-base"
+          >
+            View Our Services
+          </a>
+        </div>
+
+        {/* Trust indicators */}
+        <div className="mt-4  grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+          <div className="text-center p-1 sm:p-2 rounded-lg">
+            <div className="text-lg sm:text-xl md:text-2xl font-bold text-blue-700">
+              10+
             </div>
-
-            <div className="flex flex-wrap items-center gap-8 pt-4">
-              <div className="flex items-center gap-2">
-                <div className="flex -space-x-2">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-white"></div>
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 border-2 border-white"></div>
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 border-2 border-white"></div>
-                </div>
-                <div className="ml-2">
-                  <div className="text-sm font-bold text-slate-800">
-                    5000+ Happy Clients
-                  </div>
-                  <div className="text-xs text-gray-600">
-                    Trusted nationwide
-                  </div>
-                </div>
-              </div>
-              <div className="h-12 w-px bg-gray-300"></div>
-              <div>
-                <div className="text-2xl font-bold text-indigo-600">15+</div>
-                <div className="text-sm text-gray-600">Years Experience</div>
-              </div>
-              <div className="h-12 w-px bg-gray-300"></div>
-              <div>
-                <div className="text-2xl font-bold text-indigo-600">98%</div>
-                <div className="text-sm text-gray-600">Success Rate</div>
-              </div>
+            <div className="text-xs sm:text-sm text-gray-600">
+              Years Experience
             </div>
           </div>
-
-          {/* Right Content - Image & Refund Card */}
-          <div className="relative lg:block hidden">
-            <div className="absolute top-8 left-0 z-10 bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 rounded-2xl p-6 shadow-2xl backdrop-blur-sm border border-white/50">
-              <div className="text-sm text-gray-600 mb-1">
-                Total Savings Generated
-              </div>
-              <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
-                ₹1,47,060
-              </div>
-              <div className="mt-3 flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-xs text-gray-600">Live tracking</span>
-              </div>
+          <div className="text-center p-3 sm:p-4  rounded-lg">
+            <div className="text-lg sm:text-xl md:text-2xl font-bold text-blue-700">
+              500+
             </div>
-
-            <div className="relative ml-auto w-full max-w-md">
-              <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl border-8 border-white">
-                <div className="w-full h-full bg-gradient-to-br from-indigo-200 via-purple-200 to-pink-200 flex items-center justify-center">
-                  <div className="text-center space-y-4">
-                    <div className="w-32 h-32 mx-auto bg-white rounded-full flex items-center justify-center shadow-lg">
-                      <Building2 className="text-indigo-600" size={64} />
-                    </div>
-                    <div className="text-slate-700 font-semibold text-lg">
-                      Your Success Partner
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="absolute -bottom-4 -left-4 bg-white rounded-xl p-4 shadow-xl border border-gray-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                    <svg
-                      className="text-green-600"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path d="M9 11l3 3L22 4"></path>
-                      <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="text-sm font-bold text-slate-800">
-                      Verified Partner
-                    </div>
-                    <div className="text-xs text-gray-600">
-                      Government approved
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div className="text-xs sm:text-sm text-gray-600">
+              Happy Clients
             </div>
+          </div>
+          <div className="col-span-2 sm:col-span-1 text-center p-3 sm:p-4 rounded-lg">
+            <div className="text-lg sm:text-xl md:text-2xl font-bold text-blue-700">
+              24/7
+            </div>
+            <div className="text-xs sm:text-sm text-gray-600">Support</div>
           </div>
         </div>
       </div>
