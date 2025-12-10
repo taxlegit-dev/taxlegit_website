@@ -7,6 +7,7 @@ import ServicesSection from "@/components/pages/home/serviceSection";
 import HowWeWorkSection from "@/components/pages/home/HowWeWorkSection";
 import WhyChooseTaxLegitMinimal from "@/components/pages/home/WhyTaxlegit";
 import Testimonial from "@/components/pages/home/ReviewSlider";
+import RecentBlogsSection from "@/components/pages/home/RecentBlogsSection";
 import { FAQSection } from "@/components/faq/faq-section";
 
 export default async function IndiaHomePage() {
@@ -35,6 +36,7 @@ export default async function IndiaHomePage() {
         <ServicesSection />
         <HowWeWorkSection />
         <WhyChooseTaxLegitMinimal />
+        <RecentBlogsSection />
         <Testimonial />
 
         {faq && faq.questions.length > 0 && (
