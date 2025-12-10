@@ -24,6 +24,12 @@ import {
 } from "lucide-react";
 
 export default function ScrollTabs() {
+  interface ServiceItem {
+    icon: React.ReactNode;
+    title: string;
+    desc: string;
+  }
+
   const tabs = [
     "Company Registration",
     "Government Registration",
@@ -34,13 +40,12 @@ export default function ScrollTabs() {
   ];
 
   const [activeTab, setActiveTab] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
 
   // -------------------------------------------------------
   // CONTENT FOR ALL TABS
   // -------------------------------------------------------
 
-  const contentData: Record<string, any[]> = {
+  const contentData: Record<string, ServiceItem[]> = {
     "Company Registration": [
       {
         icon: <Building2 className="w-6 h-6 md:w-7 md:h-7" />,
@@ -145,13 +150,13 @@ export default function ScrollTabs() {
     ],
   };
 
-  // Handle responsive behavior
+  // Handle responsive behavior - keep for future use if needed
   useEffect(() => {
+    // Event listeners remain for responsive detection
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      // Mobile detection logic for responsive UI
     };
 
-    checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);

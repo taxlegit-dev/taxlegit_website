@@ -99,7 +99,7 @@ export function BlogManager({
   const [message, setMessage] = useState<string | null>(null);
   const [blogGroups, setBlogGroups] =
     useState<BlogGroupWithBlogs[]>(initialBlogGroups);
-  const [selectedBlogGroupId, setSelectedBlogGroupId] = useState<string | null>(
+  const [selectedBlogGroupId] = useState<string | null>(
     searchParams?.get("blogGroupId") || null
   );
   const [selectedBlogId, setSelectedBlogId] = useState<string | null>(
@@ -154,7 +154,7 @@ export function BlogManager({
     if (!content) return undefined;
     const parsed = tryParseEditorJson(content);
     return parsed || undefined;
-  }, [blogForm.watch("content"), editingBlog?.id, isEditorReady, showBlogForm]);
+  }, [isEditorReady, showBlogForm, blogForm]);
 
   // Update blog form when editing - WITH PROPER EDITOR INITIALIZATION
   useEffect(() => {

@@ -49,7 +49,7 @@ export function EditorJsEditor({
   // Only set once on first mount, ignore subsequent value changes
   const initialValueRef = useRef<OutputData | null | undefined>(value);
   const hasInitializedRef = useRef(false);
-  
+
   // Update initial value only before first initialization (in useEffect, not during render)
   useEffect(() => {
     if (!hasInitializedRef.current && value !== undefined) {
@@ -89,7 +89,13 @@ export function EditorJsEditor({
       isInitializing: isInitializingRef.current,
     });
 
-    if (!isMounted || !holderRef.current || editorRef.current || isInitializingRef.current || hasInitializedRef.current) {
+    if (
+      !isMounted ||
+      !holderRef.current ||
+      editorRef.current ||
+      isInitializingRef.current ||
+      hasInitializedRef.current
+    ) {
       console.log("🔴 Skipping editor initialization", {
         isMounted,
         hasHolder: !!holderRef.current,
@@ -225,7 +231,7 @@ export function EditorJsEditor({
       }
     };
     // FIXED: Only depend on stable values - callbacks stored in refs
-  }, [isMounted, placeholder]);
+  }, [isMounted, placeholder, handleImageUpload]);
 
   // Update editor content when value changes externally
   useEffect(() => {

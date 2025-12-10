@@ -324,62 +324,6 @@ const Footer = () => {
             </div>
           </div>
         </footer>
-
-        {/* Floating Action Buttons */}
-        <div className="fixed right-6 bottom-6 z-50 flex flex-col gap-4">
-          {/* WhatsApp */}
-          <a
-            href="https://wa.me/918929218091"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative flex items-center justify-center w-14 h-14 lg:w-16 lg:h-16 bg-green-500 rounded-full text-white shadow-xl hover:shadow-2xl transform hover:scale-110 transition-all duration-300"
-            aria-label="Chat on WhatsApp"
-          >
-            <FaWhatsapp className="text-2xl" />
-            <span className="absolute right-full mr-3 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap shadow-lg">
-              Chat on WhatsApp
-              <div className="absolute top-1/2 right-0 transform translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
-            </span>
-          </a>
-
-          {/* Phone Call */}
-          <a
-            href="tel:+918929218091"
-            className="group relative flex items-center justify-center w-14 h-14 lg:w-16 lg:h-16 bg-blue-500 rounded-full text-white shadow-xl hover:shadow-2xl transform hover:scale-110 transition-all duration-300"
-            aria-label="Call Us"
-          >
-            <MdPhone className="text-2xl" />
-            <span className="absolute right-full mr-3 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap shadow-lg">
-              Call Now
-              <div className="absolute top-1/2 right-0 transform translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
-            </span>
-          </a>
-
-          {/* Back to Top */}
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="group relative flex items-center justify-center w-14 h-14 lg:w-16 lg:h-16 bg-gray-800 rounded-full text-white shadow-xl hover:shadow-2xl transform hover:scale-110 transition-all duration-300"
-            aria-label="Back to top"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 10l7-7m0 0l7 7m-7-7v18"
-              />
-            </svg>
-            <span className="absolute right-full mr-3 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap shadow-lg">
-              Back to Top
-              <div className="absolute top-1/2 right-0 transform translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
-            </span>
-          </button>
-        </div>
       </div>
     </>
   );

@@ -137,7 +137,7 @@ export default function ReviewSlider() {
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 mb-3 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm">
-            <span className="text-xl font-bold text-yellow-500">4.8</span>
+            <span className="text-xl font-bold text-yellow-500">4.9</span>
             <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
 
             <span className="text-sm font-semibold text-gray-700">

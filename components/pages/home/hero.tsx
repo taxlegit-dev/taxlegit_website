@@ -3,14 +3,14 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { MessageCircle } from "lucide-react";
 
-export default function IndiaHero() {
-  const sentences = [
-    "Tax Risk Advisory",
-    "International Tax Planning",
-    "Audit & Assurance Services",
-    "Regulatory & Compliance Support",
-  ];
+const sentences = [
+  "Tax Risk Advisory",
+  "International Tax Planning",
+  "Audit & Assurance Services",
+  "Regulatory & Compliance Support",
+];
 
+export default function IndiaHero() {
   const [text, setText] = useState("");
   const [sentenceIndex, setSentenceIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);

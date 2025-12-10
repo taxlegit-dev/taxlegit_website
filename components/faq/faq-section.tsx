@@ -35,8 +35,8 @@ export function FAQSection({ questions, region }: FAQSectionProps) {
             className={`text-sm font-medium px-3 py-1 rounded-full inline-block
             ${
               isIndia
-                ? "bg-indigo-100 text-indigo-700"
-                : "bg-slate-700 text-indigo-300"
+                ? "bg-blue-100 text-blue-700"
+                : "bg-slate-700 text-blue-300"
             }`}
           >
             Frequently asked questions
@@ -49,7 +49,7 @@ export function FAQSection({ questions, region }: FAQSectionProps) {
             }`}
           >
             Frequently asked <br />
-            <span className="text-indigo-600">questions</span>
+            <span className="text-blue-600">questions</span>
           </h2>
 
           {/* Small Description */}
@@ -149,10 +149,10 @@ export function FAQSection({ questions, region }: FAQSectionProps) {
           Still have questions?{" "}
           <a
             href="tel:+918929218091"
-            className={`font-semibold underline hover:no-underline transition ${
+            className={`font-semibold  hover:underline transition ${
               isIndia
-                ? "text-indigo-600 hover:text-indigo-700"
-                : "text-indigo-400 hover:text-indigo-300"
+                ? "text-blue-600 hover:text-blue-700"
+                : "text-blue-400 hover:text-blue-300"
             }`}
           >
             Contact us
