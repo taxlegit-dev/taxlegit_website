@@ -18,9 +18,6 @@ type IndiaHeroContent = {
 
 type UsHeroContent = {
   announcement?: string;
-  highlightedWords?: string[];
-  primaryCTA: { text: string; href?: string };
-  secondaryCTA?: { text: string; href?: string };
 };
 
 type HeroSectionManagerProps = {
@@ -45,18 +42,7 @@ const usHeroSchema = z.object({
   navbarItemId: z.string().min(1),
   announcement: z.string().optional(),
   headline: z.string().min(3),
-  highlightedWords: z.array(z.string()).optional(),
   description: z.string().min(10),
-  primaryCTA: z.object({
-    text: z.string(),
-    href: z.string().optional(),
-  }),
-  secondaryCTA: z
-    .object({
-      text: z.string(),
-      href: z.string().optional(),
-    })
-    .optional(),
 });
 
 type IndiaHeroForm = z.infer<typeof indiaHeroSchema>;
@@ -94,8 +80,6 @@ export function HeroSectionManager({
       headline: "",
       description: "",
       announcement: "",
-      highlightedWords: [],
-      primaryCTA: { text: "Get Started" },
     },
   });
 
@@ -130,9 +114,6 @@ export function HeroSectionManager({
           headline: existingHero.title,
           description: existingHero.description || "",
           announcement: content?.announcement || "",
-          highlightedWords: content?.highlightedWords || [],
-          primaryCTA: content?.primaryCTA || { text: "Get Started" },
-          secondaryCTA: content?.secondaryCTA,
         });
       }
     } else if (selectedItemId || selectedNavbarItemId) {
@@ -150,8 +131,6 @@ export function HeroSectionManager({
           headline: "",
           description: "",
           announcement: "",
-          highlightedWords: [],
-          primaryCTA: { text: "Get Started" },
         });
       }
     }
@@ -273,9 +252,6 @@ export function HeroSectionManager({
         description: data.description,
         content: {
           announcement: data.announcement,
-          highlightedWords: data.highlightedWords || [],
-          primaryCTA: data.primaryCTA,
-          secondaryCTA: data.secondaryCTA,
         },
         status: "PUBLISHED" as const,
       };
@@ -547,52 +523,6 @@ export function HeroSectionManager({
                   {usForm.formState.errors.description.message}
                 </p>
               )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-slate-900 mb-2">
-                  Primary CTA Text
-                </label>
-                <input
-                  {...usForm.register("primaryCTA.text")}
-                  className="w-full rounded-lg border border-slate-200 px-4 py-2"
-                  placeholder="Get Started"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-900 mb-2">
-                  Primary CTA Link (Optional)
-                </label>
-                <input
-                  {...usForm.register("primaryCTA.href")}
-                  className="w-full rounded-lg border border-slate-200 px-4 py-2"
-                  placeholder="/contact"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-slate-900 mb-2">
-                  Secondary CTA Text (Optional)
-                </label>
-                <input
-                  {...usForm.register("secondaryCTA.text")}
-                  className="w-full rounded-lg border border-slate-200 px-4 py-2"
-                  placeholder="Preview Platform"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-900 mb-2">
-                  Secondary CTA Link (Optional)
-                </label>
-                <input
-                  {...usForm.register("secondaryCTA.href")}
-                  className="w-full rounded-lg border border-slate-200 px-4 py-2"
-                  placeholder="/preview"
-                />
-              </div>
             </div>
 
             <button
