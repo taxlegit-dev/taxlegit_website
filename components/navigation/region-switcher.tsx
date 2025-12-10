@@ -15,14 +15,9 @@ export function RegionSwitcher({
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
 
   const current = supportedRegions.find((r) => r.value === currentRegion);
-
-  const filtered = supportedRegions.filter((r) =>
-    r.label.toLowerCase().includes(search.toLowerCase())
-  );
 
   const handleSelect = async (value: SupportedRegion) => {
     setLoading(true);
@@ -42,8 +37,7 @@ export function RegionSwitcher({
 
   return (
     <div className="relative inline-block w-42">
-
-      {/* CLEAN WHITE UI */}
+      {/* Trigger Button */}
       <button
         disabled={loading}
         onClick={() => setOpen(!open)}
@@ -68,24 +62,9 @@ export function RegionSwitcher({
             overflow-hidden z-50
           "
         >
-          {/* Search */}
-          <div className="p-2 border-b border-zinc-100 bg-zinc-50">
-            <input
-              autoFocus
-              placeholder="Search region..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="
-                w-full rounded-md border border-zinc-200 
-                bg-white px-2 py-1 text-sm
-                focus:outline-none focus:ring-2 focus:ring-indigo-400
-              "
-            />
-          </div>
-
-          {/* List */}
+          {/* Region List */}
           <div className="max-h-64 overflow-y-auto">
-            {filtered.map((region) => (
+            {supportedRegions.map((region) => (
               <button
                 key={region.value}
                 onClick={() => handleSelect(region.value)}
@@ -98,12 +77,6 @@ export function RegionSwitcher({
                 <span className="text-zinc-700">{region.label}</span>
               </button>
             ))}
-
-            {filtered.length === 0 && (
-              <div className="p-3 text-center text-sm text-zinc-500">
-                No regions found
-              </div>
-            )}
           </div>
         </div>
       )}
