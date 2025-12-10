@@ -30,7 +30,7 @@ export default async function IndiaHomePage() {
     <div className="min-h-screen bg-white text-black">
       <NavbarServer region={region} />
 
-      <div>
+      <div className="pt-[72px]">
         <TaxLegitHero />
         <ServicesSection />
         <HowWeWorkSection />

@@ -119,20 +119,21 @@ const Footer = () => {
               </div>
 
               {/* RIGHT BUTTON */}
-              <div className="mt-6 md:mt-0 flex-shrink-0">
+              <div className="mt-6 md:mt-0 flex-shrink-0 w-full md:w-auto px-4 md:px-0">
                 <button
                   className="
-            group relative
+            group relative w-full md:w-auto
             bg-white text-blue-700 font-bold 
-            px-10 py-4 rounded-xl 
+            px-6 md:px-10 py-3 md:py-4 rounded-lg md:rounded-xl 
             shadow-lg hover:shadow-2xl 
             transition-all duration-300
             hover:scale-105 active:scale-95
-            flex items-center gap-3
+            flex items-center justify-center md:justify-start gap-2 md:gap-3
+            text-sm md:text-base
           "
                 >
                   <span>TALK TO A SPECIALIST</span>
-                  <div className="absolute -inset-1 bg-white/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+                  <div className="absolute -inset-1 bg-white/20 rounded-lg md:rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
                 </button>
               </div>
             </div>

@@ -41,10 +41,6 @@ export default function ScrollTabs() {
 
   const [activeTab, setActiveTab] = useState(0);
 
-  // -------------------------------------------------------
-  // CONTENT FOR ALL TABS
-  // -------------------------------------------------------
-
   const contentData: Record<string, ServiceItem[]> = {
     "Company Registration": [
       {
@@ -150,9 +146,7 @@ export default function ScrollTabs() {
     ],
   };
 
-  // Handle responsive behavior - keep for future use if needed
   useEffect(() => {
-    // Event listeners remain for responsive detection
     const checkMobile = () => {
       // Mobile detection logic for responsive UI
     };
@@ -170,13 +164,10 @@ export default function ScrollTabs() {
   };
 
   return (
-    <div
-      className="
-  w-full max-w-7xl mx-auto px-4 py-10 md:px-6 lg:px-8"
-    >
+    <div className="w-full max-w-7xl mx-auto px-4 py-10 md:px-6 lg:px-8">
       {/* Heading */}
       <div className="text-center mb-8">
-        <h1 className=" font-[Gilroy] text-3xl md:text-4xl lg:text-5xl font-bold text-slate-600 mb-3 md:mb-4">
+        <h1 className="font-[Gilroy] text-3xl md:text-4xl lg:text-5xl font-bold text-slate-600 mb-3 md:mb-4">
           Business Solutions
         </h1>
         <p className="text-base md:text-lg text-gray-600 max-w-2xl md:max-w-3xl mx-auto px-4">
@@ -203,7 +194,7 @@ export default function ScrollTabs() {
           <ChevronLeft size={20} />
         </button>
 
-        <div className="px-8 py-5 ">
+        <div className="px-8 py-5">
           <div className="flex items-center justify-center">
             <h2 className="text-4xl text-blue-500 text-center font-bold">
               {tabs[activeTab]}
@@ -264,93 +255,91 @@ export default function ScrollTabs() {
         ))}
       </div>
 
-      {/* CONTENT SECTION - ORIGINAL EXPANDABLE CARDS */}
-      <div className="flex flex-wrap justify-center gap-4 md:gap-6 mt-8 px-2 ">
+      {/* CONTENT SECTION - MOBILE: ALWAYS EXTENDED, DESKTOP: HOVER TO EXPAND */}
+      <div className="flex flex-wrap justify-center gap-4 md:gap-6 mt-8 px-2">
         {contentData[tabs[activeTab]].map((item, i) => (
           <div
             key={i}
             className="
-    group relative overflow-hidden
-    rounded-xl border border-gray-200 shadow-md
-    transition-all duration-500
-    w-full md:w-[calc(33.333%-1rem)]
-    md:min-w-[260px] md:max-w-[300px]
-    md:hover:flex-[2] md:hover:min-w-[550px] md:hover:max-w-[650px]
-    h-[180px] md:h-[240px]
-    bg-white
-  "
+              group relative overflow-hidden
+              rounded-xl border border-gray-200 shadow-md
+              transition-all duration-500
+              w-full md:w-[calc(33.333%-1rem)]
+              md:min-w-[260px] md:max-w-[300px]
+              md:hover:flex-[2] md:hover:min-w-[550px] md:hover:max-w-[650px]
+              h-[280px] md:h-[240px]
+              bg-white
+            "
           >
-            {/* ========= IMAGE (ONLY WHEN EXPANDED) ========= */}
+            {/* IMAGE - Always visible on mobile, only on hover for desktop */}
             <div
               className="
-      absolute inset-0 bg-cover bg-center
-      opacity-0 group-hover:opacity-100
-      transition-all duration-500
-      scale-110 group-hover:scale-100
-    "
+                absolute inset-0 bg-cover bg-center
+                opacity-100 md:opacity-0 md:group-hover:opacity-100
+                transition-all duration-500
+                scale-100 md:scale-110 md:group-hover:scale-100
+              "
               style={{ backgroundImage: "url('/service.jpg')" }}
             />
 
-            {/* DARK GRADIENT ONLY WHEN EXPANDED */}
+            {/* DARK GRADIENT - Always visible on mobile, only on hover for desktop */}
             <div
               className="
-      absolute bottom-0 left-0 right-0 h-1/2
-      bg-gradient-to-t from-black/70 to-transparent
-      opacity-0 group-hover:opacity-100
-      transition-all duration-500
-    "
+                absolute bottom-0 left-0 right-0 h-1/2
+                bg-gradient-to-t from-black/70 to-transparent
+                opacity-100 md:opacity-0 md:group-hover:opacity-100
+                transition-all duration-500
+              "
             />
 
-            {/* ========= NORMAL STATE CONTENT (CENTERED WITH LIGHT BLUE GRADIENT) ========= */}
+            {/* NORMAL STATE CONTENT - Hidden on mobile, visible on desktop until hover */}
             <div
               className="
-    absolute inset-0 
-    flex flex-col items-center justify-center
-    opacity-100 group-hover:opacity-0
-    transition-all duration-300 z-10
-    bg-gradient-to-br from-blue-100 via-blue-100/20 to-blue-50/30
-    rounded-xl
-  "
+                absolute inset-0 
+                flex flex-col items-center justify-center
+                opacity-0 md:opacity-100 md:group-hover:opacity-0
+                transition-all duration-300 z-10
+                bg-gradient-to-br from-blue-100 via-blue-100/20 to-blue-50/30
+                rounded-xl
+              "
             >
-              {/* ICON - positioned in lower half */}
               <div
                 className="
-      flex items-center justify-center
-      w-14 h-14 rounded-2xl
-      bg-blue-100 text-blue-600
-      mb-3
-      transform translate-y-6
-    "
+                  flex items-center justify-center
+                  w-14 h-14 rounded-2xl
+                  bg-blue-100 text-blue-600
+                  mb-3
+                  transform translate-y-6
+                "
               >
                 {item.icon}
               </div>
 
-              {/* TITLE */}
               <h3
                 className="
-      text-base font-semibold text-slate-600
-      text-center px-3 leading-snug
-      transform translate-y-6
-    "
+                  text-base font-semibold text-slate-600
+                  text-center px-3 leading-snug
+                  transform translate-y-6
+                "
               >
                 {item.title}
               </h3>
             </div>
 
-            {/* ========= EXPANDED STATE CONTENT ========= */}
+            {/* EXPANDED STATE CONTENT - Always visible on mobile, only on hover for desktop */}
             <div
               className="
-      absolute bottom-0 left-0 p-5 z-20
-      w-full
-      opacity-0 group-hover:opacity-100
-      transition-all duration-500
-    "
+                absolute bottom-0 left-0 p-5 z-20
+                w-full
+                opacity-100 md:opacity-0 md:group-hover:opacity-100
+                transition-all duration-500
+              "
             >
               <div
                 className="
-        w-12 h-12 flex items-center justify-center
-        rounded-xl bg-blue-200 backdrop-blur text-white mb-2
-      "
+                  w-12 h-12 flex items-center justify-center
+                  rounded-xl bg-blue-200 backdrop-blur text-white mb-2
+                "
               >
                 {item.icon}
               </div>
@@ -363,8 +352,8 @@ export default function ScrollTabs() {
 
               <button
                 className="
-        px-4 py-2 bg-gradient-to-r from-blue-700 to-sky-400 text-white rounded-lg text-sm shadow-md
-      "
+                  px-4 py-2 bg-gradient-to-r from-blue-700 to-sky-400 text-white rounded-lg text-sm shadow-md
+                "
               >
                 Read More
               </button>

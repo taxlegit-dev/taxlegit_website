@@ -16,7 +16,7 @@ export function IndiaHero({ hero }: IndiaHeroProps) {
   const partnerLogos = content?.partnerLogos || [];
 
   return (
-    <section className="bg-gradient-to-br from-indigo-50 via-white to-slate-50 py-16">
+    <section className="bg-gradient-to-br from-indigo-50 via-white to-slate-50 py-16 mt-10">
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Left Content */}

@@ -7,10 +7,9 @@ import type { OutputData } from "@editorjs/editorjs";
 
 type ServicePageViewProps = {
   sections: ServicePageSection[];
-  region: "INDIA" | "US";
 };
 
-export function ServicePageView({ sections, region }: ServicePageViewProps) {
+export function ServicePageView({ sections }: ServicePageViewProps) {
   const [activeSection, setActiveSection] = useState(0);
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
   const tocRef = useRef<HTMLDivElement>(null);
@@ -26,7 +25,10 @@ export function ServicePageView({ sections, region }: ServicePageViewProps) {
         const element = sectionRefs.current[index];
         if (element) {
           const { offsetTop, offsetHeight } = element;
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+          if (
+            scrollPosition >= offsetTop &&
+            scrollPosition < offsetTop + offsetHeight
+          ) {
             setActiveSection(index);
           }
         }
@@ -49,31 +51,23 @@ export function ServicePageView({ sections, region }: ServicePageViewProps) {
     }
   };
 
-  const isIndia = region === "INDIA";
-
   return (
-    <div className={`min-h-screen ${isIndia ? "bg-white" : "bg-slate-950"}`}>
-      {/* Sticky TOC Bar */}
+    <div className="min-h-screen bg-white">
+      {/* Sticky TOC Bar - Below Fixed Navbar */}
       <div
         ref={tocRef}
-        className={`sticky top-0 z-50 border-b ${
-          isIndia ? "bg-white border-slate-200" : "bg-slate-900 border-slate-700"
-        }`}
+        className="sticky top-[72px] z-40 border-b bg-white border-slate-200 shadow-sm"
       >
         <div className="mx-auto w-full max-w-6xl px-6">
-          <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide py-4">
             {sortedSections.map((section, index) => (
               <button
                 key={section.id}
                 onClick={() => scrollToSection(index)}
-                className={`whitespace-nowrap px-4 py-3 text-sm font-medium transition ${
+                className={`whitespace-nowrap px-5 py-2 text-base font-bold transition-all duration-200 ${
                   activeSection === index
-                    ? isIndia
-                      ? "border-b-2 border-indigo-600 text-indigo-600"
-                      : "border-b-2 border-emerald-400 text-emerald-400"
-                    : isIndia
-                    ? "text-slate-600 hover:text-slate-900"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "border-b-3 border-indigo-600 text-indigo-700 text-lg"
+                    : "text-slate-700 hover:text-indigo-600 hover:border-b-2 hover:border-indigo-300"
                 }`}
               >
                 {section.title}
@@ -94,11 +88,7 @@ export function ServicePageView({ sections, region }: ServicePageViewProps) {
             id={`section-${section.id}`}
             className="mb-16 scroll-mt-24"
           >
-            <h2
-              className={`mb-6 text-3xl font-semibold ${
-                isIndia ? "text-slate-900" : "text-white"
-              }`}
-            >
+            <h2 className="mb-6 text-3xl font-semibold text-slate-900">
               {section.title}
             </h2>
 
@@ -108,7 +98,11 @@ export function ServicePageView({ sections, region }: ServicePageViewProps) {
               let editorData: OutputData | null = null;
               try {
                 const parsed = JSON.parse(section.content);
-                if (parsed && typeof parsed === "object" && "blocks" in parsed) {
+                if (
+                  parsed &&
+                  typeof parsed === "object" &&
+                  "blocks" in parsed
+                ) {
                   editorData = parsed as OutputData;
                 }
               } catch {
@@ -116,20 +110,11 @@ export function ServicePageView({ sections, region }: ServicePageViewProps) {
               }
 
               if (editorData) {
-                return (
-                  <EditorJsRenderer
-                    data={editorData}
-                    theme={isIndia ? "light" : "dark"}
-                  />
-                );
+                return <EditorJsRenderer data={editorData} theme="light" />;
               } else {
                 return (
                   <div
-                    className={`prose prose-lg max-w-none ${
-                      isIndia
-                        ? "prose-slate prose-headings:text-slate-900 prose-p:text-slate-700"
-                        : "prose-invert prose-slate prose-headings:text-white prose-p:text-slate-300"
-                    }`}
+                    className="prose prose-lg max-w-none prose-slate prose-headings:text-slate-900 prose-p:text-slate-700"
                     dangerouslySetInnerHTML={{ __html: section.content }}
                   />
                 );
@@ -151,4 +136,3 @@ export function ServicePageView({ sections, region }: ServicePageViewProps) {
     </div>
   );
 }
-

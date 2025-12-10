@@ -11,89 +11,72 @@ const sentences = [
 ];
 
 export default function IndiaHero() {
-  const [text, setText] = useState("");
   const [sentenceIndex, setSentenceIndex] = useState(0);
-  const [charIndex, setCharIndex] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
+  const [wordIndex, setWordIndex] = useState(0);
 
   useEffect(() => {
-    // Check if mobile
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    const words = sentences[sentenceIndex].split(" ");
 
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  useEffect(() => {
-    const currentSentence = sentences[sentenceIndex];
-    const typingSpeed = isMobile ? 150 : 120; // Slower on mobile for better readability
-
-    const timeout = setTimeout(() => {
-      if (charIndex < currentSentence.length) {
-        setText(currentSentence.slice(0, charIndex + 1));
-        setCharIndex(charIndex + 1);
+    const timer = setTimeout(() => {
+      if (wordIndex < words.length - 1) {
+        setWordIndex(wordIndex + 1);
       } else {
         setTimeout(() => {
           setSentenceIndex((sentenceIndex + 1) % sentences.length);
-          setCharIndex(0);
-          setText("");
-        }, 1200);
+          setWordIndex(0);
+        }, 1000);
       }
-    }, typingSpeed);
+    }, 1000);
 
-    return () => clearTimeout(timeout);
-  }, [charIndex, sentenceIndex, isMobile]);
+    return () => clearTimeout(timer);
+  }, [wordIndex, sentenceIndex]);
+
+  const words = sentences[sentenceIndex].split(" ");
 
   return (
-    <div className="relative min-h-[60vh] md:min-h-[80vh] bg-white flex items-center justify-center text-center px-4 sm:px-6 lg:px-8 py-10 md:py-16 overflow-hidden">
-      {/* Responsive Background Circle */}
-      <div
-        className="absolute inset-x-0 top-0 mx-auto 
-             w-full max-w-[1000px] h-[300px] sm:h-[400px] md:h-[520px]
-             bg-gray-50
-             rounded-b-full"
-      ></div>
-
-      {/* Decorative elements */}
-      <div className="absolute top-10 left-4 sm:left-10 w-20 h-20 sm:w-32 sm:h-32 bg-blue-50 rounded-full opacity-50 blur-xl"></div>
-      <div className="absolute bottom-10 right-4 sm:right-10 w-20 h-20 sm:w-32 sm:h-32 bg-blue-50 rounded-full opacity-50 blur-xl"></div>
+    <div className="relative min-h-[60vh] md:min-h-[80vh] flex items-center justify-center text-center px-4 sm:px-6 lg:px-8 py-10 md:py-16 overflow-hidden">
+      {/* BACKGROUND IMAGE */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/hero2.jpg" // Replace with your image path
+          alt="Hero Background"
+          fill
+          priority
+          className="object-cover"
+          quality={90}
+        />
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-white/70 backdrop-blur-sm"></div>
+      </div>
 
       {/* MAIN CONTENT */}
       <div className="relative z-[10] max-w-4xl mx-auto w-full px-4">
         {/* FLAGS */}
         <div className="flex items-center justify-center mt-4 md:mt-0">
-          <div className="relative h-5 w-7 sm:h-6 sm:w-9 md:h-7 md:w-10">
-            <Image
-              src="https://flagcdn.com/w20/in.png"
-              alt="Indian Flag"
-              fill
-              className="rounded shadow object-cover"
-              sizes="(max-width: 640px) 28px, (max-width: 768px) 36px, 40px"
-            />
-          </div>
           <span className="text-xs sm:text-sm md:text-base text-black font-medium pl-2">
             Welcome to <strong className="text-blue-600">Taxlegit</strong>.
           </span>
         </div>
 
-        {/* TYPING TEXT - GRADIENT TEXT */}
-        <div className="min-h-[60px] sm:min-h-[72px] md:min-h-[80px] flex items-center justify-center">
-          <h2
-            className="text-2xl sm:text-3xl md:text-4xl font-bold mt-2 sm:mt-4
-                     bg-gradient-to-r from-blue-800 via-blue-400 to-blue-800
-                     bg-clip-text text-transparent leading-tight"
-          >
-            {text}
-            <span className="border-r-2 border-sky-400 ml-1 animate-pulse inline-block h-6 sm:h-8 md:h-10 align-middle"></span>
+        {/* CAPSULE WORD HIGHLIGHT */}
+        <div className="min-h-[60px] sm:min-h-[72px] md:min-h-[80px] flex items-center justify-center mt-3">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight flex gap-2 flex-wrap justify-center font-bold">
+            {words.map((w, i) => (
+              <span
+                key={i}
+                className={`px-1 py-1 rounded-md transition-all duration-200 
+                ${
+                  i === wordIndex ? " bg-blue-500 text-white" : "text-blue-600"
+                }`}
+              >
+                {w}
+              </span>
+            ))}
           </h2>
         </div>
 
         {/* MAIN TITLE */}
-        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight mt-1 sm:mt-3 px-2 sm:px-0">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
           Taxlegit: Your Trusted Partner
         </h1>
 
@@ -124,9 +107,9 @@ export default function IndiaHero() {
           </a>
         </div>
 
-        {/* Trust indicators */}
-        <div className="mt-4  grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
-          <div className="text-center p-1 sm:p-2 rounded-lg">
+        {/* TRUST INDICATORS */}
+        <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+          <div className="text-center p-1 sm:p-2 rounded-lg bg-white/60 backdrop-blur-sm">
             <div className="text-lg sm:text-xl md:text-2xl font-bold text-blue-700">
               10+
             </div>
@@ -134,7 +117,8 @@ export default function IndiaHero() {
               Years Experience
             </div>
           </div>
-          <div className="text-center p-3 sm:p-4  rounded-lg">
+
+          <div className="text-center p-3 sm:p-4 rounded-lg bg-white/60 backdrop-blur-sm">
             <div className="text-lg sm:text-xl md:text-2xl font-bold text-blue-700">
               500+
             </div>
@@ -142,7 +126,8 @@ export default function IndiaHero() {
               Happy Clients
             </div>
           </div>
-          <div className="col-span-2 sm:col-span-1 text-center p-3 sm:p-4 rounded-lg">
+
+          <div className="col-span-2 sm:col-span-1 text-center p-3 sm:p-4 rounded-lg bg-white/60 backdrop-blur-sm">
             <div className="text-lg sm:text-xl md:text-2xl font-bold text-blue-700">
               24/7
             </div>

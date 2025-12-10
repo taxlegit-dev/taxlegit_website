@@ -21,9 +21,9 @@ const services = [
 export default function ContactForm() {
   return (
     <div className="bg-white rounded-2xl border border-zinc-200 p-8 shadow-lg">
-      <h2 className="text-2xl font-bold text-slate-800 mb-2 relative pb-1 text-center">
+      <h2 className="text-2xl font-bold text-slate-800 mb-2 relative pb-4 text-center inline-block w-full">
         Start Your Business with free consultation
-        <span className="absolute bottom-0 left-48 w-16 h-0.5 bg-blue-800"></span>
+        <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-blue-800 rounded-full"></span>
       </h2>
 
       <form className="space-y-4 mt-4">

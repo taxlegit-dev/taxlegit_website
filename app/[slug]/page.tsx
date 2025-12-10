@@ -6,7 +6,7 @@ import { NavbarServer } from "@/components/navigation/navbar-server";
 import { IndiaHero } from "@/components/ServiceHeroSection/india-hero";
 import { ServicePageView } from "@/components/service-page/service-page-view";
 import { FAQSection } from "@/components/faq/faq-section";
-
+import Footer from "@/components/footer";
 type DynamicPageProps = {
   params: Promise<{ slug: string }>;
 };
@@ -114,12 +114,7 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
           <FAQSection questions={faq.questions} region="INDIA" />
         )}
       </main>
-      <footer className="border-t border-zinc-100 bg-white">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-8 text-sm text-zinc-500">
-          <p>© {new Date().getFullYear()} Taxlegit. All rights reserved.</p>
-          <p className="font-medium text-zinc-700">India Region</p>
-        </div>
-      </footer>
+      <Footer></Footer>
     </div>
   );
 }
