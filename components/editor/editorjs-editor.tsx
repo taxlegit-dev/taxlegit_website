@@ -325,11 +325,19 @@ export function EditorJsEditor({
         .ce-block {
           margin: 10px 0;
         }
+
+        /* FIXED: Remove fixed font-size, only set line-height and color */
         .ce-paragraph {
           line-height: 1.6;
-          font-size: 16px;
           color: #374151;
+          /* font-size removed - now respects inline styles */
         }
+
+        /* Ensure inline font-size styles have priority */
+        .ce-paragraph span[style*="font-size"] {
+          line-height: 1.4 !important; /* Adjust line-height proportionally */
+        }
+
         .ce-paragraph[data-placeholder]:empty::before {
           content: attr(data-placeholder);
           color: #9ca3af;

@@ -13,7 +13,6 @@ import type {
 import dynamic from "next/dynamic";
 import type { OutputData } from "@editorjs/editorjs";
 
-// Dynamically import EditorJsEditor to avoid SSR issues
 const EditorJsEditor = dynamic(
   () =>
     import("@/components/editor/editorjs-editor").then((mod) => ({
@@ -29,11 +28,9 @@ const EditorJsEditor = dynamic(
   }
 );
 
-// Helper function to parse Editor.js JSON from string
 function tryParseEditorJson(content: string): OutputData | null {
   try {
     const parsed = JSON.parse(content);
-    // Check if it looks like Editor.js format
     if (parsed && typeof parsed === "object" && "blocks" in parsed) {
       return parsed as OutputData;
     }
@@ -83,8 +80,11 @@ export function ServicePageManager({
 }: ServicePageManagerProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
+  const [expandedSections, setExpandedSections] = useState<Set<number>>(
+    new Set([0])
+  );
+  const [savingSection, setSavingSection] = useState<number | null>(null);
 
   const selectedItemId = selectedNavbarItemId || "";
 
@@ -96,7 +96,7 @@ export function ServicePageManager({
           sections: existingServicePage.sections.map((s) => ({
             id: s.id,
             title: s.title,
-            content: s.content, // Will be parsed in the editor component
+            content: s.content,
             order: s.order,
           })),
         }
@@ -123,7 +123,7 @@ export function ServicePageManager({
         sections: existingServicePage.sections.map((s) => ({
           id: s.id,
           title: s.title,
-          content: s.content, // Will be parsed in the editor component
+          content: s.content,
           order: s.order,
         })),
       });
@@ -134,6 +134,18 @@ export function ServicePageManager({
       });
     }
   }, [existingServicePage, selectedItemId, selectedNavbarItemId, form]);
+
+  const toggleSection = (index: number) => {
+    setExpandedSections((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(index)) {
+        newSet.delete(index);
+      } else {
+        newSet.add(index);
+      }
+      return newSet;
+    });
+  };
 
   const handleNavbarItemSelect = (itemId: string) => {
     const next = new URLSearchParams(searchParams?.toString() ?? "");
@@ -150,70 +162,104 @@ export function ServicePageManager({
     router.push(`/admin/service-pages?${next.toString()}`);
   };
 
-  const handleSubmit = form.handleSubmit((data) => {
-    startTransition(async () => {
-      setMessage(null);
+  const handleSectionUpdate = async (index: number) => {
+    const section = form.getValues(`sections.${index}`);
 
-      // Validate sections
-      const validSections = data.sections.filter(
-        (s) => s.title.trim() && s.content.trim()
-      );
-      if (validSections.length === 0) {
-        setMessage("Please add at least one section with title and content");
-        return;
-      }
+    if (!section.title.trim() || !section.content.trim()) {
+      setMessage("Please fill in both title and content");
+      return;
+    }
 
-      const finalNavbarItemId =
-        data.navbarItemId || selectedItemId || selectedNavbarItemId;
-      if (!finalNavbarItemId) {
-        setMessage("Please select a service page first");
-        return;
-      }
+    const finalNavbarItemId =
+      form.getValues("navbarItemId") || selectedItemId || selectedNavbarItemId;
 
-      const payload = {
-        ...(existingServicePage?.id && { id: existingServicePage.id }),
-        navbarItemId: finalNavbarItemId,
-        region,
-        status: "PUBLISHED" as const,
-        sections: validSections.map((s, index) => ({
-          ...s,
-          order: s.order || index + 1,
-        })),
-      };
+    if (!finalNavbarItemId) {
+      setMessage("Please select a service page first");
+      return;
+    }
 
-      try {
-        const url = "/api/admin/service-pages";
-        const method = existingServicePage ? "PUT" : "POST";
+    setSavingSection(index);
+    setMessage(null);
 
-        const response = await fetch(url, {
-          method,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
+    try {
+      // Check if this is an existing section (has id) or new section
+      const isNewSection = !section.id;
 
-        const result = await response.json();
+      let payload;
+      let url;
+      let method;
 
-        if (!response.ok) {
-          const errorMsg =
-            result.error?.message ||
-            (typeof result.error === "string"
-              ? result.error
-              : JSON.stringify(result.error)) ||
-            "Failed to save service page";
-          setMessage(errorMsg);
-          return;
+      if (isNewSection) {
+        // New section - use service-page-sections endpoint
+        if (existingServicePage?.id) {
+          // Service page exists, provide servicePageId
+          payload = {
+            servicePageId: existingServicePage.id,
+            title: section.title,
+            content: section.content,
+            order: section.order || index + 1,
+          };
+        } else {
+          // Service page doesn't exist, provide navbarItemId and region
+          // API will create service page automatically
+          payload = {
+            navbarItemId: finalNavbarItemId,
+            region,
+            title: section.title,
+            content: section.content,
+            order: section.order || index + 1,
+          };
         }
-
-        setMessage("Service page saved successfully!");
-        setTimeout(() => {
-          handleBackToNavbar();
-        }, 1500);
-      } catch (error) {
-        setMessage("Network error. Please try again.");
-        console.error("Error saving service page:", error);
+        url = "/api/admin/service-page-sections";
+        method = "POST";
+      } else {
+        // Existing section - update it
+        payload = {
+          id: section.id,
+          title: section.title,
+          content: section.content,
+          order: section.order || index + 1,
+        };
+        url = "/api/admin/service-page-sections";
+        method = "PUT";
       }
-    });
-  });
+
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        const errorMsg =
+          result.error?.message ||
+          (typeof result.error === "string"
+            ? result.error
+            : JSON.stringify(result.error)) ||
+          "Failed to save section";
+        setMessage(errorMsg);
+        return;
+      }
+
+      // Update the form with the returned section id if it was a new section
+      if (isNewSection && result.section?.id) {
+        form.setValue(`sections.${index}.id`, result.section.id);
+      }
+
+      setMessage(`Section ${index + 1} saved successfully!`);
+      setTimeout(() => setMessage(null), 3000);
+
+      // Optionally refresh the page data
+      router.refresh();
+    } catch (error) {
+      setMessage("Network error. Please try again.");
+      console.error("Error saving section:", error);
+    } finally {
+      setSavingSection(null);
+    }
+  };
 
   if (!selectedItemId && !selectedNavbarItemId) {
     return (
@@ -337,14 +383,14 @@ export function ServicePageManager({
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <div className="space-y-8">
           <input
             type="hidden"
             {...form.register("navbarItemId")}
             value={selectedItemId || selectedNavbarItemId || ""}
           />
 
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-slate-900">Sections</h3>
               <button
@@ -355,11 +401,13 @@ export function ServicePageManager({
                     ...currentSections.map((s, i) => s.order || i + 1),
                     0
                   );
+                  const newIndex = fields.length;
                   append({
                     title: "",
                     content: "",
                     order: Math.min(maxOrder + 1, 10),
                   });
+                  setExpandedSections((prev) => new Set([...prev, newIndex]));
                 }}
                 className="px-4 py-2 text-sm font-semibold text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
                 disabled={fields.length >= 10}
@@ -368,127 +416,191 @@ export function ServicePageManager({
               </button>
             </div>
 
-            {fields.map((field, index) => (
-              <div
-                key={field.id}
-                className="rounded-lg border border-slate-200 p-6 space-y-4"
-              >
-                <div className="flex items-center justify-between">
-                  <h4 className="text-md font-semibold text-slate-900">
-                    Section {index + 1}
-                  </h4>
-                  {fields.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => remove(index)}
-                      className="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded-lg"
-                    >
-                      Remove
-                    </button>
+            {fields.map((field, index) => {
+              const isExpanded = expandedSections.has(index);
+              const section = form.watch(`sections.${index}`);
+
+              return (
+                <div
+                  key={field.id}
+                  className="rounded-lg border border-slate-200 overflow-hidden"
+                >
+                  {/* Section Header - Collapsible */}
+                  <button
+                    type="button"
+                    onClick={() => toggleSection(index)}
+                    className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 font-semibold text-sm">
+                        {index + 1}
+                      </span>
+                      <div className="text-left">
+                        <h4 className="text-md font-semibold text-slate-900">
+                          {section?.title || `Section ${index + 1}`}
+                        </h4>
+                        {!isExpanded && section?.title && (
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            Order: {section.order || index + 1}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {fields.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            remove(index);
+                            setExpandedSections((prev) => {
+                              const newSet = new Set(prev);
+                              newSet.delete(index);
+                              return newSet;
+                            });
+                          }}
+                          className="px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg"
+                        >
+                          Remove
+                        </button>
+                      )}
+                      <svg
+                        className={`w-5 h-5 text-slate-400 transition-transform ${
+                          isExpanded ? "rotate-180" : ""
+                        }`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
+                  </button>
+
+                  {/* Section Content - Expandable */}
+                  {isExpanded && (
+                    <div className="p-6 pt-0 space-y-4 border-t border-slate-100">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-semibold text-slate-900 mb-2">
+                            Section Title{" "}
+                            <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            {...form.register(`sections.${index}.title`)}
+                            className="w-full rounded-lg border border-slate-200 px-4 py-2"
+                            placeholder="e.g., Overview, Features, Benefits"
+                          />
+                          {form.formState.errors.sections?.[index]?.title && (
+                            <p className="text-xs text-red-600 mt-1">
+                              {
+                                form.formState.errors.sections[index]?.title
+                                  ?.message
+                              }
+                            </p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-semibold text-slate-900 mb-2">
+                            Order (1-10)
+                          </label>
+                          <input
+                            type="number"
+                            min="1"
+                            max="10"
+                            {...form.register(`sections.${index}.order`, {
+                              valueAsNumber: true,
+                            })}
+                            className="w-full rounded-lg border border-slate-200 px-4 py-2"
+                          />
+                          {form.formState.errors.sections?.[index]?.order && (
+                            <p className="text-xs text-red-600 mt-1">
+                              {
+                                form.formState.errors.sections[index]?.order
+                                  ?.message
+                              }
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-900 mb-2">
+                          Content <span className="text-red-500">*</span>
+                        </label>
+                        <EditorJsEditor
+                          key={`section-${field.id}-${index}`}
+                          value={
+                            field.content
+                              ? typeof field.content === "string"
+                                ? tryParseEditorJson(field.content)
+                                : field.content
+                              : undefined
+                          }
+                          onChange={(value) => {
+                            form.setValue(
+                              `sections.${index}.content`,
+                              JSON.stringify(value),
+                              {
+                                shouldDirty: true,
+                                shouldValidate: false,
+                              }
+                            );
+                          }}
+                          placeholder=""
+                          onImageUpload={async (file) => {
+                            const formData = new FormData();
+                            formData.append("file", file);
+                            formData.append("region", region);
+                            const response = await fetch("/api/admin/upload", {
+                              method: "POST",
+                              body: formData,
+                            });
+                            const result = await response.json();
+                            if (!response.ok) {
+                              throw new Error(result.error || "Upload failed");
+                            }
+                            return result.url;
+                          }}
+                          region={region}
+                        />
+                        {form.formState.errors.sections?.[index]?.content && (
+                          <p className="text-xs text-red-600 mt-1">
+                            {
+                              form.formState.errors.sections[index]?.content
+                                ?.message
+                            }
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Individual Section Update Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleSectionUpdate(index)}
+                        disabled={savingSection === index}
+                        className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-white font-semibold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                      >
+                        {savingSection === index
+                          ? "Saving..."
+                          : section?.id
+                          ? `Update Section ${index + 1}`
+                          : `Save Section ${index + 1}`}
+                      </button>
+                    </div>
                   )}
                 </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-900 mb-2">
-                      Section Title <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      {...form.register(`sections.${index}.title`)}
-                      className="w-full rounded-lg border border-slate-200 px-4 py-2"
-                      placeholder="e.g., Overview, Features, Benefits"
-                    />
-                    {form.formState.errors.sections?.[index]?.title && (
-                      <p className="text-xs text-red-600 mt-1">
-                        {form.formState.errors.sections[index]?.title?.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-900 mb-2">
-                      Order (1-10)
-                    </label>
-                    <input
-                      type="number"
-                      min="1"
-                      max="10"
-                      {...form.register(`sections.${index}.order`, {
-                        valueAsNumber: true,
-                      })}
-                      className="w-full rounded-lg border border-slate-200 px-4 py-2"
-                    />
-                    {form.formState.errors.sections?.[index]?.order && (
-                      <p className="text-xs text-red-600 mt-1">
-                        {form.formState.errors.sections[index]?.order?.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-slate-900 mb-2">
-                    Content <span className="text-red-500">*</span>
-                  </label>
-                  <EditorJsEditor
-                    key={`section-${field.id}-${index}`}
-                    value={
-                      field.content
-                        ? typeof field.content === "string"
-                          ? tryParseEditorJson(field.content)
-                          : field.content
-                        : undefined
-                    }
-                    onChange={(value) => {
-                      // Store as JSON string
-                      form.setValue(
-                        `sections.${index}.content`,
-                        JSON.stringify(value),
-                        {
-                          shouldDirty: true,
-                          shouldValidate: false,
-                        }
-                      );
-                    }}
-                    placeholder=""
-                    onImageUpload={async (file) => {
-                      const formData = new FormData();
-                      formData.append("file", file);
-                      formData.append("region", region);
-                      const response = await fetch("/api/admin/upload", {
-                        method: "POST",
-                        body: formData,
-                      });
-                      const result = await response.json();
-                      if (!response.ok) {
-                        throw new Error(result.error || "Upload failed");
-                      }
-                      return result.url;
-                    }}
-                    region={region}
-                  />
-                  {form.formState.errors.sections?.[index]?.content && (
-                    <p className="text-xs text-red-600 mt-1">
-                      {form.formState.errors.sections[index]?.content?.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
-
-          <button
-            type="submit"
-            disabled={isPending}
-            className="w-full rounded-lg bg-indigo-600 px-4 py-3 text-white font-semibold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isPending
-              ? "Saving..."
-              : existingServicePage
-              ? "Update Service Page"
-              : "Create Service Page"}
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   );

@@ -42,8 +42,14 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
   const scrollToSection = (index: number) => {
     const element = sectionRefs.current[index];
     if (element) {
-      const offset = tocRef.current?.offsetHeight || 0;
-      const elementPosition = element.offsetTop - offset - 20;
+      const navbarHeight = 72; // your fixed navbar height
+      const tocHeight = tocRef.current?.offsetHeight || 0;
+      const extraSpacing = 20; // little padding
+
+      const totalOffset = navbarHeight + tocHeight + extraSpacing;
+
+      const elementPosition = element.offsetTop - totalOffset;
+
       window.scrollTo({
         top: elementPosition,
         behavior: "smooth",
@@ -88,10 +94,6 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
             id={`section-${section.id}`}
             className="mb-16 scroll-mt-24"
           >
-            <h2 className="mb-6 text-3xl font-semibold text-slate-900">
-              {section.title}
-            </h2>
-
             {/* Content */}
             {(() => {
               // Try to parse as Editor.js JSON, fallback to HTML

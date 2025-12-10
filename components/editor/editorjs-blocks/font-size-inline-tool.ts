@@ -10,7 +10,20 @@ export default class FontSizeInlineTool implements InlineTool {
   private api: any;
   private button: HTMLButtonElement | null = null;
   private currentSize: string | null = null;
-  private sizes = ["10", "12", "14", "16", "18", "20", "24", "28", "32", "36", "40", "48"];
+  private sizes = [
+    "10",
+    "12",
+    "14",
+    "16",
+    "18",
+    "20",
+    "24",
+    "28",
+    "32",
+    "36",
+    "40",
+    "48",
+  ];
 
   static get isInline() {
     return true;
@@ -67,9 +80,14 @@ export default class FontSizeInlineTool implements InlineTool {
 
     // Check if selection already has font-size
     const container = range.commonAncestorContainer;
-    const span = container.nodeType === Node.TEXT_NODE 
-      ? container.parentElement?.closest('span[style*="font-size"]') as HTMLSpanElement
-      : (container as HTMLElement).closest('span[style*="font-size"]') as HTMLSpanElement;
+    const span =
+      container.nodeType === Node.TEXT_NODE
+        ? (container.parentElement?.closest(
+            'span[style*="font-size"]'
+          ) as HTMLSpanElement)
+        : ((container as HTMLElement).closest(
+            'span[style*="font-size"]'
+          ) as HTMLSpanElement);
 
     let currentSize = "16"; // default
     if (span && span.style.fontSize) {
@@ -145,19 +163,19 @@ export default class FontSizeInlineTool implements InlineTool {
     const viewportWidth = window.innerWidth;
     const scrollY = window.scrollY;
     const scrollX = window.scrollX;
-    
+
     // Estimate dropdown height (approximate)
     const dropdownHeight = 300; // Approximate height
     const dropdownWidth = 120; // Approximate width
     const spacing = 4;
-    
+
     // Check if there's enough space below
     const spaceBelow = viewportHeight - buttonRect.bottom;
     const spaceAbove = buttonRect.top;
-    
+
     let top: number;
     let left: number;
-    
+
     // Position vertically
     if (spaceBelow >= dropdownHeight + spacing) {
       // Position below button
@@ -169,7 +187,7 @@ export default class FontSizeInlineTool implements InlineTool {
       // Not enough space on either side, position in viewport center vertically
       top = scrollY + Math.max(10, buttonRect.top - dropdownHeight / 2);
     }
-    
+
     // Position horizontally - ensure it stays within viewport
     left = buttonRect.left + scrollX;
     if (left + dropdownWidth > viewportWidth + scrollX) {
@@ -179,7 +197,7 @@ export default class FontSizeInlineTool implements InlineTool {
     if (left < scrollX + 10) {
       left = scrollX + 10;
     }
-    
+
     dropdown.style.position = "absolute";
     dropdown.style.top = `${top}px`;
     dropdown.style.left = `${left}px`;
@@ -198,9 +216,14 @@ export default class FontSizeInlineTool implements InlineTool {
     }
 
     // Check if selection is already wrapped in a span with font-size
-    const span = range.commonAncestorContainer.nodeType === Node.TEXT_NODE
-      ? range.commonAncestorContainer.parentElement?.closest('span[style*="font-size"]') as HTMLSpanElement
-      : (range.commonAncestorContainer as HTMLElement).closest('span[style*="font-size"]') as HTMLSpanElement;
+    const span =
+      range.commonAncestorContainer.nodeType === Node.TEXT_NODE
+        ? (range.commonAncestorContainer.parentElement?.closest(
+            'span[style*="font-size"]'
+          ) as HTMLSpanElement)
+        : ((range.commonAncestorContainer as HTMLElement).closest(
+            'span[style*="font-size"]'
+          ) as HTMLSpanElement);
 
     if (span && span.style.fontSize) {
       // Update existing span
@@ -210,7 +233,7 @@ export default class FontSizeInlineTool implements InlineTool {
       // Create new span
       const newSpan = document.createElement("span");
       newSpan.style.fontSize = `${size}px`;
-      
+
       try {
         range.surroundContents(newSpan);
       } catch {
@@ -219,7 +242,7 @@ export default class FontSizeInlineTool implements InlineTool {
         newSpan.appendChild(contents);
         range.insertNode(newSpan);
       }
-      
+
       this.api.selection.expandToTag(newSpan);
     }
 
@@ -234,9 +257,14 @@ export default class FontSizeInlineTool implements InlineTool {
 
     const range = selection.getRangeAt(0);
     const container = range.commonAncestorContainer;
-    const span = container.nodeType === Node.TEXT_NODE
-      ? container.parentElement?.closest('span[style*="font-size"]') as HTMLSpanElement
-      : (container as HTMLElement).closest('span[style*="font-size"]') as HTMLSpanElement;
+    const span =
+      container.nodeType === Node.TEXT_NODE
+        ? (container.parentElement?.closest(
+            'span[style*="font-size"]'
+          ) as HTMLSpanElement)
+        : ((container as HTMLElement).closest(
+            'span[style*="font-size"]'
+          ) as HTMLSpanElement);
 
     if (span && span.style.fontSize) {
       this.currentSize = span.style.fontSize.replace("px", "");
@@ -258,7 +286,7 @@ export default class FontSizeInlineTool implements InlineTool {
   renderActions(): HTMLElement {
     const wrapper = document.createElement("div");
     wrapper.style.cssText = "display: flex; gap: 4px; padding: 4px;";
-    
+
     const removeBtn = document.createElement("button");
     removeBtn.textContent = "Remove Size";
     removeBtn.style.cssText = `
@@ -273,7 +301,7 @@ export default class FontSizeInlineTool implements InlineTool {
     removeBtn.addEventListener("click", () => {
       this.removeSize();
     });
-    
+
     wrapper.appendChild(removeBtn);
     return wrapper;
   }
@@ -286,9 +314,14 @@ export default class FontSizeInlineTool implements InlineTool {
 
     const range = selection.getRangeAt(0);
     const container = range.commonAncestorContainer;
-    const span = container.nodeType === Node.TEXT_NODE
-      ? container.parentElement?.closest('span[style*="font-size"]') as HTMLSpanElement
-      : (container as HTMLElement).closest('span[style*="font-size"]') as HTMLSpanElement;
+    const span =
+      container.nodeType === Node.TEXT_NODE
+        ? (container.parentElement?.closest(
+            'span[style*="font-size"]'
+          ) as HTMLSpanElement)
+        : ((container as HTMLElement).closest(
+            'span[style*="font-size"]'
+          ) as HTMLSpanElement);
 
     if (span) {
       const parent = span.parentElement;
@@ -302,4 +335,3 @@ export default class FontSizeInlineTool implements InlineTool {
     }
   }
 }
-

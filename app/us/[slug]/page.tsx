@@ -88,7 +88,8 @@ export default async function UsDynamicPage({ params }: DynamicPageProps) {
         {servicePage &&
         servicePage.status === "PUBLISHED" &&
         servicePage.sections.length > 0 ? (
-          <ServicePageView sections={servicePage.sections} region="US" />
+          // <ServicePageView sections={servicePage.sections} region="US" />
+          <ServicePageView sections={servicePage.sections} />
         ) : !hero ? (
           <section className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-12">
             <div className="rounded-3xl border border-white/10 bg-slate-900 p-10 shadow-2xl">
