@@ -7,6 +7,8 @@ import { IndiaHero } from "@/components/ServiceHeroSection/india-hero";
 import { ServicePageView } from "@/components/service-page/service-page-view";
 import { FAQSection } from "@/components/faq/faq-section";
 import Footer from "@/components/footer";
+import { MetaDataRenderer } from "@/components/seo/meta-data-renderer";
+import { parseMetaBlockForMetadata } from "@/lib/seo-utils";
 type DynamicPageProps = {
   params: Promise<{ slug: string }>;
 };
@@ -31,9 +33,97 @@ export async function generateMetadata({
     };
   }
 
+  // Check for custom meta data
+  const hero = await prisma.pageHero.findUnique({
+    where: { navbarItemId: navbarItem.id },
+  });
+
+  const servicePage = await prisma.servicePage.findUnique({
+    where: { navbarItemId: navbarItem.id },
+  });
+
+  // Try to fetch meta data for hero or service page
+  let metaData = null;
+  if (hero) {
+    metaData = await prisma.metaData.findUnique({
+      where: {
+        pageType_pageId: {
+          pageType: "HERO",
+          pageId: hero.id,
+        },
+      },
+    });
+  } else if (servicePage) {
+    metaData = await prisma.metaData.findUnique({
+      where: {
+        pageType_pageId: {
+          pageType: "SERVICE",
+          pageId: servicePage.id,
+        },
+      },
+    });
+  }
+
+  // Build base URL
+  const baseUrl = "https://taxlegit.com";
+  const pageUrl = `${baseUrl}/${slug}`;
+  const defaultTitle = `${navbarItem.label} | Taxlegit`;
+  const defaultDescription = `Learn more about ${navbarItem.label} services at Taxlegit`;
+
+  // If custom meta data exists, parse it
+  if (metaData?.metaBlock) {
+    const parsedMeta = parseMetaBlockForMetadata(metaData.metaBlock);
+    return {
+      ...parsedMeta,
+      // Fallback to defaults if not in meta block
+      title: parsedMeta.title || defaultTitle,
+      description: parsedMeta.description || defaultDescription,
+      robots: parsedMeta.robots || "index, follow",
+      alternates: {
+        ...parsedMeta.alternates,
+        canonical: parsedMeta.alternates?.canonical || pageUrl,
+      },
+      openGraph: {
+        ...(parsedMeta.openGraph || {}),
+        title: parsedMeta.openGraph?.title || defaultTitle,
+        description: parsedMeta.openGraph?.description || defaultDescription,
+        type:
+          (parsedMeta.openGraph?.type as "website" | "article" | undefined) ||
+          "website",
+        url: parsedMeta.openGraph?.url || pageUrl,
+      },
+      twitter: {
+        ...(parsedMeta.twitter || {}),
+        card:
+          (parsedMeta.twitter?.card as
+            | "summary"
+            | "summary_large_image"
+            | undefined) || "summary",
+        title: parsedMeta.twitter?.title || defaultTitle,
+        description: parsedMeta.twitter?.description || defaultDescription,
+      },
+    };
+  }
+
+  // Default metadata with all required tags
   return {
-    title: `${navbarItem.label} | Taxlegit`,
-    description: `Learn more about ${navbarItem.label} services at Taxlegit`,
+    title: defaultTitle,
+    description: defaultDescription,
+    robots: "index, follow",
+    alternates: {
+      canonical: pageUrl,
+    },
+    openGraph: {
+      title: defaultTitle,
+      description: defaultDescription,
+      type: "website",
+      url: pageUrl,
+    },
+    twitter: {
+      card: "summary",
+      title: defaultTitle,
+      description: defaultDescription,
+    },
   };
 }
 
@@ -80,42 +170,60 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
     },
   });
 
+  // Determine which meta data to render
+  let metaPageType: "SERVICE" | "HERO" | null = null;
+  let metaPageId: string | null = null;
+
+  if (hero) {
+    metaPageType = "HERO";
+    metaPageId = hero.id;
+  } else if (servicePage) {
+    metaPageType = "SERVICE";
+    metaPageId = servicePage.id;
+  }
+
   return (
-    <div className="min-h-screen bg-white text-black">
-      <NavbarServer region={region} />
-      <main>
-        {hero && hero.status === "PUBLISHED" && <IndiaHero hero={hero} />}
-        {servicePage &&
-        servicePage.status === "PUBLISHED" &&
-        servicePage.sections.length > 0 ? (
-          <ServicePageView sections={servicePage.sections} />
-        ) : // <ServicePageView sections={servicePage.sections} region="INDIA" />
-        !hero ? (
-          <section className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-12">
-            <div className="rounded-3xl border border-zinc-100 bg-gradient-to-br from-indigo-50 via-white to-slate-50 p-10 shadow-sm">
-              <div className="space-y-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-indigo-600">
-                  India Region
-                </p>
-                <h1 className="text-4xl font-semibold leading-tight text-zinc-900">
-                  {navbarItem.label}
-                </h1>
-                <div className="max-w-2xl">
-                  <p className="text-lg text-zinc-600">
-                    This is a dynamic page for{" "}
-                    <strong>{navbarItem.label}</strong>. Create a hero section
-                    or service page in admin panel to customize this page.
+    <>
+      {/* Render meta tags server-side */}
+      {metaPageType && metaPageId && (
+        <MetaDataRenderer pageType={metaPageType} pageId={metaPageId} />
+      )}
+      <div className="min-h-screen bg-white text-black">
+        <NavbarServer region={region} />
+        <main>
+          {hero && hero.status === "PUBLISHED" && <IndiaHero hero={hero} />}
+          {servicePage &&
+          servicePage.status === "PUBLISHED" &&
+          servicePage.sections.length > 0 ? (
+            <ServicePageView sections={servicePage.sections} />
+          ) : // <ServicePageView sections={servicePage.sections} region="INDIA" />
+          !hero ? (
+            <section className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-12">
+              <div className="rounded-3xl border border-zinc-100 bg-gradient-to-br from-indigo-50 via-white to-slate-50 p-10 shadow-sm">
+                <div className="space-y-6">
+                  <p className="text-xs font-semibold uppercase tracking-[0.35em] text-indigo-600">
+                    India Region
                   </p>
+                  <h1 className="text-4xl font-semibold leading-tight text-zinc-900">
+                    {navbarItem.label}
+                  </h1>
+                  <div className="max-w-2xl">
+                    <p className="text-lg text-zinc-600">
+                      This is a dynamic page for{" "}
+                      <strong>{navbarItem.label}</strong>. Create a hero section
+                      or service page in admin panel to customize this page.
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
-        ) : null}
-        {faq && faq.status === "PUBLISHED" && faq.questions.length > 0 && (
-          <FAQSection questions={faq.questions} region="INDIA" />
-        )}
-      </main>
-      <Footer></Footer>
-    </div>
+            </section>
+          ) : null}
+          {faq && faq.status === "PUBLISHED" && faq.questions.length > 0 && (
+            <FAQSection questions={faq.questions} region="INDIA" />
+          )}
+        </main>
+        <Footer></Footer>
+      </div>
+    </>
   );
 }

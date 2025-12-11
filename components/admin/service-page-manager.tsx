@@ -12,6 +12,7 @@ import type {
 } from "@prisma/client";
 import dynamic from "next/dynamic";
 import type { OutputData } from "@editorjs/editorjs";
+import { SEOMetaEditor } from "@/components/admin/seo-meta-editor";
 
 const EditorJsEditor = dynamic(
   () =>
@@ -600,6 +601,17 @@ export function ServicePageManager({
               );
             })}
           </div>
+
+          {/* SEO Meta Tags Section */}
+          {existingServicePage?.id && (
+            <div className="border-t border-slate-200 pt-8">
+              <SEOMetaEditor
+                pageType="SERVICE"
+                pageId={existingServicePage.id}
+                pageName={selectedItem?.label}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

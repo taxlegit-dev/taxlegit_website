@@ -9,6 +9,7 @@ import dynamic from "next/dynamic";
 import type { OutputData } from "@editorjs/editorjs";
 import { EditorJsRenderer } from "@/components/rich-text/editorjs-renderer";
 import Image from "next/image";
+import { SEOMetaEditor } from "@/components/admin/seo-meta-editor";
 
 // Types
 type Blog = {
@@ -499,6 +500,15 @@ export function BlogManager({
               }
             })()}
           </div>
+
+          {/* SEO Meta Tags Section */}
+          <div className="border-t border-slate-200 pt-8 mt-8">
+            <SEOMetaEditor
+              pageType="BLOG"
+              pageId={selectedBlog.id}
+              pageName={selectedBlog.title}
+            />
+          </div>
         </div>
       </div>
     );
@@ -664,6 +674,17 @@ export function BlogManager({
                 : "Create Blog"}
             </button>
           </form>
+
+          {/* SEO Meta Tags Section - Only show when editing existing blog */}
+          {editingBlog?.id && (
+            <div className="border-t border-slate-200 pt-8 mt-8">
+              <SEOMetaEditor
+                pageType="BLOG"
+                pageId={editingBlog.id}
+                pageName={editingBlog.title}
+              />
+            </div>
+          )}
         </div>
       </div>
     );

@@ -6,6 +6,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import type { NavbarItem, PageHero } from "@prisma/client";
+import { SEOMetaEditor } from "@/components/admin/seo-meta-editor";
 
 type HeroWithNavItem = PageHero & {
   navbarItem: NavbarItem | null;
@@ -398,145 +399,169 @@ export function HeroSectionManager({
         </div>
 
         {region === "INDIA" ? (
-          <form onSubmit={handleIndiaSubmit} className="space-y-6">
-            <input
-              type="hidden"
-              {...indiaForm.register("navbarItemId")}
-              value={selectedItemId || selectedNavbarItemId || ""}
-            />
-
-            <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">
-                Title
-              </label>
+          <div>
+            <form onSubmit={handleIndiaSubmit} className="space-y-6">
               <input
-                {...indiaForm.register("title")}
-                className="w-full rounded-lg border border-slate-200 px-4 py-2"
-                placeholder="e.g., Limited Liability Partnership Registration"
+                type="hidden"
+                {...indiaForm.register("navbarItemId")}
+                value={selectedItemId || selectedNavbarItemId || ""}
               />
-              {indiaForm.formState.errors.title && (
-                <p className="text-xs text-red-600 mt-1">
-                  {indiaForm.formState.errors.title.message}
-                </p>
-              )}
-            </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">
-                Benefits
-              </label>
-              {indiaBenefits.map((_, index) => (
-                <div key={index} className="flex gap-2 mb-2">
-                  <input
-                    {...indiaForm.register(`benefits.${index}`)}
-                    className="flex-1 rounded-lg border border-slate-200 px-4 py-2"
-                    placeholder="e.g., 750+ LLPs Registered"
-                  />
-                  {index > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const benefits = indiaForm.getValues("benefits");
-                        indiaForm.setValue(
-                          "benefits",
-                          benefits.filter((_, i) => i !== index)
-                        );
-                      }}
-                      className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
-              ))}
+              <div>
+                <label className="block text-sm font-semibold text-slate-900 mb-2">
+                  Title
+                </label>
+                <input
+                  {...indiaForm.register("title")}
+                  className="w-full rounded-lg border border-slate-200 px-4 py-2"
+                  placeholder="e.g., Limited Liability Partnership Registration"
+                />
+                {indiaForm.formState.errors.title && (
+                  <p className="text-xs text-red-600 mt-1">
+                    {indiaForm.formState.errors.title.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-900 mb-2">
+                  Benefits
+                </label>
+                {indiaBenefits.map((_, index) => (
+                  <div key={index} className="flex gap-2 mb-2">
+                    <input
+                      {...indiaForm.register(`benefits.${index}`)}
+                      className="flex-1 rounded-lg border border-slate-200 px-4 py-2"
+                      placeholder="e.g., 750+ LLPs Registered"
+                    />
+                    {index > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const benefits = indiaForm.getValues("benefits");
+                          indiaForm.setValue(
+                            "benefits",
+                            benefits.filter((_, i) => i !== index)
+                          );
+                        }}
+                        className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const benefits = indiaForm.getValues("benefits");
+                    indiaForm.setValue("benefits", [...benefits, ""]);
+                  }}
+                  className="mt-2 text-sm text-indigo-600 hover:text-indigo-700"
+                >
+                  + Add Benefit
+                </button>
+              </div>
+
               <button
-                type="button"
-                onClick={() => {
-                  const benefits = indiaForm.getValues("benefits");
-                  indiaForm.setValue("benefits", [...benefits, ""]);
-                }}
-                className="mt-2 text-sm text-indigo-600 hover:text-indigo-700"
+                type="submit"
+                disabled={isPending}
+                className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-white font-semibold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                + Add Benefit
+                {isPending
+                  ? "Saving..."
+                  : existingHero
+                  ? "Update Hero Section"
+                  : "Create Hero Section"}
               </button>
-            </div>
+            </form>
 
-            <button
-              type="submit"
-              disabled={isPending}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-white font-semibold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isPending
-                ? "Saving..."
-                : existingHero
-                ? "Update Hero Section"
-                : "Create Hero Section"}
-            </button>
-          </form>
+            {existingHero?.id && (
+              <div className="border-t border-slate-200 pt-8 mt-8">
+                <SEOMetaEditor
+                  pageType="HERO"
+                  pageId={existingHero.id}
+                  pageName={selectedItem?.label}
+                />
+              </div>
+            )}
+          </div>
         ) : (
-          <form onSubmit={handleUsSubmit} className="space-y-6">
-            <input
-              type="hidden"
-              {...usForm.register("navbarItemId")}
-              value={selectedItemId || selectedNavbarItemId}
-            />
-
-            <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">
-                Announcement Banner (Optional)
-              </label>
+          <div>
+            <form onSubmit={handleUsSubmit} className="space-y-6">
               <input
-                {...usForm.register("announcement")}
-                className="w-full rounded-lg border border-slate-200 px-4 py-2"
-                placeholder="e.g., New We've just released a new feature →"
+                type="hidden"
+                {...usForm.register("navbarItemId")}
+                value={selectedItemId || selectedNavbarItemId}
               />
-            </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">
-                Headline
-              </label>
-              <input
-                {...usForm.register("headline")}
-                className="w-full rounded-lg border border-slate-200 px-4 py-2"
-                placeholder="e.g., Boost Your Productivity, Simplify Your Life"
-              />
-              {usForm.formState.errors.headline && (
-                <p className="text-xs text-red-600 mt-1">
-                  {usForm.formState.errors.headline.message}
-                </p>
-              )}
-            </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-900 mb-2">
+                  Announcement Banner (Optional)
+                </label>
+                <input
+                  {...usForm.register("announcement")}
+                  className="w-full rounded-lg border border-slate-200 px-4 py-2"
+                  placeholder="e.g., New We've just released a new feature →"
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">
-                Description
-              </label>
-              <textarea
-                {...usForm.register("description")}
-                rows={3}
-                className="w-full rounded-lg border border-slate-200 px-4 py-2"
-                placeholder="Describe the service..."
-              />
-              {usForm.formState.errors.description && (
-                <p className="text-xs text-red-600 mt-1">
-                  {usForm.formState.errors.description.message}
-                </p>
-              )}
-            </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-900 mb-2">
+                  Headline
+                </label>
+                <input
+                  {...usForm.register("headline")}
+                  className="w-full rounded-lg border border-slate-200 px-4 py-2"
+                  placeholder="e.g., Boost Your Productivity, Simplify Your Life"
+                />
+                {usForm.formState.errors.headline && (
+                  <p className="text-xs text-red-600 mt-1">
+                    {usForm.formState.errors.headline.message}
+                  </p>
+                )}
+              </div>
 
-            <button
-              type="submit"
-              disabled={isPending}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-white font-semibold hover:bg-indigo-700 disabled:opacity-50"
-            >
-              {isPending
-                ? "Saving..."
-                : existingHero
-                ? "Update Hero Section"
-                : "Create Hero Section"}
-            </button>
-          </form>
+              <div>
+                <label className="block text-sm font-semibold text-slate-900 mb-2">
+                  Description
+                </label>
+                <textarea
+                  {...usForm.register("description")}
+                  rows={3}
+                  className="w-full rounded-lg border border-slate-200 px-4 py-2"
+                  placeholder="Describe the service..."
+                />
+                {usForm.formState.errors.description && (
+                  <p className="text-xs text-red-600 mt-1">
+                    {usForm.formState.errors.description.message}
+                  </p>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                disabled={isPending}
+                className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-white font-semibold hover:bg-indigo-700 disabled:opacity-50"
+              >
+                {isPending
+                  ? "Saving..."
+                  : existingHero
+                  ? "Update Hero Section"
+                  : "Create Hero Section"}
+              </button>
+            </form>
+
+            {existingHero?.id && (
+              <div className="border-t border-slate-200 pt-8 mt-8">
+                <SEOMetaEditor
+                  pageType="HERO"
+                  pageId={existingHero.id}
+                  pageName={selectedItem?.label}
+                />
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>
