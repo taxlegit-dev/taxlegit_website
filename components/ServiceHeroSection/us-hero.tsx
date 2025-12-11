@@ -14,7 +14,7 @@ interface HeroContent {
 export function UsHero({ hero }: UsHeroProps) {
   const content = hero.content as HeroContent;
   const announcement = content?.announcement;
-  const headline = hero.title; // ✅ Variable hai
+  const headline = hero.title;
   const description = hero.description || "";
 
   return (
