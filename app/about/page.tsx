@@ -1,25 +1,29 @@
-import { Region, PageKey } from "@prisma/client";
+import { Region } from "@prisma/client";
 import { NavbarServer } from "@/components/navigation/navbar-server";
-import { getStaticPage } from "@/lib/queries";
-import { RichContent } from "@/components/rich-text/rich-content";
-import type { RichTextDocument } from "@/types/rich-text";
+import HeroSection from "@/components/pages/about/HeroSection";
+import MissionStatement from "@/components/pages/about/MissionStatement";
+import WhatWeDo from "@/components/pages/about/WhatWeDo";
+import WhyChooseUs from "@/components/pages/about/WhyChooseUs";
+import StatsSection from "@/components/pages/about/StatsSection";
+import ValuesSection from "@/components/pages/about/ValuesSection";
+import WhyChooseTaxlegit from "@/components/pages/home/WhyTaxlegit";
+import AboutHeroSection from "@/components/pages/about/HeroSection";
+import OurServicesSection from "@/components/pages/about/OurServiceSection";
+import RecentBlogsSection from "@/components/pages/home/RecentBlogsSection";
 
-export default async function AboutPage() {
-  const page = await getStaticPage(Region.INDIA, PageKey.ABOUT);
-  const content = page?.content as RichTextDocument | null;
-
+export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <NavbarServer region={Region.INDIA} />
-      <main className="mx-auto w-full max-w-3xl px-6 py-12 space-y-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.35em] text-indigo-500">About</p>
-        <h1 className="text-4xl font-semibold text-zinc-900">{page?.title ?? "About Taxlegit India"}</h1>
-        {content && (
-          <div className="rounded-3xl border border-zinc-100 p-6 shadow-sm">
-            <RichContent document={content} />
-          </div>
-        )}
-      </main>
+
+      <div className="mt-[72px]">
+        <AboutHeroSection />
+        <OurServicesSection />
+        <WhyChooseUs />
+        <RecentBlogsSection />
+
+      </div>
+
     </div>
   );
 }

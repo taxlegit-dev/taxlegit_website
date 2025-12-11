@@ -29,7 +29,6 @@ export default async function IndiaHomePage() {
 
   return (
     <div className="min-h-screen bg-white text-black">
-      <NavbarServer region={region} />
 
       <div className="pt-[72px]">
         <TaxLegitHero />
@@ -44,7 +43,6 @@ export default async function IndiaHomePage() {
         )}
       </div>
 
-      <Footer />
     </div>
   );
 }
