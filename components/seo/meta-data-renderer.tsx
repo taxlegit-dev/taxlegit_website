@@ -1,25 +1,54 @@
 import { prisma } from "@/lib/prisma";
 import { MetaPageType } from "@prisma/client";
-import { MetaDataInjector } from "./meta-data-injector";
-import {
-  extractJsonLdFromMetaBlock,
-  extractCustomMetaTagsForSSR,
-  removeSSRTagsFromMetaBlock,
-} from "@/lib/seo-utils";
 
 type MetaDataRendererProps = {
   pageType: "SERVICE" | "BLOG" | "HERO";
   pageId: string;
 };
 
+// Helper to parse HTML string and extract meta tags (server-side safe)
+function parseMetaTags(htmlString: string) {
+  const metaTags: Array<{ name?: string; property?: string; content: string }> = [];
+  const jsonLdScripts: string[] = [];
+  
+  // Extract meta tags using regex
+  const metaRegex = /<meta\s+([^>]*?)>/gi;
+  let metaMatch;
+  
+  while ((metaMatch = metaRegex.exec(htmlString)) !== null) {
+    const attrs = metaMatch[1];
+    const nameMatch = /name=["']([^"']+)["']/i.exec(attrs);
+    const propertyMatch = /property=["']([^"']+)["']/i.exec(attrs);
+    const contentMatch = /content=["']([^"']+)["']/i.exec(attrs);
+    
+    if (contentMatch) {
+      metaTags.push({
+        ...(nameMatch && { name: nameMatch[1] }),
+        ...(propertyMatch && { property: propertyMatch[1] }),
+        content: contentMatch[1],
+      });
+    }
+  }
+  
+  // Extract JSON-LD scripts using regex
+  const jsonLdRegex = /<script\s+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  let scriptMatch;
+  
+  while ((scriptMatch = jsonLdRegex.exec(htmlString)) !== null) {
+    if (scriptMatch[1]) {
+      jsonLdScripts.push(scriptMatch[1].trim());
+    }
+  }
+  
+  return { metaTags, jsonLdScripts };
+}
+
 export async function MetaDataRenderer({
   pageType,
   pageId,
 }: MetaDataRendererProps) {
   let metaData = null;
-  let error = null;
 
-  // Fetch data outside of try/catch for rendering
   try {
     metaData = await prisma.metaData.findUnique({
       where: {
@@ -31,27 +60,19 @@ export async function MetaDataRenderer({
     });
   } catch (err) {
     console.error("Error fetching meta data:", err);
-    error = err;
-  }
-
-  // If there's an error or no data, return null
-  if (error || !metaData || !metaData.metaBlock) {
     return null;
   }
 
-  // Extract JSON-LD scripts
-  const jsonLdScripts = extractJsonLdFromMetaBlock(metaData.metaBlock);
+  if (!metaData || !metaData.metaBlock) {
+    return null;
+  }
 
-  // Extract custom meta tags for SSR (keywords, googlebot, etc.)
-  const customMetaTags = extractCustomMetaTagsForSSR(metaData.metaBlock);
-
-  // Remove SSR'd tags from metaBlock to avoid duplication in window.__META_BLOCK__
-  // This prevents meta tags from appearing as strings in JavaScript
-  const cleanedMetaBlock = removeSSRTagsFromMetaBlock(metaData.metaBlock);
+  // Parse the meta block to extract tags
+  const { metaTags, jsonLdScripts } = parseMetaTags(metaData.metaBlock);
 
   return (
     <>
-      {/* Render JSON-LD scripts server-side - these appear in page source */}
+      {/* Render JSON-LD scripts - these appear in page source */}
       {jsonLdScripts.map((jsonLd, index) => (
         <script
           key={`jsonld-${index}`}
@@ -59,28 +80,16 @@ export async function MetaDataRenderer({
           dangerouslySetInnerHTML={{ __html: jsonLd }}
         />
       ))}
-      {/* Render custom meta tags server-side (keywords, googlebot, etc.) */}
-      {/* These appear directly in HTML source, not as JavaScript strings */}
-      {customMetaTags.map((tag, index) => (
+      
+      {/* Render meta tags directly as HTML elements */}
+      {metaTags.map((tag, index) => (
         <meta
-          key={`meta-${tag.name}-${index}`}
-          name={tag.name}
+          key={`meta-${tag.name || tag.property}-${index}`}
+          {...(tag.name && { name: tag.name })}
+          {...(tag.property && { property: tag.property })}
           content={tag.content}
         />
       ))}
-      {/* Store cleaned meta block in window object for client-side injection */}
-      {/* SSR'd tags are removed to prevent duplication */}
-      {cleanedMetaBlock && (
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `window.__META_BLOCK__ = ${JSON.stringify(
-              cleanedMetaBlock
-            )};`,
-          }}
-        />
-      )}
-      {/* Client-side injector for remaining meta tags */}
-      <MetaDataInjector />
     </>
   );
 }
