@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useTransition, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,6 +12,7 @@ import type {
 } from "@prisma/client";
 import dynamic from "next/dynamic";
 import type { OutputData } from "@editorjs/editorjs";
+import { SEOMetaEditor } from "@/components/admin/seo-meta-editor";
 
 const EditorJsEditor = dynamic(
   () =>
@@ -460,13 +461,14 @@ export function ServicePageManager({
                               return newSet;
                             });
                           }}
-                          className="px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg"
+                          className="px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition"
                         >
                           Remove
                         </button>
                       )}
+
                       <svg
-                        className={`w-5 h-5 text-slate-400 transition-transform ${
+                        className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${
                           isExpanded ? "rotate-180" : ""
                         }`}
                         fill="none"
@@ -600,6 +602,17 @@ export function ServicePageManager({
               );
             })}
           </div>
+
+          {/* SEO Meta Tags Section */}
+          {existingServicePage?.id && (
+            <div className="border-t border-slate-200 pt-8">
+              <SEOMetaEditor
+                pageType="SERVICE"
+                pageId={existingServicePage.id}
+                pageName={selectedItem?.label}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
