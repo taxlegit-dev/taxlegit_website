@@ -5,7 +5,7 @@ import { MetaPageType } from "@prisma/client";
 import { z } from "zod";
 
 const metaDataSchema = z.object({
-  pageType: z.enum(["SERVICE", "BLOG", "HERO"]),
+  pageType: z.enum(["SERVICE", "BLOG"]),
   pageId: z.string().min(1),
   metaBlock: z.string(),
 });

@@ -37,7 +37,6 @@ enum PageKey {
 enum MetaPageType {
   SERVICE
   BLOG
-  HERO
 }
 
 model User {
@@ -255,7 +254,7 @@ model StaticPage {
 /// Meta Data - Stores SEO meta tags and JSON-LD for any page
 model MetaData {
   id        String       @id @default(cuid())
-  pageType  MetaPageType // SERVICE, BLOG, or HERO
+  pageType  MetaPageType // SERVICE, BLOG
   pageId    String // ID of the service/blog/hero page
   metaBlock String // Raw HTML/JSON containing all meta tags and JSON-LD
   createdAt DateTime     @default(now())

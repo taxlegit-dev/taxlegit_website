@@ -34,32 +34,20 @@ export async function generateMetadata({
     };
   }
 
-  // Check for custom meta data
-  const hero = await prisma.pageHero.findUnique({
-    where: { navbarItemId: navbarItem.id },
-  });
-
   const servicePage = await prisma.servicePage.findUnique({
     where: { navbarItemId: navbarItem.id },
   });
 
   // Try to fetch meta data for hero or service page
+  // Try to fetch meta data ONLY for service page
   let metaData = null;
+
   if (servicePage) {
     metaData = await prisma.metaData.findUnique({
       where: {
         pageType_pageId: {
           pageType: "SERVICE",
           pageId: servicePage.id,
-        },
-      },
-    });
-  } else if (hero) {
-    metaData = await prisma.metaData.findUnique({
-      where: {
-        pageType_pageId: {
-          pageType: "HERO",
-          pageId: hero.id,
         },
       },
     });
@@ -166,15 +154,12 @@ export default async function UsDynamicPage({ params }: DynamicPageProps) {
   });
 
   // Determine which meta data to render
-  let metaPageType: "SERVICE" | "HERO" | null = null;
+  let metaPageType: "SERVICE" | null = null;
   let metaPageId: string | null = null;
 
   if (servicePage) {
     metaPageType = "SERVICE";
     metaPageId = servicePage.id;
-  } else if (hero) {
-    metaPageType = "HERO";
-    metaPageId = hero.id;
   }
 
   return (
