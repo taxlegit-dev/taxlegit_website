@@ -461,13 +461,14 @@ export function ServicePageManager({
                               return newSet;
                             });
                           }}
-                          className="px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg"
+                          className="px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition"
                         >
                           Remove
                         </button>
                       )}
+
                       <svg
-                        className={`w-5 h-5 text-slate-400 transition-transform ${
+                        className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${
                           isExpanded ? "rotate-180" : ""
                         }`}
                         fill="none"

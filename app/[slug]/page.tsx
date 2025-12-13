@@ -87,18 +87,13 @@ export async function generateMetadata({
         ...(parsedMeta.openGraph || {}),
         title: parsedMeta.openGraph?.title || defaultTitle,
         description: parsedMeta.openGraph?.description || defaultDescription,
-        type:
-          (parsedMeta.openGraph?.type as "website" | "article" | undefined) ||
-          "website",
+        // type:
+        //   (parsedMeta.openGraph?.type as "website" | "article" | undefined) ||
+        //   "website",
         url: parsedMeta.openGraph?.url || pageUrl,
       },
       twitter: {
         ...(parsedMeta.twitter || {}),
-        card:
-          (parsedMeta.twitter?.card as
-            | "summary"
-            | "summary_large_image"
-            | undefined) || "summary",
         title: parsedMeta.twitter?.title || defaultTitle,
         description: parsedMeta.twitter?.description || defaultDescription,
       },
@@ -174,12 +169,12 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
   let metaPageType: "SERVICE" | "HERO" | null = null;
   let metaPageId: string | null = null;
 
-  if (hero) {
-    metaPageType = "HERO";
-    metaPageId = hero.id;
-  } else if (servicePage) {
+  if (servicePage) {
     metaPageType = "SERVICE";
     metaPageId = servicePage.id;
+  } else if (hero) {
+    metaPageType = "HERO";
+    metaPageId = hero.id;
   }
 
   return (

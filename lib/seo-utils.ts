@@ -1,9 +1,5 @@
 import { Metadata } from "next";
 
-/**
- * Parses HTML meta block to extract basic metadata for Next.js generateMetadata
- * This is a fallback - the full meta block will be injected client-side
- */
 export function parseMetaBlockForMetadata(
   metaBlock: string
 ): Partial<Metadata> {
@@ -217,7 +213,6 @@ export function extractJsonLdFromMetaBlock(metaBlock: string): string[] {
   while ((scriptMatch = scriptRegex.exec(metaBlock)) !== null) {
     jsonLdScripts.push(scriptMatch[1].trim());
   }
-
   return jsonLdScripts;
 }
 
@@ -232,19 +227,32 @@ export function extractCustomMetaTagsForSSR(
 
   const customMetaTags: Array<{ name: string; content: string }> = [];
   const metaTagRegex =
-    /<meta\s+name=["']([^"']+)["']\s+content=["']([^"']+)["']/gi;
+    /<meta\s+(?:name|property)=["']([^"']+)["']\s+content=["']([^"']+)["']/gi;
   let metaMatch;
 
   // Tags that should be rendered server-side
-  const ssrTags = ["keywords", "googlebot"];
+  const ssrTags = [
+    "keywords",
+    "googlebot",
+    "description",
+    "og:title",
+    "og:description",
+    "og:image",
+    "og:url",
+    "og:type",
+    "twitter:card",
+    "twitter:title",
+    "twitter:description",
+    "twitter:image",
+  ];
 
   while ((metaMatch = metaTagRegex.exec(metaBlock)) !== null) {
-    const name = metaMatch[1];
+    const nameOrProperty = metaMatch[1];
     const content = metaMatch[2];
 
     // Only extract tags that should be SSR'd
-    if (ssrTags.includes(name.toLowerCase())) {
-      customMetaTags.push({ name, content });
+    if (ssrTags.includes(nameOrProperty.toLowerCase())) {
+      customMetaTags.push({ name: nameOrProperty, content });
     }
   }
 
@@ -261,12 +269,25 @@ export function removeSSRTagsFromMetaBlock(metaBlock: string): string {
   let cleanedMetaBlock = metaBlock;
 
   // Tags that are already SSR'd - remove them from metaBlock string
-  const ssrTags = ["keywords", "googlebot"];
+  const ssrTags = [
+    "keywords",
+    "googlebot",
+    "description",
+    "og:title",
+    "og:description",
+    "og:image",
+    "og:url",
+    "og:type",
+    "twitter:card",
+    "twitter:title",
+    "twitter:description",
+    "twitter:image",
+  ];
 
   ssrTags.forEach((tagName) => {
-    // Remove meta tags with this name (case insensitive)
+    // Remove meta tags with this name or property (case insensitive)
     const regex = new RegExp(
-      `<meta\\s+name=["']${tagName}["']\\s+content=["'][^"']+["']\\s*/?>`,
+      `<meta\\s+(?:name|property)=["']${tagName}["']\\s+content=["'][^"']+["']\\s*/?>`,
       "gi"
     );
     cleanedMetaBlock = cleanedMetaBlock.replace(regex, "");

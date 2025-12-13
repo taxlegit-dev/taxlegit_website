@@ -8,6 +8,7 @@ import { ServicePageView } from "@/components/service-page/service-page-view";
 import { FAQSection } from "@/components/faq/faq-section";
 import { MetaDataRenderer } from "@/components/seo/meta-data-renderer";
 import { parseMetaBlockForMetadata } from "@/lib/seo-utils";
+import Footer from "@/components/footer";
 
 type DynamicPageProps = {
   params: Promise<{ slug: string }>;
@@ -44,21 +45,21 @@ export async function generateMetadata({
 
   // Try to fetch meta data for hero or service page
   let metaData = null;
-  if (hero) {
-    metaData = await prisma.metaData.findUnique({
-      where: {
-        pageType_pageId: {
-          pageType: "HERO",
-          pageId: hero.id,
-        },
-      },
-    });
-  } else if (servicePage) {
+  if (servicePage) {
     metaData = await prisma.metaData.findUnique({
       where: {
         pageType_pageId: {
           pageType: "SERVICE",
           pageId: servicePage.id,
+        },
+      },
+    });
+  } else if (hero) {
+    metaData = await prisma.metaData.findUnique({
+      where: {
+        pageType_pageId: {
+          pageType: "HERO",
+          pageId: hero.id,
         },
       },
     });
@@ -87,12 +88,12 @@ export async function generateMetadata({
         ...(parsedMeta.openGraph || {}),
         title: parsedMeta.openGraph?.title || defaultTitle,
         description: parsedMeta.openGraph?.description || defaultDescription,
-        type: (parsedMeta.openGraph?.type as "website" | "article" | undefined) || "website",
+        type: parsedMeta.openGraph?.type || "website",
         url: parsedMeta.openGraph?.url || pageUrl,
       },
       twitter: {
         ...(parsedMeta.twitter || {}),
-        card: (parsedMeta.twitter?.card as "summary" | "summary_large_image" | undefined) || "summary",
+        card: parsedMeta.twitter?.card || "summary",
         title: parsedMeta.twitter?.title || defaultTitle,
         description: parsedMeta.twitter?.description || defaultDescription,
       },
@@ -168,12 +169,12 @@ export default async function UsDynamicPage({ params }: DynamicPageProps) {
   let metaPageType: "SERVICE" | "HERO" | null = null;
   let metaPageId: string | null = null;
 
-  if (hero) {
-    metaPageType = "HERO";
-    metaPageId = hero.id;
-  } else if (servicePage) {
+  if (servicePage) {
     metaPageType = "SERVICE";
     metaPageId = servicePage.id;
+  } else if (hero) {
+    metaPageType = "HERO";
+    metaPageId = hero.id;
   }
 
   return (
@@ -184,44 +185,39 @@ export default async function UsDynamicPage({ params }: DynamicPageProps) {
       )}
       <div className="min-h-screen bg-slate-950 text-white">
         <NavbarServer region={region} />
-      <main>
-        {hero && hero.status === "PUBLISHED" && <UsHero hero={hero} />}
-        {servicePage &&
-        servicePage.status === "PUBLISHED" &&
-        servicePage.sections.length > 0 ? (
-          // <ServicePageView sections={servicePage.sections} region="US" />
-          <ServicePageView sections={servicePage.sections} />
-        ) : !hero ? (
-          <section className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-12">
-            <div className="rounded-3xl border border-white/10 bg-slate-900 p-10 shadow-2xl">
-              <div className="space-y-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-emerald-300">
-                  United States
-                </p>
-                <h1 className="text-4xl font-semibold leading-tight">
-                  {navbarItem.label}
-                </h1>
-                <div className="max-w-2xl text-slate-200">
-                  <p className="text-lg">
-                    This is a dynamic page for{" "}
-                    <strong>{navbarItem.label}</strong>. Create a hero section
-                    or service page in admin panel to customize this page.
+        <main>
+          {hero && hero.status === "PUBLISHED" && <UsHero hero={hero} />}
+          {servicePage &&
+          servicePage.status === "PUBLISHED" &&
+          servicePage.sections.length > 0 ? (
+            // <ServicePageView sections={servicePage.sections} region="US" />
+            <ServicePageView sections={servicePage.sections} />
+          ) : !hero ? (
+            <section className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-12">
+              <div className="rounded-3xl border border-white/10 bg-slate-900 p-10 shadow-2xl">
+                <div className="space-y-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.35em] text-emerald-300">
+                    United States
                   </p>
+                  <h1 className="text-4xl font-semibold leading-tight">
+                    {navbarItem.label}
+                  </h1>
+                  <div className="max-w-2xl text-slate-200">
+                    <p className="text-lg">
+                      This is a dynamic page for{" "}
+                      <strong>{navbarItem.label}</strong>. Create a hero section
+                      or service page in admin panel to customize this page.
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
-        ) : null}
-        {faq && faq.status === "PUBLISHED" && faq.questions.length > 0 && (
-          <FAQSection questions={faq.questions} region="US" />
-        )}
-      </main>
-      <footer className="border-t border-white/10">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-8 text-sm text-slate-400">
-          <p>© {new Date().getFullYear()} Taxlegit. US Region</p>
-          <p>Admin controlled content</p>
-        </div>
-      </footer>
+            </section>
+          ) : null}
+          {faq && faq.status === "PUBLISHED" && faq.questions.length > 0 && (
+            <FAQSection questions={faq.questions} region="US" />
+          )}
+        </main>
+        <Footer></Footer>
       </div>
     </>
   );
