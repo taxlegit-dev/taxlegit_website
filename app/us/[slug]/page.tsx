@@ -34,32 +34,20 @@ export async function generateMetadata({
     };
   }
 
-  // Check for custom meta data
-  const hero = await prisma.pageHero.findUnique({
-    where: { navbarItemId: navbarItem.id },
-  });
-
   const servicePage = await prisma.servicePage.findUnique({
     where: { navbarItemId: navbarItem.id },
   });
 
   // Try to fetch meta data for hero or service page
+  // Try to fetch meta data ONLY for service page
   let metaData = null;
+
   if (servicePage) {
     metaData = await prisma.metaData.findUnique({
       where: {
         pageType_pageId: {
           pageType: "SERVICE",
           pageId: servicePage.id,
-        },
-      },
-    });
-  } else if (hero) {
-    metaData = await prisma.metaData.findUnique({
-      where: {
-        pageType_pageId: {
-          pageType: "HERO",
-          pageId: hero.id,
         },
       },
     });
@@ -85,15 +73,15 @@ export async function generateMetadata({
         canonical: parsedMeta.alternates?.canonical || pageUrl,
       },
       openGraph: {
-        ...(parsedMeta.openGraph || {}),
+        ...parsedMeta.openGraph,
         title: parsedMeta.openGraph?.title || defaultTitle,
         description: parsedMeta.openGraph?.description || defaultDescription,
-        type: parsedMeta.openGraph?.type || "website",
+        type: (parsedMeta.openGraph as any)?.type || "website",
         url: parsedMeta.openGraph?.url || pageUrl,
       },
       twitter: {
-        ...(parsedMeta.twitter || {}),
-        card: parsedMeta.twitter?.card || "summary",
+        ...parsedMeta.twitter,
+        card: (parsedMeta.twitter as any)?.card || "summary",
         title: parsedMeta.twitter?.title || defaultTitle,
         description: parsedMeta.twitter?.description || defaultDescription,
       },
@@ -166,15 +154,12 @@ export default async function UsDynamicPage({ params }: DynamicPageProps) {
   });
 
   // Determine which meta data to render
-  let metaPageType: "SERVICE" | "HERO" | null = null;
+  let metaPageType: "SERVICE" | null = null;
   let metaPageId: string | null = null;
 
   if (servicePage) {
     metaPageType = "SERVICE";
     metaPageId = servicePage.id;
-  } else if (hero) {
-    metaPageType = "HERO";
-    metaPageId = hero.id;
   }
 
   return (

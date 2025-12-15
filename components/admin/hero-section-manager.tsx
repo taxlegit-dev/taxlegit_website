@@ -6,7 +6,6 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import type { NavbarItem, PageHero } from "@prisma/client";
-import { SEOMetaEditor } from "@/components/admin/seo-meta-editor";
 
 type HeroWithNavItem = PageHero & {
   navbarItem: NavbarItem | null;
@@ -475,16 +474,6 @@ export function HeroSectionManager({
                   : "Create Hero Section"}
               </button>
             </form>
-
-            {existingHero?.id && (
-              <div className="border-t border-slate-200 pt-8 mt-8">
-                <SEOMetaEditor
-                  pageType="HERO"
-                  pageId={existingHero.id}
-                  pageName={selectedItem?.label}
-                />
-              </div>
-            )}
           </div>
         ) : (
           <div>
@@ -551,16 +540,6 @@ export function HeroSectionManager({
                   : "Create Hero Section"}
               </button>
             </form>
-
-            {existingHero?.id && (
-              <div className="border-t border-slate-200 pt-8 mt-8">
-                <SEOMetaEditor
-                  pageType="HERO"
-                  pageId={existingHero.id}
-                  pageName={selectedItem?.label}
-                />
-              </div>
-            )}
           </div>
         )}
       </div>

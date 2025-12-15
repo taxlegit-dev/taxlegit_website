@@ -1,11 +1,63 @@
 import { Metadata } from "next";
 
+type OpenGraphType =
+  | "website"
+  | "article"
+  | "book"
+  | "profile"
+  | "music.song"
+  | "music.album"
+  | "music.playlist"
+  | "music.radio_station"
+  | "video.movie"
+  | "video.episode"
+  | "video.tv_show"
+  | "video.other";
+type TwitterCardType = "summary" | "summary_large_image" | "app" | "player";
+
+type MutableMetadata = Omit<Partial<Metadata>, "openGraph" | "twitter"> & {
+  openGraph?: Record<string, unknown>;
+  twitter?: Record<string, unknown>;
+};
+
+const OPEN_GRAPH_TYPES: OpenGraphType[] = [
+  "website",
+  "article",
+  "book",
+  "profile",
+  "music.song",
+  "music.album",
+  "music.playlist",
+  "music.radio_station",
+  "video.movie",
+  "video.episode",
+  "video.tv_show",
+  "video.other",
+];
+
+const TWITTER_CARD_TYPES: TwitterCardType[] = [
+  "summary",
+  "summary_large_image",
+  "app",
+  "player",
+];
+
+function ensureOpenGraphType(value: string): OpenGraphType {
+  const normalized = value.toLowerCase() as OpenGraphType;
+  return OPEN_GRAPH_TYPES.includes(normalized) ? normalized : "website";
+}
+
+function ensureTwitterCard(value: string): TwitterCardType {
+  const normalized = value.toLowerCase().replace(/-/g, "_") as TwitterCardType;
+  return TWITTER_CARD_TYPES.includes(normalized) ? normalized : "summary";
+}
+
 export function parseMetaBlockForMetadata(
   metaBlock: string
 ): Partial<Metadata> {
   if (!metaBlock) return {};
 
-  const metadata: Partial<Metadata> = {};
+  const metadata: MutableMetadata = {};
   // Extract title
   const titleMatch = metaBlock.match(/<title[^>]*>([^<]+)<\/title>/i);
   if (titleMatch) {
@@ -25,7 +77,7 @@ export function parseMetaBlockForMetadata(
     /<meta\s+name=["']robots["']\s+content=["']([^"']+)["']/i
   );
   if (robotsMatch) {
-    metadata.robots = robotsMatch[1] as any;
+    metadata.robots = robotsMatch[1];
   }
 
   // Extract canonical URL
@@ -68,7 +120,7 @@ export function parseMetaBlockForMetadata(
   if (ogImageMatch) {
     metadata.openGraph = {
       ...metadata.openGraph,
-      images: [ogImageMatch[1]],
+      images: [{ url: ogImageMatch[1] }],
     };
   }
 
@@ -90,7 +142,7 @@ export function parseMetaBlockForMetadata(
   if (ogTypeMatch) {
     metadata.openGraph = {
       ...metadata.openGraph,
-      type: ogTypeMatch[1] as any,
+      type: ensureOpenGraphType(ogTypeMatch[1]),
     };
   }
 
@@ -101,7 +153,7 @@ export function parseMetaBlockForMetadata(
   if (twitterCardMatch) {
     metadata.twitter = {
       ...metadata.twitter,
-      card: twitterCardMatch[1] as any,
+      card: ensureTwitterCard(twitterCardMatch[1]),
     };
   }
 
@@ -134,7 +186,7 @@ export function parseMetaBlockForMetadata(
   if (twitterImageMatch) {
     metadata.twitter = {
       ...metadata.twitter,
-      images: [twitterImageMatch[1]],
+      images: [{ url: twitterImageMatch[1] }],
     };
   }
 
@@ -196,7 +248,7 @@ export function parseMetaBlockForMetadata(
     }
   }
 
-  return metadata;
+  return metadata as Partial<Metadata>;
 }
 
 /**
