@@ -13,7 +13,7 @@ This project includes a fully dynamic mega-menu navbar system built with Next.js
 ✅ **Full CRUD** - Create, Read, Update, Delete menu items  
 ✅ **Reordering** - Change order of menus and submenus  
 ✅ **Groups/Wrappers** - Group submenu items under labels (e.g., "Company Registration")  
-✅ **Auto-Update** - Navbar automatically updates when admin makes changes  
+✅ **Auto-Update** - Navbar automatically updates when admin makes changes
 
 ## Database Schema
 
@@ -63,6 +63,7 @@ Top Menu: Start A Business (DROPDOWN)
 Fetches navbar items for a specific region (public endpoint)
 
 **Response:**
+
 ```json
 {
   "items": [
@@ -100,6 +101,7 @@ Fetches all navbar items for admin (includes inactive items)
 Creates a new navbar item
 
 **Request Body:**
+
 ```json
 {
   "label": "Start A Business",
@@ -117,6 +119,7 @@ Creates a new navbar item
 Updates an existing navbar item
 
 **Request Body:**
+
 ```json
 {
   "id": "xxx",
@@ -138,6 +141,7 @@ Deletes a navbar item (cascades to children)
 Reorders navbar items
 
 **Request Body:**
+
 ```json
 {
   "items": [
@@ -157,10 +161,11 @@ Located at: `components/navigation/navbar-server.tsx`
 Fetches navbar data from the database and passes it to the client component.
 
 **Usage:**
+
 ```tsx
 import { NavbarServer } from "@/components/navigation/navbar-server";
 
-<NavbarServer region={Region.INDIA} />
+<NavbarServer region={Region.INDIA} />;
 ```
 
 ### MegaNavbar (Client Component)
@@ -168,6 +173,7 @@ import { NavbarServer } from "@/components/navigation/navbar-server";
 Located at: `components/navigation/mega-navbar.tsx`
 
 Renders the responsive mega-menu navbar with:
+
 - Desktop: Hover-activated mega-menu dropdowns
 - Mobile: Accordion-style menu
 
@@ -176,6 +182,7 @@ Renders the responsive mega-menu navbar with:
 Located at: `components/admin/nav-menu-manager.tsx`
 
 Full-featured admin panel for managing navbar items with:
+
 - Create new menu items
 - Edit existing items
 - Delete items
@@ -188,6 +195,7 @@ Full-featured admin panel for managing navbar items with:
 Access the admin panel at: `/admin/navigation?region=INDIA`
 
 Features:
+
 - Region selector (INDIA/US)
 - Create form for new menu items
 - Edit form (appears when editing)
@@ -208,16 +216,19 @@ The seed file includes example menus for both INDIA and US regions with the mega
 ## Setup Instructions
 
 1. **Update Prisma Schema:**
+
    ```bash
    npx prisma db push
    ```
 
 2. **Generate Prisma Client:**
+
    ```bash
    npx prisma generate
    ```
 
 3. **Seed Database:**
+
    ```bash
    npx prisma db seed
    ```
@@ -271,6 +282,7 @@ The seed file includes example menus for both INDIA and US regions with the mega
 ### Creating a Dropdown Menu with Groups
 
 1. Create the parent dropdown:
+
 ```json
 {
   "label": "Start A Business",
@@ -282,6 +294,7 @@ The seed file includes example menus for both INDIA and US regions with the mega
 ```
 
 2. Create child items with groupLabel:
+
 ```json
 {
   "label": "Private Limited Company Registration",
@@ -305,24 +318,18 @@ The seed file includes example menus for both INDIA and US regions with the mega
 ## Troubleshooting
 
 **Menu not updating?**
+
 - Check if items have `isActive: true`
 - Verify region matches current page region
 - Clear browser cache
 
 **Dropdown not showing?**
+
 - Ensure parent item has `type: "DROPDOWN"`
 - Verify children have correct `parentId`
 - Check that children have `isActive: true`
 
 **Group labels not appearing?**
+
 - Ensure child items have `groupLabel` set
 - Items without `groupLabel` will appear in a "default" group
-
-## Support
-
-For issues or questions, check:
-- Prisma schema for data structure
-- API routes for endpoint details
-- Admin panel for UI management
-- Seed file for example data structure
-
