@@ -240,7 +240,7 @@ const Footer = () => {
               </div>
 
               {/* Popular Licenses */}
-              <div className="space-y-6">
+              <div className="space-y-6 ">
                 <h3 className="text-lg font-semibold text-white border-l-4 border-cyan-500 pl-3">
                   Popular Licenses
                 </h3>
