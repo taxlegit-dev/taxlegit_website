@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { NavbarServer } from "@/components/navigation/navbar-server";
 import { UsHero } from "@/components/ServiceHeroSection/us-hero";
 import { ServicePageView } from "@/components/service-page/service-page-view";
+import { GenericPageView } from "@/components/generic-page/generic-page-view";
 import { FAQSection } from "@/components/faq/faq-section";
 import { MetaDataRenderer } from "@/components/seo/meta-data-renderer";
 import { parseMetaBlockForMetadata } from "@/lib/seo-utils";
@@ -38,6 +39,15 @@ export async function generateMetadata({
     where: { navbarItemId: navbarItem.id },
   });
 
+  const genericPage = await prisma.genericPage.findUnique({
+    where: {
+      navbarItemId_region: {
+        navbarItemId: navbarItem.id,
+        region,
+      },
+    },
+  });
+
   // Try to fetch meta data for hero or service page
   // Try to fetch meta data ONLY for service page
   let metaData = null;
@@ -48,6 +58,15 @@ export async function generateMetadata({
         pageType_pageId: {
           pageType: "SERVICE",
           pageId: servicePage.id,
+        },
+      },
+    });
+  } else if (genericPage) {
+    metaData = await prisma.metaData.findUnique({
+      where: {
+        pageType_pageId: {
+          pageType: "GENERIC",
+          pageId: genericPage.id,
         },
       },
     });
@@ -143,6 +162,16 @@ export default async function UsDynamicPage({ params }: DynamicPageProps) {
     },
   });
 
+  // Fetch generic page if exists
+  const genericPage = await prisma.genericPage.findUnique({
+    where: {
+      navbarItemId_region: {
+        navbarItemId: navbarItem.id,
+        region,
+      },
+    },
+  });
+
   // Fetch FAQ if exists
   const faq = await prisma.servicePageFAQ.findUnique({
     where: { navbarItemId: navbarItem.id },
@@ -154,12 +183,15 @@ export default async function UsDynamicPage({ params }: DynamicPageProps) {
   });
 
   // Determine which meta data to render
-  let metaPageType: "SERVICE" | null = null;
+  let metaPageType: "SERVICE" | "GENERIC" | null = null;
   let metaPageId: string | null = null;
 
   if (servicePage) {
     metaPageType = "SERVICE";
     metaPageId = servicePage.id;
+  } else if (genericPage) {
+    metaPageType = "GENERIC";
+    metaPageId = genericPage.id;
   }
 
   return (
@@ -177,6 +209,8 @@ export default async function UsDynamicPage({ params }: DynamicPageProps) {
           servicePage.sections.length > 0 ? (
             // <ServicePageView sections={servicePage.sections} region="US" />
             <ServicePageView sections={servicePage.sections} />
+          ) : genericPage && genericPage.status === "PUBLISHED" ? (
+            <GenericPageView genericPage={genericPage} />
           ) : !hero ? (
             <section className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-12">
               <div className="rounded-3xl border border-white/10 bg-slate-900 p-10 shadow-2xl">
@@ -190,8 +224,8 @@ export default async function UsDynamicPage({ params }: DynamicPageProps) {
                   <div className="max-w-2xl text-slate-200">
                     <p className="text-lg">
                       This is a dynamic page for{" "}
-                      <strong>{navbarItem.label}</strong>. Create a hero section
-                      or service page in admin panel to customize this page.
+                      <strong>{navbarItem.label}</strong>. Create a hero section,
+                      service page, or generic page in admin panel to customize this page.
                     </p>
                   </div>
                 </div>
