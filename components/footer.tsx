@@ -30,8 +30,8 @@ const Footer = () => {
   ];
 
   const companyLinks = [
-    { name: "About Us", href: "#about" },
-    { name: "Blog", href: "#blog" },
+    { name: "About Us", href: "about" },
+    { name: "Blog", href: "blog" },
     { name: "Careers", href: "#careers" },
     { name: "Contact Us", href: "#contact" },
   ];
