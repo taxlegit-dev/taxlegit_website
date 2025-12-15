@@ -7,10 +7,64 @@ import type { OutputData } from "@editorjs/editorjs";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { MetaDataRenderer } from "@/components/seo/meta-data-renderer";
+import { parseMetaBlockForMetadata } from "@/lib/seo-utils";
 
 type BlogDetailPageProps = {
   params: Promise<{ id: string }>;
 };
+
+export async function generateMetadata({
+  params,
+}: BlogDetailPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const region = Region.INDIA;
+
+  const blog = await prisma.blog.findFirst({
+    where: {
+      id,
+      region,
+      status: ContentStatus.PUBLISHED,
+    },
+    include: {
+      blogGroup: true,
+    },
+  });
+
+  if (!blog) {
+    return {
+      title: "Blog Not Found",
+    };
+  }
+
+  // Check for custom meta data
+  const metaData = await prisma.metaData.findUnique({
+    where: {
+      pageType_pageId: {
+        pageType: "BLOG",
+        pageId: blog.id,
+      },
+    },
+  });
+
+  // If custom meta data exists, parse it
+  if (metaData?.metaBlock) {
+    const parsedMeta = parseMetaBlockForMetadata(metaData.metaBlock);
+    return {
+      ...parsedMeta,
+      // Fallback to defaults if not in meta block
+      title: parsedMeta.title || `${blog.title} | Taxlegit Blog`,
+      description: parsedMeta.description || blog.title,
+    };
+  }
+
+  // Default metadata
+  return {
+    title: `${blog.title} | Taxlegit Blog`,
+    description: blog.title,
+  };
+}
 
 export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   const { id } = await params;
@@ -44,8 +98,11 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white text-black">
-      <NavbarServer region={region} />
+    <>
+      {/* Render meta tags server-side */}
+      <MetaDataRenderer pageType="BLOG" pageId={blog.id} />
+      <div className="min-h-screen bg-white text-black">
+        <NavbarServer region={region} />
       <main className="mx-auto w-full max-w-4xl px-6 py-12">
         <Link
           href="/blog"
@@ -111,6 +168,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
         </article>
       </main>
       <Footer />
-    </div>
+      </div>
+    </>
   );
 }

@@ -7,11 +7,9 @@ import {
   FaLinkedinIn,
   FaPhoneAlt,
   FaMapMarkerAlt,
-  FaWhatsapp,
   FaChevronRight,
   FaEnvelope,
 } from "react-icons/fa";
-import { MdPhone } from "react-icons/md";
 import Image from "next/image";
 
 const Footer = () => {
