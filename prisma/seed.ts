@@ -339,10 +339,95 @@ async function seedNavigation() {
   });
 }
 
+async function seedBlogGroups() {
+  const indiaBlogGroups = [
+    { name: "Company Registration", order: 0 },
+    { name: "Tax Compliance", order: 1 },
+    { name: "Business Tips", order: 2 },
+  ];
+
+  for (const group of indiaBlogGroups) {
+    await prisma.blogGroup.upsert({
+      where: {
+        name_region: {
+          name: group.name,
+          region: Region.INDIA,
+        },
+      },
+      update: {},
+      create: {
+        name: group.name,
+        region: Region.INDIA,
+        order: group.order,
+      },
+    });
+  }
+}
+
+async function seedBlogs() {
+  const blogGroups = await prisma.blogGroup.findMany({
+    where: { region: Region.INDIA },
+  });
+
+  const companyRegGroup = blogGroups.find(g => g.name === "Company Registration");
+  const taxComplianceGroup = blogGroups.find(g => g.name === "Tax Compliance");
+  const businessTipsGroup = blogGroups.find(g => g.name === "Business Tips");
+
+  const sampleBlogs = [
+    {
+      title: "Complete Guide to Private Limited Company Registration in India",
+      content: "Learn everything about registering a private limited company in India, including requirements, documents, and timelines.",
+      blogGroupId: companyRegGroup?.id || "",
+      image: "/hero1.jpg",
+    },
+    {
+      title: "Understanding GST Compliance for Indian Businesses",
+      content: "A comprehensive guide to GST registration, filing, and compliance requirements for businesses in India.",
+      blogGroupId: taxComplianceGroup?.id || "",
+      image: "/hero2.jpg",
+    },
+    {
+      title: "Top 10 Mistakes to Avoid When Starting a Business",
+      content: "Common pitfalls that new entrepreneurs face and how to avoid them for a successful business launch.",
+      blogGroupId: businessTipsGroup?.id || "",
+      image: "/service.jpg",
+    },
+    {
+      title: "LLP vs Private Limited Company: Which is Right for You?",
+      content: "Compare the advantages and disadvantages of LLP and Pvt Ltd structures to choose the best for your business.",
+      blogGroupId: companyRegGroup?.id || "",
+      image: "/tax.png",
+    },
+    {
+      title: "Digital Marketing Strategies for Small Businesses",
+      content: "Effective digital marketing tips and strategies to grow your business online in the competitive market.",
+      blogGroupId: businessTipsGroup?.id || "",
+      image: "/review1.jpg",
+    },
+  ];
+
+  for (const blog of sampleBlogs) {
+    if (blog.blogGroupId) {
+      await prisma.blog.create({
+        data: {
+          title: blog.title,
+          content: blog.content,
+          blogGroupId: blog.blogGroupId,
+          region: Region.INDIA,
+          status: ContentStatus.PUBLISHED,
+          image: blog.image,
+        },
+      });
+    }
+  }
+}
+
 async function main() {
   await seedUsers();
   await seedStaticPages();
   await seedNavigation();
+  await seedBlogGroups();
+  await seedBlogs();
 }
 
 main()

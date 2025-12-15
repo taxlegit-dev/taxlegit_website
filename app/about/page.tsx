@@ -14,14 +14,12 @@ import RecentBlogsSection from "@/components/pages/home/RecentBlogsSection";
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <NavbarServer region={Region.INDIA} />
 
-      <div className="mt-[72px]">
+      <div>
         <AboutHeroSection />
         <OurServicesSection />
         <WhyChooseUs />
         <RecentBlogsSection />
-
       </div>
 
     </div>

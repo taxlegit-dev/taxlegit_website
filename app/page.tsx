@@ -30,7 +30,7 @@ export default async function IndiaHomePage() {
   return (
     <div className="min-h-screen bg-white text-black">
 
-      <div className="pt-[72px]">
+      <div>
         <TaxLegitHero />
         <ServicesSection />
         <HowWeWorkSection />

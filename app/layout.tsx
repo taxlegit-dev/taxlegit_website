@@ -34,7 +34,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="min-h-screen bg-white text-black antialiased">
+      <body className="min-h-screen bg-white text-black antialiased pt-[72px]">
         <ProviderTree>
           <NavbarServer region={region} />
           {children}
