@@ -12,9 +12,8 @@ export const createNavItemSchema = z.object({
   label: z.string().min(2),
   href: z.string().optional(),
   order: z.number().int().min(0).default(0),
-  type: z.enum(["LINK", "DROPDOWN", "BUTTON"]).default("LINK"),
+  pageType: z.enum(["SERVICE", "BLOG", "GENERIC", "EXTERNAL"]).default("GENERIC"),
   region: regionEnum,
-  isLoginLink: z.boolean().default(false),
   parentId: z.string().optional(),
   groupLabel: z.string().optional(), // For grouping submenu items in mega-menu
 });
@@ -22,6 +21,8 @@ export const createNavItemSchema = z.object({
 export const updateNavItemSchema = createNavItemSchema.extend({
   id: z.string().min(1),
   isActive: z.boolean().optional(),
+  type: z.enum(["LINK", "DROPDOWN", "BUTTON"]).optional(),
+  isLoginLink: z.boolean().optional(),
 });
 
 export const reorderNavItemsSchema = z.object({

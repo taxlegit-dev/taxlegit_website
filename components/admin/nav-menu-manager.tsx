@@ -27,6 +27,8 @@ type NavMenuManagerProps = {
 
 const navFormSchema = createNavItemSchema.extend({
   order: z.preprocess((value) => Number(value ?? 0), z.number().int().min(0)),
+  type: z.enum(["LINK", "DROPDOWN", "BUTTON"]).default("LINK"),
+  isLoginLink: z.boolean().default(false),
 });
 
 const updateFormSchema = updateNavItemSchema.extend({
@@ -54,6 +56,7 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
       label: "",
       href: "",
       order: 0,
+      pageType: "SERVICE",
       type: "LINK",
       isLoginLink: false,
       region,
@@ -143,6 +146,7 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
       label: item.label,
       href: item.href || "",
       order: item.order,
+      pageType: "GENERIC", // Default, since we don't have it in NavItem type
       type: item.type as "LINK" | "DROPDOWN" | "BUTTON",
       isLoginLink: item.isLoginLink,
       region,
@@ -235,7 +239,7 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
             </div>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-3">
             <div className="space-y-1">
               <label className="text-sm font-semibold text-slate-800">Order</label>
               <input
@@ -245,14 +249,15 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-semibold text-slate-800">Type</label>
+              <label className="text-sm font-semibold text-slate-800">Page Type</label>
               <select
                 className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
-                {...registerCreate("type")}
+                {...registerCreate("pageType")}
               >
-                <option value="LINK">Link</option>
-                <option value="DROPDOWN">Dropdown</option>
-                <option value="BUTTON">Button</option>
+                <option value="SERVICE">Service</option>
+                <option value="BLOG">Blog</option>
+                <option value="GENERIC">Generic</option>
+                <option value="EXTERNAL">External</option>
               </select>
             </div>
             <div className="space-y-1">
@@ -269,29 +274,18 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
                 ))}
               </select>
             </div>
-            <div className="space-y-1">
-              <label className="text-sm font-semibold text-slate-800">Group Label</label>
-              <input
-                type="text"
-                placeholder="Company Registration"
-                className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
-                {...registerCreate("groupLabel")}
-              />
-              <p className="text-xs text-zinc-500">For grouping submenu items</p>
-            </div>
+          </div>
+          <div className="space-y-1">
+            <label className="text-sm font-semibold text-slate-800">Group Label</label>
+            <input
+              type="text"
+              placeholder="Company Registration"
+              className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+              {...registerCreate("groupLabel")}
+            />
+            <p className="text-xs text-zinc-500">For grouping submenu items</p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <input
-              id="isLoginLink"
-              type="checkbox"
-              className="h-4 w-4 rounded border-slate-300"
-              {...registerCreate("isLoginLink")}
-            />
-            <label htmlFor="isLoginLink" className="text-sm font-semibold text-slate-800">
-              Login link?
-            </label>
-          </div>
 
           <input type="hidden" value={region} {...registerCreate("region")} />
           <button
@@ -330,7 +324,7 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-3">
               <div className="space-y-1">
                 <label className="text-sm font-semibold text-slate-800">Order</label>
                 <input
@@ -340,14 +334,15 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-sm font-semibold text-slate-800">Type</label>
+                <label className="text-sm font-semibold text-slate-800">Page Type</label>
                 <select
                   className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
-                  {...registerUpdate("type")}
+                  {...registerUpdate("pageType")}
                 >
-                  <option value="LINK">Link</option>
-                  <option value="DROPDOWN">Dropdown</option>
-                  <option value="BUTTON">Button</option>
+                  <option value="SERVICE">Service</option>
+                  <option value="BLOG">Blog</option>
+                  <option value="GENERIC">Generic</option>
+                  <option value="EXTERNAL">External</option>
                 </select>
               </div>
               <div className="space-y-1">
@@ -366,39 +361,26 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
                     ))}
                 </select>
               </div>
-              <div className="space-y-1">
-                <label className="text-sm font-semibold text-slate-800">Group Label</label>
-                <input
-                  type="text"
-                  className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
-                  {...registerUpdate("groupLabel")}
-                />
-              </div>
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-semibold text-slate-800">Group Label</label>
+              <input
+                type="text"
+                className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                {...registerUpdate("groupLabel")}
+              />
             </div>
 
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <input
-                  id="isLoginLinkEdit"
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-slate-300"
-                  {...registerUpdate("isLoginLink")}
-                />
-                <label htmlFor="isLoginLinkEdit" className="text-sm font-semibold text-slate-800">
-                  Login link?
-                </label>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  id="isActive"
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-slate-300"
-                  {...registerUpdate("isActive")}
-                />
-                <label htmlFor="isActive" className="text-sm font-semibold text-slate-800">
-                  Active?
-                </label>
-              </div>
+            <div className="flex items-center gap-2">
+              <input
+                id="isActive"
+                type="checkbox"
+                className="h-4 w-4 rounded border-slate-300"
+                {...registerUpdate("isActive")}
+              />
+              <label htmlFor="isActive" className="text-sm font-semibold text-slate-800">
+                Active?
+              </label>
             </div>
 
             <input type="hidden" value={region} {...registerUpdate("region")} />

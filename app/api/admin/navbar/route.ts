@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { NavbarItemType, Region } from "@prisma/client";
+import { NavbarItemType, NavbarPageType, Region } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
@@ -12,6 +12,13 @@ const navTypeMap: Record<"LINK" | "DROPDOWN" | "BUTTON", NavbarItemType> = {
   LINK: NavbarItemType.LINK,
   DROPDOWN: NavbarItemType.DROPDOWN,
   BUTTON: NavbarItemType.BUTTON,
+};
+
+const pageTypeMap: Record<"SERVICE" | "BLOG" | "GENERIC" | "EXTERNAL", NavbarPageType> = {
+  SERVICE: NavbarPageType.SERVICE,
+  BLOG: NavbarPageType.BLOG,
+  GENERIC: NavbarPageType.GENERIC,
+  EXTERNAL: NavbarPageType.EXTERNAL,
 };
 
 // GET - Fetch all navbar items for a region
@@ -27,7 +34,9 @@ export async function GET(request: Request) {
   const region = regionParam === "US" ? Region.US : Region.INDIA;
 
   const items = await prisma.navbarItem.findMany({
-    where: { region },
+    where: {
+      region,
+    },
     include: {
       children: {
         orderBy: { order: "asc" },
@@ -93,6 +102,7 @@ export async function POST(request: Request) {
       href: parsed.data.href,
       order: parsed.data.order ?? 0,
       type: navTypeMap[parsed.data.type],
+      pageType: pageTypeMap[parsed.data.pageType],
       region: parsed.data.region === "US" ? Region.US : Region.INDIA,
       isLoginLink: parsed.data.isLoginLink ?? false,
       ...(parsed.data.parentId && parsed.data.parentId.trim() !== ""
@@ -115,6 +125,7 @@ type UpdateData = {
   href?: string;
   order?: number;
   type?: NavbarItemType;
+  pageType?: NavbarPageType;
   isLoginLink?: boolean;
   groupLabel?: string | null;
   isActive?: boolean;
@@ -198,7 +209,8 @@ export async function PUT(request: Request) {
     label: parsed.data.label,
     href: parsed.data.href,
     order: parsed.data.order,
-    type: navTypeMap[parsed.data.type],
+    type: parsed.data.type ? navTypeMap[parsed.data.type] : undefined,
+    pageType: parsed.data.pageType ? pageTypeMap[parsed.data.pageType] : undefined,
     isLoginLink: parsed.data.isLoginLink ?? false,
     groupLabel: parsed.data.groupLabel,
     isActive: parsed.data.isActive ?? existingItem.isActive,

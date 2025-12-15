@@ -11,7 +11,9 @@ export default async function AdminNavigationPage({ searchParams }: AdminNavigat
   const params = await searchParams;
   const selectedRegion = params?.region === "US" ? Region.US : Region.INDIA;
   const navItems = await prisma.navbarItem.findMany({
-    where: { region: selectedRegion },
+    where: {
+      region: selectedRegion
+    },
     include: {
       children: {
         orderBy: { order: "asc" },
@@ -19,6 +21,8 @@ export default async function AdminNavigationPage({ searchParams }: AdminNavigat
     },
     orderBy: { order: "asc" },
   });
+
+  console.log(navItems);
 
   // Structure items hierarchically
   const topLevelItems = navItems.filter((item) => !item.parentId);

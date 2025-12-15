@@ -15,7 +15,7 @@ export default async function AdminGenericPagesPage({ searchParams }: AdminGener
   // Fetch existing generic page if slug is selected
   let existingGenericPage = null;
   if (selectedSlug) {
-    existingGenericPage = await prisma.genericPage.findUnique({
+    existingGenericPage = await prisma.genericPage.findFirst({
       where: {
         slug: selectedSlug,
         region: selectedRegion,
@@ -23,7 +23,16 @@ export default async function AdminGenericPagesPage({ searchParams }: AdminGener
     });
   }
 
-  // Fetch all generic pages for this region
+  // Fetch all navbar items with pageType GENERIC for this region
+  const genericNavbarItems = await prisma.navbarItem.findMany({
+    where: {
+      region: selectedRegion,
+      pageType: "GENERIC"
+    },
+    orderBy: { order: "asc" },
+  });
+
+  // Fetch all generic pages for this region to associate with navbar items
   const allGenericPages = await prisma.genericPage.findMany({
     where: { region: selectedRegion },
     orderBy: { updatedAt: "desc" },
@@ -45,6 +54,7 @@ export default async function AdminGenericPagesPage({ searchParams }: AdminGener
         region={selectedRegion === Region.US ? "US" : "INDIA"}
         selectedSlug={selectedSlug || undefined}
         existingGenericPage={existingGenericPage}
+        genericNavbarItems={genericNavbarItems}
         allGenericPages={allGenericPages}
       />
     </div>

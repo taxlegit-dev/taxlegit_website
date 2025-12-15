@@ -48,6 +48,7 @@ type GenericPageManagerProps = {
   region: "INDIA" | "US";
   selectedSlug?: string;
   existingGenericPage?: GenericPage | null;
+  genericNavbarItems: NavbarItem[];
   allGenericPages: GenericPage[];
 };
 
@@ -64,6 +65,7 @@ export function GenericPageManager({
   region,
   selectedSlug,
   existingGenericPage,
+  genericNavbarItems,
   allGenericPages,
 }: GenericPageManagerProps) {
   const router = useRouter();
@@ -118,6 +120,12 @@ export function GenericPageManager({
   const handleBackToNavbar = () => {
     const next = new URLSearchParams(searchParams?.toString() ?? "");
     next.delete("navbarItemId");
+    router.push(`/admin/generic-pages?${next.toString()}`);
+  };
+
+  const handleEditPage = (slug: string) => {
+    const next = new URLSearchParams(searchParams?.toString() ?? "");
+    next.set("slug", slug);
     router.push(`/admin/generic-pages?${next.toString()}`);
   };
 
@@ -202,42 +210,50 @@ export function GenericPageManager({
             Select a Generic Page to Edit
           </h2>
           <p className="text-sm text-slate-600 mb-6">
-            Choose an existing generic page to edit or create a new one.
+            Choose a generic navbar link to edit its page content.
           </p>
           <div className="space-y-2">
-            {allGenericPages.map((page) => (
-              <button
-                key={page.id}
-                onClick={() => handleEditPage(page.slug)}
-                className="w-full text-left rounded-lg border border-slate-200 p-4 hover:bg-slate-50 transition"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-semibold text-slate-900">
-                      {page.title}
+            {genericNavbarItems.map((item) => {
+              const correspondingPage = allGenericPages.find(page => page.slug === item.href);
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleEditPage(item.href || "")}
+                  className="w-full text-left rounded-lg border border-slate-200 p-4 hover:bg-slate-50 transition"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-semibold text-slate-900">
+                        {item.label}
+                      </div>
+                      <div className="text-xs text-slate-500 mt-1">
+                        /{item.href}
+                      </div>
+                      {correspondingPage ? (
+                        <div className="text-xs text-slate-400 mt-1">
+                          Page: {correspondingPage.title}
+                        </div>
+                      ) : (
+                        <div className="text-xs text-orange-500 mt-1">
+                          No page content created yet
+                        </div>
+                      )}
                     </div>
-                    <div className="text-xs text-slate-500 mt-1">
-                      /{page.slug}
-                    </div>
+                    {correspondingPage && (
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        correspondingPage.status === "PUBLISHED"
+                          ? "bg-green-100 text-green-700"
+                          : correspondingPage.status === "DRAFT"
+                          ? "bg-yellow-100 text-yellow-700"
+                          : "bg-red-100 text-red-700"
+                      }`}>
+                        {correspondingPage.status}
+                      </span>
+                    )}
                   </div>
-                  <span className={`text-xs px-2 py-1 rounded-full ${
-                    page.status === "PUBLISHED"
-                      ? "bg-green-100 text-green-700"
-                      : page.status === "DRAFT"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : "bg-red-100 text-red-700"
-                  }`}>
-                    {page.status}
-                  </span>
-                </div>
-              </button>
-            ))}
-            <button
-              onClick={() => handleEditPage("")}
-              className="w-full text-left rounded-lg border border-dashed border-slate-300 p-4 hover:bg-slate-50 transition text-slate-600"
-            >
-              <div className="font-semibold">+ Create New Generic Page</div>
-            </button>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -293,7 +309,7 @@ export function GenericPageManager({
               )}
             </div>
             <button
-              onClick={handleBackToList}
+              onClick={handleBackToNavbar}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
             >
               <svg
