@@ -62,7 +62,7 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
       {/* Sticky TOC Bar - Below Fixed Navbar */}
       <div
         ref={tocRef}
-        className="sticky top-[72px] z-40 border-b bg-white border-slate-200 shadow-sm"
+        className="sticky  z-40 border-b bg-white border-slate-200 shadow-sm"
       >
         <div className="mx-auto w-full max-w-6xl px-6">
           <div className="flex gap-2 overflow-x-auto scrollbar-hide py-4">
