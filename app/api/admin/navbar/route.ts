@@ -49,7 +49,11 @@ export async function GET(request: Request) {
   const topLevelItems = items.filter((item) => !item.parentId);
   const structuredItems = topLevelItems.map((item) => ({
     ...item,
-    children: item.children,
+    href: item.pageType === NavbarPageType.GENERIC ? `/gen/${item.href}` : item.href,
+    children: item.children.map((child) => ({
+      ...child,
+      href: child.pageType === NavbarPageType.GENERIC ? `/gen/${child.href}` : child.href,
+    })),
   }));
 
   return NextResponse.json({ items: structuredItems });

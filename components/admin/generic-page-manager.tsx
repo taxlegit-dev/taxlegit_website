@@ -53,7 +53,8 @@ type GenericPageManagerProps = {
 };
 
 const genericPageFormSchema = z.object({
-  navbarItemId: z.string().min(1, "Navbar item is required"),
+  id: z.string().optional(),
+  slug: z.string().min(1, "Slug is required"),
   title: z.string().min(1, "Title is required"),
   content: z.string().min(1, "Content is required"),
   status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]).optional(),
@@ -72,32 +73,34 @@ export function GenericPageManager({
   const searchParams = useSearchParams();
   const [message, setMessage] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [editorData, setEditorData] = useState<OutputData | null>(null);
 
   const form = useForm<GenericPageForm>({
     resolver: zodResolver(genericPageFormSchema),
-    defaultValues: existingGenericPage
-      ? {
-          slug: existingGenericPage.slug,
-          title: existingGenericPage.title,
-          content: existingGenericPage.content as string,
-          status: existingGenericPage.status,
-        }
-      : {
-          slug: selectedSlug || "",
-          title: "",
-          content: "",
-          status: "DRAFT",
-        },
+    defaultValues: {
+      slug: selectedSlug || "",
+      title: "",
+      content: "",
+      status: "DRAFT",
+    },
   });
 
   useEffect(() => {
     if (existingGenericPage) {
       form.reset({
+        id: existingGenericPage.id,
         slug: existingGenericPage.slug,
         title: existingGenericPage.title,
         content: existingGenericPage.content as string,
         status: existingGenericPage.status,
       });
+      
+      // Parse content for editor
+      const content = existingGenericPage.content as string;
+      if (content) {
+        const parsed = tryParseEditorJson(content);
+        setEditorData(parsed);
+      }
     } else if (selectedSlug) {
       form.reset({
         slug: selectedSlug,
@@ -105,27 +108,30 @@ export function GenericPageManager({
         content: "",
         status: "DRAFT",
       });
+      setEditorData(null);
     }
   }, [existingGenericPage, selectedSlug, form]);
 
-  const handleNavbarItemSelect = (itemId: string) => {
-    const next = new URLSearchParams(searchParams?.toString() ?? "");
-    next.set("navbarItemId", itemId);
-    const regionParam =
-      searchParams?.get("region") || (region === "US" ? "US" : "INDIA");
-    next.set("region", regionParam);
-    router.push(`/admin/generic-pages?${next.toString()}`);
-  };
-
-  const handleBackToNavbar = () => {
-    const next = new URLSearchParams(searchParams?.toString() ?? "");
-    next.delete("navbarItemId");
-    router.push(`/admin/generic-pages?${next.toString()}`);
-  };
+  // Update editor data when content changes
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === "content" && value.content) {
+        const parsed = tryParseEditorJson(value.content);
+        setEditorData(parsed);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form.watch]);
 
   const handleEditPage = (slug: string) => {
     const next = new URLSearchParams(searchParams?.toString() ?? "");
     next.set("slug", slug);
+    router.push(`/admin/generic-pages?${next.toString()}`);
+  };
+
+  const handleBackToList = () => {
+    const next = new URLSearchParams(searchParams?.toString() ?? "");
+    next.delete("slug");
     router.push(`/admin/generic-pages?${next.toString()}`);
   };
 
@@ -304,12 +310,12 @@ export function GenericPageManager({
               </h2>
               {selectedSlug && (
                 <p className="text-sm text-slate-600 mt-1">
-                  Slug: <span className="font-semibold">/{selectedSlug}</span>
+                  Slug: <span className="font-semibold">{selectedSlug}</span>
                 </p>
               )}
             </div>
             <button
-              onClick={handleBackToNavbar}
+              onClick={handleBackToList}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
             >
               <svg
@@ -338,8 +344,9 @@ export function GenericPageManager({
               </label>
               <input
                 {...form.register("slug")}
-                className="w-full rounded-lg border border-slate-200 px-4 py-3"
+                className="w-full rounded-lg border border-slate-200 px-4 py-3 bg-slate-50"
                 placeholder="Enter page slug (e.g., about-us)"
+                readOnly
               />
               {form.formState.errors.slug && (
                 <p className="text-xs text-red-600 mt-1">
@@ -363,6 +370,7 @@ export function GenericPageManager({
                 </p>
               )}
             </div>
+            <input type="hidden" {...form.register("id")} />
 
             <div>
               <label className="block text-sm font-semibold text-slate-900 mb-2">
@@ -383,9 +391,8 @@ export function GenericPageManager({
                 Content <span className="text-red-500">*</span>
               </label>
               <EditorJsEditor
-                value={
-                  tryParseEditorJson(form.watch("content") || "")
-                }
+                key={`${existingGenericPage?.id || 'new'}-${selectedSlug}`}
+                value={editorData}
                 onChange={(value) => {
                   form.setValue(
                     "content",

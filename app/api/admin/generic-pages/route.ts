@@ -64,16 +64,20 @@ export async function POST(request: Request) {
       );
     }
 
-    const region = parsed.data.region === "US" ? Region.US : Region.INDIA;
+    const region =
+      parsed.data.region === "US" ? Region.US : Region.INDIA;
+
     const status = parsed.data.status
       ? (parsed.data.status as ContentStatus)
       : ContentStatus.DRAFT;
 
-    // Check if generic page already exists for this slug and region
+    // ✅ Correct uniqueness check
     const existingPage = await prisma.genericPage.findUnique({
       where: {
-        slug,
-        region,
+        slug_region: {
+          slug: parsed.data.slug,
+          region,
+        },
       },
     });
 
@@ -95,11 +99,12 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ genericPage });
-  } catch (error: unknown) {
+  } catch (error) {
     console.error("Error creating generic page:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "Failed to create generic page";
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create generic page" },
+      { status: 500 }
+    );
   }
 }
 

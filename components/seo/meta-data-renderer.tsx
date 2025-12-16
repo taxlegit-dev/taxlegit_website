@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { MetaPageType } from "@prisma/client";
 
 type MetaDataRendererProps = {
-  pageType: "SERVICE" | "BLOG";
+  pageType: "SERVICE" | "BLOG" | "GENERIC";
   pageId: string;
 };
 

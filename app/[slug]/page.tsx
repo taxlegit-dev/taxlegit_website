@@ -5,7 +5,6 @@ import { prisma } from "@/lib/prisma";
 import { NavbarServer } from "@/components/navigation/navbar-server";
 import { IndiaHero } from "@/components/ServiceHeroSection/india-hero";
 import { ServicePageView } from "@/components/service-page/service-page-view";
-import { GenericPageView } from "@/components/generic-page/generic-page-view";
 import { FAQSection } from "@/components/faq/faq-section";
 import Footer from "@/components/footer";
 import { MetaDataRenderer } from "@/components/seo/meta-data-renderer";
@@ -16,7 +15,7 @@ type DynamicPageProps = {
 };
 
 /* =========================
-    SEO METADATA
+   SEO METADATA (SERVICE ONLY)
 ========================= */
 export async function generateMetadata({
   params,
@@ -24,7 +23,6 @@ export async function generateMetadata({
   const { slug } = await params;
   const region = Region.INDIA;
 
-  // First, try to find navbar item for service pages
   const navbarItem = await prisma.navbarItem.findFirst({
     where: {
       region,
@@ -33,59 +31,31 @@ export async function generateMetadata({
     },
   });
 
-  let servicePage = null;
-  let genericPage = null;
-  let metaData = null;
-  let defaultTitle = "";
-  let defaultDescription = "";
-
-  if (navbarItem) {
-    // Service page
-    servicePage = await prisma.servicePage.findUnique({
-      where: { navbarItemId: navbarItem.id },
-    });
-
-    if (servicePage) {
-      metaData = await prisma.metaData.findUnique({
-        where: {
-          pageType_pageId: {
-            pageType: "SERVICE",
-            pageId: servicePage.id,
-          },
-        },
-      });
-      defaultTitle = `${navbarItem.label} | Taxlegit`;
-      defaultDescription = `Learn more about ${navbarItem.label} services at Taxlegit`;
-    }
-  } else {
-    // Try generic page
-    genericPage = await prisma.genericPage.findUnique({
-      where: {
-        slug,
-        region,
-      },
-    });
-
-    if (genericPage) {
-      metaData = await prisma.metaData.findUnique({
-        where: {
-          pageType_pageId: {
-            pageType: "GENERIC",
-            pageId: genericPage.id,
-          },
-        },
-      });
-      defaultTitle = `${genericPage.title} | Taxlegit`;
-      defaultDescription = `Learn more about ${genericPage.title} at Taxlegit`;
-    }
+  if (!navbarItem) {
+    return { title: "Page Not Found" };
   }
 
-  if (!navbarItem && !genericPage) {
-    return { title: "Page Not Found" };
+  const servicePage = await prisma.servicePage.findUnique({
+    where: { navbarItemId: navbarItem.id },
+  });
+
+  let metaData = null;
+
+  if (servicePage) {
+    metaData = await prisma.metaData.findUnique({
+      where: {
+        pageType_pageId: {
+          pageType: "SERVICE",
+          pageId: servicePage.id,
+        },
+      },
+    });
   }
 
   const baseUrl = "https://taxlegit.com";
   const pageUrl = `${baseUrl}/${slug}`;
+  const defaultTitle = `${navbarItem.label} | Taxlegit`;
+  const defaultDescription = `Learn more about ${navbarItem.label} services at Taxlegit`;
 
   if (metaData?.metaBlock) {
     const parsedMeta = parseMetaBlockForMetadata(metaData.metaBlock);
@@ -135,13 +105,12 @@ export async function generateMetadata({
 }
 
 /* =========================
-    PAGE RENDER
+   PAGE RENDER
 ========================= */
 export default async function DynamicPage({ params }: DynamicPageProps) {
   const { slug } = await params;
   const region = Region.INDIA;
 
-  // First, try navbar item for service pages
   const navbarItem = await prisma.navbarItem.findFirst({
     where: {
       region,
@@ -150,52 +119,35 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
     },
   });
 
-  let servicePage = null;
-  let genericPage = null;
-  let hero = null;
-  let faq = null;
-  let metaPageType: "SERVICE" | "GENERIC" | null = null;
+  if (!navbarItem) {
+    notFound();
+  }
+
+  const hero = await prisma.pageHero.findUnique({
+    where: { navbarItemId: navbarItem.id },
+  });
+
+  const servicePage = await prisma.servicePage.findUnique({
+    where: { navbarItemId: navbarItem.id },
+    include: {
+      sections: { orderBy: { order: "asc" } },
+    },
+  });
+
+  const faq = await prisma.servicePageFAQ.findUnique({
+    where: { navbarItemId: navbarItem.id },
+    include: {
+      questions: { orderBy: { order: "asc" } },
+    },
+  });
+
+  // ✅ SERVICE SEO ONLY
+  let metaPageType: "SERVICE" | null = null;
   let metaPageId: string | null = null;
 
-  if (navbarItem) {
-    // Service page
-    hero = await prisma.pageHero.findUnique({
-      where: { navbarItemId: navbarItem.id },
-    });
-
-    servicePage = await prisma.servicePage.findUnique({
-      where: { navbarItemId: navbarItem.id },
-      include: {
-        sections: { orderBy: { order: "asc" } },
-      },
-    });
-
-    faq = await prisma.servicePageFAQ.findUnique({
-      where: { navbarItemId: navbarItem.id },
-      include: {
-        questions: { orderBy: { order: "asc" } },
-      },
-    });
-
-    if (servicePage) {
-      metaPageType = "SERVICE";
-      metaPageId = servicePage.id;
-    }
-  } else {
-    // Try generic page
-    genericPage = await prisma.genericPage.findUnique({
-      where: {
-        slug,
-        region,
-      },
-    });
-
-    if (genericPage && genericPage.status === "PUBLISHED") {
-      metaPageType = "GENERIC";
-      metaPageId = genericPage.id;
-    } else {
-      notFound();
-    }
+  if (servicePage) {
+    metaPageType = "SERVICE";
+    metaPageId = servicePage.id;
   }
 
   return (
@@ -214,9 +166,7 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
           servicePage.status === "PUBLISHED" &&
           servicePage.sections.length > 0 ? (
             <ServicePageView sections={servicePage.sections} />
-          ) : genericPage && genericPage.status === "PUBLISHED" ? (
-            <GenericPageView genericPage={genericPage} />
-          ) : !hero && navbarItem ? (
+          ) : !hero ? (
             <section className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-12">
               <div className="rounded-3xl border border-zinc-100 bg-gradient-to-br from-indigo-50 via-white to-slate-50 p-10 shadow-sm">
                 <div className="space-y-6">
@@ -228,8 +178,8 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
                   </h1>
                   <p className="max-w-2xl text-lg text-zinc-600">
                     This is a dynamic page for{" "}
-                    <strong>{navbarItem.label}</strong>. Create a hero section,
-                    service page, or generic page in admin panel to customize this page.
+                    <strong>{navbarItem.label}</strong>. Create a hero section
+                    or service page in admin panel to customize this page.
                   </p>
                 </div>
               </div>

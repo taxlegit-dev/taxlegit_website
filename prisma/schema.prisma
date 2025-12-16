@@ -283,7 +283,7 @@ model MetaData {
 
 model GenericPage {
   id        String        @id @default(cuid())
-  slug      String
+  slug      String?
   region    Region        @default(INDIA)
   title     String
   content   Json          // Editor.js / blocks / sections
