@@ -1,6 +1,5 @@
 import React from 'react';
-import { Award, Shield, Users, Sparkles } from 'lucide-react';
-import { Quote } from 'lucide-react';
+import { Shield } from 'lucide-react';
 
 export default function AboutHeroSection() {
   return (
@@ -19,7 +18,7 @@ export default function AboutHeroSection() {
             d="M0,0 L1440,0 L1440,120 C1200,180 960,200 720,180 C480,160 240,120 0,240 Z"
           />
         </svg>
-        
+
         {/* Circular decorative element */}
         <div className="absolute top-8 right-32 w-64 h-64 rounded-full border-2 border-blue-400 opacity-20"></div>
         <div className="absolute top-16 right-40 w-48 h-48 rounded-full border-2 border-blue-300 opacity-30"></div>
@@ -43,7 +42,7 @@ export default function AboutHeroSection() {
 
                   {/* Mission Statement */}
                   <p className="text-center text-gray-700 text-sm leading-relaxed mb-6 px-4">
-                    "Your trusted partner in navigating the complexities of business registration, taxation, and legal compliance. We simplify the process so you can focus on what matters most - growing your business."
+                    &ldquo;Your trusted partner in navigating the complexities of business registration, taxation, and legal compliance. We simplify the process so you can focus on what matters most - growing your business.&rdquo;
                   </p>
 
                   {/* Divider */}
@@ -65,19 +64,19 @@ export default function AboutHeroSection() {
             {/* Right Column - Text Content */}
             <div className="flex flex-col justify-center space-y-5 mt-8">
               <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-sky-700 leading-tight">
-                Simplifying Business Compliance for India's Entrepreneurs
+                Simplifying Business Compliance for India&apos;s Entrepreneurs
               </h2>
 
               <p className="text-gray-700 text-sm leading-relaxed">
-                In today's complex regulatory landscape, staying compliant shouldn't be a burden. 
-                TaxLegit is dedicated to making company registration, tax filing, and legal compliance 
+                In today&apos;s complex regulatory landscape, staying compliant shouldn&apos;t be a burden.
+                TaxLegit is dedicated to making company registration, tax filing, and legal compliance
                 accessible and stress-free for businesses of all sizes across India.
               </p>
 
               <p className="text-gray-700 text-sm leading-relaxed">
-                We believe every entrepreneur deserves expert guidance without the complexity. Our 
-                comprehensive services from ITR filing to GST registration, company incorporation to 
-                annual compliance help you focus on growing your business while we handle the 
+                We believe every entrepreneur deserves expert guidance without the complexity. Our
+                comprehensive services from ITR filing to GST registration, company incorporation to
+                annual compliance help you focus on growing your business while we handle the
                 legal intricacies. Your success is our mission.
               </p>
             </div>

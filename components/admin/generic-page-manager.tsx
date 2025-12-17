@@ -40,9 +40,7 @@ function tryParseEditorJson(content: string): OutputData | null {
   }
 }
 
-type GenericPageWithNavItem = GenericPage & {
-  navbarItem: NavbarItem | null;
-};
+
 
 type GenericPageManagerProps = {
   region: "INDIA" | "US";
@@ -89,7 +87,7 @@ export function GenericPageManager({
     if (existingGenericPage) {
       form.reset({
         id: existingGenericPage.id,
-        slug: existingGenericPage.slug,
+        slug: existingGenericPage.slug || "",
         title: existingGenericPage.title,
         content: existingGenericPage.content as string,
         status: existingGenericPage.status,
@@ -121,7 +119,7 @@ export function GenericPageManager({
       }
     });
     return () => subscription.unsubscribe();
-  }, [form.watch]);
+  }, [form]);
 
   const handleEditPage = (slug: string) => {
     const next = new URLSearchParams(searchParams?.toString() ?? "");

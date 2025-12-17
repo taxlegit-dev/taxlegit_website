@@ -41,8 +41,8 @@ export async function generateMetadata({
 
   const genericPage = await prisma.genericPage.findUnique({
     where: {
-      navbarItemId_region: {
-        navbarItemId: navbarItem.id,
+      slug_region: {
+        slug,
         region,
       },
     },
@@ -95,12 +95,13 @@ export async function generateMetadata({
         ...parsedMeta.openGraph,
         title: parsedMeta.openGraph?.title || defaultTitle,
         description: parsedMeta.openGraph?.description || defaultDescription,
-        type: (parsedMeta.openGraph as any)?.type || "website",
+        type: "website",
         url: parsedMeta.openGraph?.url || pageUrl,
       },
       twitter: {
         ...parsedMeta.twitter,
-        card: (parsedMeta.twitter as any)?.card || "summary",
+
+        card: "summary",
         title: parsedMeta.twitter?.title || defaultTitle,
         description: parsedMeta.twitter?.description || defaultDescription,
       },
@@ -165,8 +166,8 @@ export default async function UsDynamicPage({ params }: DynamicPageProps) {
   // Fetch generic page if exists
   const genericPage = await prisma.genericPage.findUnique({
     where: {
-      navbarItemId_region: {
-        navbarItemId: navbarItem.id,
+      slug_region: {
+        slug,
         region,
       },
     },
