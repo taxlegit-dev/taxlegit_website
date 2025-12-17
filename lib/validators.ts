@@ -12,10 +12,12 @@ export const createNavItemSchema = z.object({
   label: z.string().min(2),
   href: z.string().optional(),
   order: z.number().int().min(0).default(0),
+  type: z.enum(["LINK", "DROPDOWN", "BUTTON"]).default("LINK"),
   pageType: z.enum(["SERVICE", "BLOG", "GENERIC", "EXTERNAL"]).default("GENERIC"),
   region: regionEnum,
   parentId: z.string().optional(),
   groupLabel: z.string().optional(), // For grouping submenu items in mega-menu
+  isLoginLink: z.boolean().optional(),
 });
 
 export const updateNavItemSchema = createNavItemSchema.extend({

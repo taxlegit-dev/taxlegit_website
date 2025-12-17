@@ -1,6 +1,7 @@
 import { Region } from "@prisma/client";
 import WhyChooseUs from "@/components/pages/about/WhyChooseUs";
 import OurServicesSection from "@/components/pages/about/OurServiceSection";
+import WhyChooseUs from "@/components/pages/about/WhyChooseUs";
 import RecentBlogsSection from "@/components/pages/home/RecentBlogsSection";
 import { NavbarServer } from "@/components/navigation/navbar-server";
 import Footer from "@/components/footer";

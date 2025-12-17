@@ -1,7 +1,5 @@
 import { Region } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-// import { NavbarServer } from "@/components/navigation/navbar-server";
-// import Footer from "@/components/footer";
 import TaxLegitHero from "@/components/pages/home/hero";
 import ServicesSection from "@/components/pages/home/serviceSection";
 import HowWeWorkSection from "@/components/pages/home/HowWeWorkSection";

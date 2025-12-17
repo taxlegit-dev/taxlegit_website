@@ -40,7 +40,7 @@ type UpdateFormValues = z.infer<typeof updateFormSchema>;
 
 export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
   const router = useRouter();
-  const [items, setItems] = useState<NavItem[]>(initialItems);
+  const [items] = useState<NavItem[]>(initialItems);
   const [editingItem, setEditingItem] = useState<NavItem | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
