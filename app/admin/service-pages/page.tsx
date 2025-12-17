@@ -81,6 +81,7 @@ export default async function AdminServicePagesPage({ searchParams }: AdminServi
         <RegionFilter value={selectedRegion === Region.US ? "US" : "INDIA"} />
       </div>
       <ServicePageManager
+        pageType="SERVICE"
         region={selectedRegion === Region.US ? "US" : "INDIA"}
         navItems={navItems}
         selectedNavbarItemId={selectedNavbarItemId || undefined}

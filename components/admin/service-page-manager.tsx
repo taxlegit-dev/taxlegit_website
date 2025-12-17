@@ -49,7 +49,12 @@ type ServicePageWithNavItem = ServicePageWithSections & {
   navbarItem: NavbarItem | null;
 };
 
+type PageType = "SERVICE" | "GENERIC";
+
+
+
 type ServicePageManagerProps = {
+  pageType: PageType;
   region: "INDIA" | "US";
   navItems: NavbarItem[];
   selectedNavbarItemId?: string;
@@ -73,6 +78,7 @@ const servicePageFormSchema = z.object({
 type ServicePageForm = z.infer<typeof servicePageFormSchema>;
 
 export function ServicePageManager({
+  pageType,
   region,
   navItems,
   selectedNavbarItemId,
@@ -88,23 +94,31 @@ export function ServicePageManager({
   const [savingSection, setSavingSection] = useState<number | null>(null);
 
   const selectedItemId = selectedNavbarItemId || "";
+  const pageLabel = pageType === "SERVICE" ? "Service Page" : "Generic Page";
+
+  const baseAdminPath =
+    pageType === "SERVICE"
+      ? "/admin/service-pages"
+      : "/admin/generic-pages";
+
+
 
   const form = useForm<ServicePageForm>({
     resolver: zodResolver(servicePageFormSchema),
     defaultValues: existingServicePage
       ? {
-          navbarItemId: existingServicePage.navbarItemId,
-          sections: existingServicePage.sections.map((s) => ({
-            id: s.id,
-            title: s.title,
-            content: s.content,
-            order: s.order,
-          })),
-        }
+        navbarItemId: existingServicePage.navbarItemId,
+        sections: existingServicePage.sections.map((s) => ({
+          id: s.id,
+          title: s.title,
+          content: s.content,
+          order: s.order,
+        })),
+      }
       : {
-          navbarItemId: selectedItemId || "",
-          sections: [{ title: "", content: "", order: 1 }],
-        },
+        navbarItemId: selectedItemId || "",
+        sections: [{ title: "", content: "", order: 1 }],
+      },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -154,13 +168,13 @@ export function ServicePageManager({
     const regionParam =
       searchParams?.get("region") || (region === "US" ? "US" : "INDIA");
     next.set("region", regionParam);
-    router.push(`/admin/service-pages?${next.toString()}`);
+    router.push(`${baseAdminPath}?${next.toString()}`);
   };
 
   const handleBackToNavbar = () => {
     const next = new URLSearchParams(searchParams?.toString() ?? "");
     next.delete("navbarItemId");
-    router.push(`/admin/service-pages?${next.toString()}`);
+    router.push(`${baseAdminPath}?${next.toString()}`);
   };
 
   const handleSectionUpdate = async (index: number) => {
@@ -267,7 +281,7 @@ export function ServicePageManager({
       <div className="space-y-6">
         <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
           <h2 className="text-xl font-semibold text-slate-900 mb-4">
-            Select a Service Page
+            Select a {pageLabel}
           </h2>
           <p className="text-sm text-slate-600 mb-6">
             Choose a navbar item to create or edit its service page with
@@ -295,7 +309,7 @@ export function ServicePageManager({
                     </div>
                     {hasServicePage && (
                       <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
-                        Has Service Page
+                        {pageLabel} Created
                       </span>
                     )}
                   </div>
@@ -316,11 +330,10 @@ export function ServicePageManager({
     <div className="space-y-6">
       {message && (
         <div
-          className={`rounded-lg p-4 border ${
-            message.includes("success")
-              ? "bg-green-50 text-green-800 border-green-200"
-              : "bg-red-50 text-red-800 border-red-200"
-          }`}
+          className={`rounded-lg p-4 border ${message.includes("success")
+            ? "bg-green-50 text-green-800 border-green-200"
+            : "bg-red-50 text-red-800 border-red-200"
+            }`}
         >
           <div className="flex items-center gap-2">
             {message.includes("success") ? (
@@ -351,8 +364,9 @@ export function ServicePageManager({
             <div>
               <h2 className="text-xl font-semibold text-slate-900">
                 {existingServicePage
-                  ? "Edit Service Page"
-                  : "Create Service Page"}
+                  ? `Edit ${pageLabel}`
+                  : `Create ${pageLabel}`}
+
               </h2>
               {selectedItem && (
                 <p className="text-sm text-slate-600 mt-1">
@@ -468,9 +482,8 @@ export function ServicePageManager({
                       )}
 
                       <svg
-                        className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${
-                          isExpanded ? "rotate-180" : ""
-                        }`}
+                        className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""
+                          }`}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -593,8 +606,8 @@ export function ServicePageManager({
                         {savingSection === index
                           ? "Saving..."
                           : section?.id
-                          ? `Update Section ${index + 1}`
-                          : `Save Section ${index + 1}`}
+                            ? `Update Section ${index + 1}`
+                            : `Save Section ${index + 1}`}
                       </button>
                     </div>
                   )}
@@ -607,7 +620,7 @@ export function ServicePageManager({
           {existingServicePage?.id && (
             <div className="border-t border-slate-200 pt-8">
               <SEOMetaEditor
-                pageType="SERVICE"
+                pageType={pageType}
                 pageId={existingServicePage.id}
                 pageName={selectedItem?.label}
               />
