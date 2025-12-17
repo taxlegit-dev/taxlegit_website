@@ -1,7 +1,7 @@
 import { Region } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { NavbarServer } from "@/components/navigation/navbar-server";
-import Footer from "@/components/footer";
+// import { NavbarServer } from "@/components/navigation/navbar-server";
+// import Footer from "@/components/footer";
 import TaxLegitHero from "@/components/pages/home/hero";
 import ServicesSection from "@/components/pages/home/serviceSection";
 import HowWeWorkSection from "@/components/pages/home/HowWeWorkSection";
@@ -9,14 +9,16 @@ import WhyChooseTaxLegitMinimal from "@/components/pages/home/WhyTaxlegit";
 import Testimonial from "@/components/pages/home/ReviewSlider";
 import RecentBlogsSection from "@/components/pages/home/RecentBlogsSection";
 import { FAQSection } from "@/components/faq/faq-section";
-
+// import AboutUs from "@/components/pages/about/AboutTaxlegit";
+import { NavbarServer } from "@/components/navigation/navbar-server";
+import Footer from "@/components/footer";
 export default async function IndiaHomePage() {
   const region = Region.INDIA;
 
   // FIX → Do NOT use null. Use a special navbarItemId for homepage FAQ.
   const faq = await prisma.servicePageFAQ.findFirst({
     where: {
-      navbarItemId: "cmiyhgn0f0000uoyglukgbinw", // create this manually in DB
+      navbarItemId: "cmj8eku4d000puo1sqyhqldh2", // create this manually in DB
       region: region,
       status: "PUBLISHED",
     },
@@ -29,9 +31,11 @@ export default async function IndiaHomePage() {
 
   return (
     <div className="min-h-screen bg-white text-black">
-
       <div>
+        <NavbarServer region={region} />
+
         <TaxLegitHero />
+        {/* <AboutUs /> */}
         <ServicesSection />
         <HowWeWorkSection />
         <WhyChooseTaxLegitMinimal />
@@ -41,8 +45,8 @@ export default async function IndiaHomePage() {
         {faq && faq.questions.length > 0 && (
           <FAQSection questions={faq.questions} region="INDIA" />
         )}
+        <Footer />
       </div>
-
     </div>
   );
 }

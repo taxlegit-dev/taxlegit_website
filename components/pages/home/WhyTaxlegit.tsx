@@ -27,12 +27,12 @@ export default function WhyChooseTaxlegit() {
   ];
 
   return (
-    <div className="relative w-full bg-gradient-to-br from-blue-100 to-blue-200 py-12 md:py-20 px-4 md:px-6 overflow-hidden">
+    <div className="relative w-full bg-slate-50 py-8 md:py-16 px-4 md:px-6 overflow-hidden">
       {/* CURVED DARK PANEL - Hidden on Mobile */}
       <div
         className="
         hidden md:block absolute right-0 top-0 h-full w-[55%]
-        bg-gradient-to-br from-blue-800 to-blue-700
+        bg-gradient-to-br from-blue-100 to-blue-300
         shadow-2xl
         "
         style={{
@@ -44,7 +44,7 @@ export default function WhyChooseTaxlegit() {
         {/* LEFT SIDE TEXT */}
         <div className="">
           <span className="text-xs md:text-sm font-medium px-3 py-1 rounded-full inline-block bg-blue-200 text-indigo-700">
-            Frequently asked questions
+            Start Your Business
           </span>
           <h2 className="text-2xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight font-[Gilroy] mt-3">
             Why Choose Taxlegit?
@@ -56,12 +56,12 @@ export default function WhyChooseTaxlegit() {
         </div>
 
         {/* RIGHT SIDE LIST */}
-        <div className="z-10 flex flex-col gap-4 md:gap-6">
+        <div className="z-10 flex flex-col gap-2 md:gap-3">
           {features.map((item, i) => (
             <div
               key={i}
               className="
-    flex items-start md:items-center gap-4 md:gap-5 p-4 md:p-5 rounded-xl
+    flex items-start md:items-center gap-3 md:gap-4 p-1 md:p-2 rounded-xl
     bg-blue-600/90 md:bg-white/10 md:backdrop-blur-xl
     border border-white/20 shadow-xl
     text-white
@@ -78,11 +78,11 @@ export default function WhyChooseTaxlegit() {
               </div>
 
               <div>
-                <h3 className="text-base md:text-lg font-semibold">
+                <h3 className="text-blue-600 text-base md:text-lg font-semibold">
                   {item.title}
                 </h3>
 
-                <p className="text-blue-100 text-xs md:text-sm mt-1">
+                <p className="text-slate-600 text-xs md:text-sm mt-1">
                   {item.desc}
                 </p>
               </div>

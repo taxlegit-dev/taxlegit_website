@@ -1,7 +1,6 @@
 "use client";
-import Image from "next/image";
+import { FaWhatsapp } from "react-icons/fa";
 import { useState, useEffect } from "react";
-import { MessageCircle } from "lucide-react";
 
 const sentences = [
   "Tax Risk Advisory",
@@ -34,11 +33,11 @@ export default function IndiaHero() {
   const words = sentences[sentenceIndex].split(" ");
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center text-center px-4 sm:px-6 lg:px-8 py-10 md:py-16 overflow-hidden ">
+    <div className="relative min-h-screen flex items-center justify-center text-center px-4 sm:px-6 lg:px-8 py-10 md:py-16 overflow-hidden bg-gradient-to-t from-blue-300 via-white to-white">
       {/* BACKGROUND IMAGE */}
-      <div className="absolute inset-0 z-0">
+      {/* <div className="absolute inset-0 z-0">
         <Image
-          src="/hero2.jpg" // Replace with your image path
+          src="/hero1.jpg" // Replace with your image path
           alt="Hero Background"
           fill
           priority
@@ -46,21 +45,23 @@ export default function IndiaHero() {
           quality={90}
         />
         {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-white/70 backdrop-blur-sm"></div>
-      </div>
+      <div className="absolute inset-0 "></div>
+      {/* </div> */}
 
       {/* MAIN CONTENT */}
       <div className="relative z-[10] max-w-4xl mx-auto w-full px-4">
-        {/* FLAGS */}
-        <div className="flex items-center justify-center mt-4 md:mt-0">
-          <span className="text-xs sm:text-sm md:text-base text-black font-medium pl-2">
-            Welcome to <strong className="text-blue-600">Taxlegit</strong>.
+        <div className="flex items-center justify-center mt-4 md:mt-10">
+          <span className="text-md sm:text-sm md:text-base text-black font-medium pl-2">
+            <strong className="text-blue-600 bg-blue-100 rounded-full px-2 py-1 mr-2">
+              Taxlegit{"  "}
+            </strong>
+            {""} Your Trusted Partner.
           </span>
         </div>
 
         {/* CAPSULE WORD HIGHLIGHT */}
         <div className="min-h-[60px] sm:min-h-[72px] md:min-h-[80px] flex items-center justify-center mt-3">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight flex gap-2 flex-wrap justify-center font-bold">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold leading-tight flex gap-2 flex-wrap justify-center font-bold">
             {words.map((w, i) => (
               <span
                 key={i}
@@ -75,16 +76,11 @@ export default function IndiaHero() {
           </h2>
         </div>
 
-        {/* MAIN TITLE */}
-        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
-          Taxlegit: Your Trusted Partner
-        </h1>
-
         {/* DESCRIPTION */}
         <p className="text-sm sm:text-base md:text-lg text-gray-700 mt-4 sm:mt-6 px-2 sm:px-4 md:px-0">
-          At Taxlegit, we provide innovative, tech-driven solutions that ensure
-          sustainable results for your business needs. Our services include
-          audit and assurance, advisory, consulting.
+          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Velit
+          facilis hic officia neque quia, repellat id. eveniet itaque quas
+          debitis magnam ratione repellendus.
         </p>
 
         {/* CTA BUTTONS */}
@@ -93,23 +89,22 @@ export default function IndiaHero() {
             href="https://wa.me/919711765911"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 bg-green-600 text-white hover:bg-blue-700 font-semibold px-6 py-3 sm:px-8 sm:py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 min-w-[180px] sm:min-w-[200px] text-sm sm:text-base"
+            className="inline-flex items-center justify-center text-green-500 font-bold"
           >
-            <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
-            WhatsApp Us
+            <FaWhatsapp className="w-16 h-16" />
           </a>
 
           <a
             href="#services"
-            className="inline-flex items-center justify-center gap-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold px-6 py-3 sm:px-8 sm:py-3 rounded-lg shadow-sm hover:shadow transition-all duration-300 min-w-[180px] sm:min-w-[200px] text-sm sm:text-base"
+            className="inline-flex items-center justify-center gap-2 border-3 border-blue-600 text-blue-600 font-bold px-2 py-1 rounded-lg"
           >
-            View Our Services
+            Schedule a meeting
           </a>
         </div>
 
         {/* TRUST INDICATORS */}
-        <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
-          <div className="text-center p-1 sm:p-2 rounded-lg bg-white/60 backdrop-blur-sm">
+        <div className="mt-16 grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-2xl mx-auto ">
+          <div className="text-center p-1 sm:p-2 rounded-lg bg-blue-50 backdrop-blur-sm">
             <div className="text-lg sm:text-xl md:text-2xl font-bold text-blue-700">
               10+
             </div>
@@ -118,7 +113,7 @@ export default function IndiaHero() {
             </div>
           </div>
 
-          <div className="text-center p-3 sm:p-4 rounded-lg bg-white/60 backdrop-blur-sm">
+          <div className="text-center p-3 sm:p-4 rounded-lg bg-blue-50 backdrop-blur-sm">
             <div className="text-lg sm:text-xl md:text-2xl font-bold text-blue-700">
               500+
             </div>
@@ -127,7 +122,7 @@ export default function IndiaHero() {
             </div>
           </div>
 
-          <div className="col-span-2 sm:col-span-1 text-center p-3 sm:p-4 rounded-lg bg-white/60 backdrop-blur-sm">
+          <div className="col-span-2 sm:col-span-1 text-center p-3 sm:p-4 rounded-lg bg-blue-50 backdrop-blur-sm">
             <div className="text-lg sm:text-xl md:text-2xl font-bold text-blue-700">
               24/7
             </div>

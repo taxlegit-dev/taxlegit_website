@@ -344,11 +344,11 @@ export default function ScrollTabs() {
                 {item.icon}
               </div>
 
-              <h3 className="text-white text-lg font-semibold mb-1">
+              <h3 className="text-blue-600 text-lg font-semibold mb-1">
                 {item.title}
               </h3>
 
-              <p className="text-gray-200 text-sm mb-3">{item.desc}</p>
+              <p className="text-gray-700 text-sm mb-3">{item.desc}</p>
 
               <button
                 className="

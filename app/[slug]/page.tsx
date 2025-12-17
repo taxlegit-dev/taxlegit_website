@@ -156,7 +156,7 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
         <MetaDataRenderer pageType={metaPageType} pageId={metaPageId} />
       )}
 
-      <div className="min-h-screen bg-white text-black">
+      <div className="min-h-screen bg-white text-black pt-16">
         <NavbarServer region={region} />
 
         <main>
