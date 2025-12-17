@@ -3,6 +3,14 @@
 import React from "react";
 import type { OutputData } from "@editorjs/editorjs";
 import Image from "next/image";
+
+function normalizeUrl(url?: string): string {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+  return `https://${url}`;
+}
 interface EditorJsRendererProps {
   data: OutputData;
   theme?: "light" | "dark";
@@ -133,28 +141,37 @@ function renderBlock(
       if (!imageUrl) return null;
 
       // Determine image alignment and styling
-      const alignmentClass = imageData.alignment === "left" 
-        ? "float-left mr-4" 
-        : imageData.alignment === "right" 
-        ? "float-right ml-4" 
-        : "mx-auto";
-      
-      const containerClass = imageData.stretched 
-        ? "w-full" 
+      const alignmentClass =
+        imageData.alignment === "left"
+          ? "float-left mr-4"
+          : imageData.alignment === "right"
+          ? "float-right ml-4"
+          : "mx-auto";
+
+      const containerClass = imageData.stretched
+        ? "w-full"
         : imageData.alignment === "center" || !imageData.alignment
         ? "flex justify-center"
         : "";
 
       const imageElement = (
-        <div className={`relative ${containerClass} ${imageData.stretched ? '' : 'max-w-4xl'} mb-4`}>
+        <div
+          className={`relative ${containerClass} ${
+            imageData.stretched ? "" : "max-w-4xl"
+          } mb-4`}
+        >
           <Image
             src={imageUrl}
             alt={imageData.caption || ""}
             width={1200}
             height={800}
-            className={`rounded-lg ${imageData.stretched ? 'w-full' : 'w-full max-w-full'} ${imageData.withBorder ? 'border-2 border-slate-300' : ''} ${imageData.withBackground ? 'bg-slate-100 p-2' : ''}`}
+            className={`rounded-lg ${
+              imageData.stretched ? "w-full" : "w-full max-w-full"
+            } ${imageData.withBorder ? "border-2 border-slate-300" : ""} ${
+              imageData.withBackground ? "bg-slate-100 p-2" : ""
+            }`}
             style={{
-              objectFit: 'cover',
+              objectFit: "cover",
             }}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
           />
@@ -162,7 +179,12 @@ function renderBlock(
       );
 
       return (
-        <figure key={block.id} className={`mb-6 ${alignmentClass} ${imageData.stretched ? 'w-full' : ''}`}>
+        <figure
+          key={block.id}
+          className={`mb-6 ${alignmentClass} ${
+            imageData.stretched ? "w-full" : ""
+          }`}
+        >
           {linkUrl ? (
             <a
               href={linkUrl}
@@ -308,6 +330,62 @@ function renderBlock(
           </div>
         </div>
       );
+
+    case "cta": {
+      const {
+        text,
+        type,
+        url,
+        phone,
+        message,
+        align = "center",
+      } = block.data as {
+        text?: string;
+        type?: "url" | "whatsapp";
+        url?: string;
+        phone?: string;
+        message?: string;
+        align?: "left" | "center" | "right";
+      };
+
+      if (!text) return null;
+
+      const href =
+        type === "whatsapp" && phone
+          ? `https://wa.me/${phone}?text=${encodeURIComponent(message || "")}`
+          : normalizeUrl(url);
+
+      if (!href) return null;
+
+      const alignmentClass =
+        align === "left"
+          ? "justify-start"
+          : align === "right"
+          ? "justify-end"
+          : "justify-center";
+
+      return (
+        <div key={block.id} className={`my-5 flex ${alignmentClass}`}>
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="
+          inline-flex items-center justify-center
+          rounded-full
+          bg-blue-500
+          px-6 py-3
+          text-lg font-bold text-white
+          shadow-lg
+          transition-all duration-200
+          hover:bg-blue-700 hover:scale-105
+        "
+          >
+            {text}
+          </a>
+        </div>
+      );
+    }
 
     default:
       return null;
