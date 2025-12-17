@@ -33,10 +33,17 @@ enum PageKey {
   HOME
   ABOUT
 }
+enum NavbarPageType {
+  SERVICE
+  BLOG
+  GENERIC
+  EXTERNAL
+}
 
 enum MetaPageType {
   SERVICE
   BLOG
+  GENERIC
 }
 
 model User {
@@ -99,6 +106,9 @@ model NavbarItem {
   href        String?
   order       Int            @default(0)
   type        NavbarItemType @default(LINK)
+
+  pageType    NavbarPageType   @default(GENERIC)
+
   isLoginLink Boolean        @default(false)
   isActive    Boolean        @default(true)
   region      Region         @default(INDIA)
@@ -109,6 +119,9 @@ model NavbarItem {
 
   parent   NavbarItem?  @relation("NavbarHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
   children NavbarItem[] @relation("NavbarHierarchy")
+
+  pageHeroes PageHero[]
+  servicePages ServicePage[]
 
   @@unique([region, label], map: "NavbarItem_region_label_unique")
   @@index([region, parentId, order])
@@ -139,6 +152,8 @@ model PageHero {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
+  navbarItem NavbarItem @relation(fields: [navbarItemId], references: [id])
+
   @@unique([navbarItemId, region])
   @@index([region, status])
 }
@@ -151,6 +166,7 @@ model ServicePage {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
+  navbarItem NavbarItem @relation(fields: [navbarItemId], references: [id])
   sections ServicePageSection[]
 
   @@unique([navbarItemId, region])
@@ -263,3 +279,20 @@ model MetaData {
   @@unique([pageType, pageId])
   @@index([pageType, pageId])
 }
+
+
+model GenericPage {
+  id        String        @id @default(cuid())
+  slug      String?
+  region    Region        @default(INDIA)
+  title     String
+  content   Json          // Editor.js / blocks / sections
+  status    ContentStatus @default(DRAFT)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@unique([slug, region])
+  @@index([region, status])
+}
+
+

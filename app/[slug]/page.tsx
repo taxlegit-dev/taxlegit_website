@@ -22,14 +22,16 @@ export async function generateMetadata({
 }: DynamicPageProps): Promise<Metadata> {
   const { slug } = await params;
   const region = Region.INDIA;
+  console.log(slug, region);
 
   const navbarItem = await prisma.navbarItem.findFirst({
     where: {
       region,
-      href: `/${slug}`,
+      href: `${slug}`,
       isActive: true,
     },
   });
+  console.log(navbarItem);
 
   if (!navbarItem) {
     return { title: "Page Not Found" };

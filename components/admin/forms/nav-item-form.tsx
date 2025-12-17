@@ -9,6 +9,8 @@ import { createNavItemSchema } from "@/lib/validators";
 
 const navFormSchema = createNavItemSchema.extend({
   order: z.preprocess((value) => Number(value ?? 0), z.number().int().min(0)),
+  type: z.enum(["LINK", "DROPDOWN", "BUTTON"]).default("LINK"),
+  isLoginLink: z.boolean().default(false),
 });
 
 type NavFormValues = z.infer<typeof navFormSchema>;
@@ -33,6 +35,7 @@ export function NavItemForm({ region }: NavItemFormProps) {
       label: "",
       href: "",
       order: 0,
+      pageType: "GENERIC",
       type: "LINK",
       isLoginLink: false,
       region,
@@ -56,7 +59,7 @@ export function NavItemForm({ region }: NavItemFormProps) {
         return;
       }
 
-      reset({ label: "", href: "", order: 0, type: "LINK", isLoginLink: false, region });
+      reset({ label: "", href: "", order: 0, pageType: "GENERIC", type: "LINK", isLoginLink: false, region });
       setMessage("Navigation item saved");
       router.refresh();
     });
@@ -82,7 +85,7 @@ export function NavItemForm({ region }: NavItemFormProps) {
           {...register("href")}
         />
       </div>
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-1">
           <label className="text-sm font-semibold text-slate-800">Order</label>
           <input
@@ -92,21 +95,16 @@ export function NavItemForm({ region }: NavItemFormProps) {
           />
         </div>
         <div className="space-y-1">
-          <label className="text-sm font-semibold text-slate-800">Type</label>
+          <label className="text-sm font-semibold text-slate-800">Page Type</label>
           <select
             className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
-            {...register("type")}
+            {...register("pageType")}
           >
-            <option value="LINK">Link</option>
-            <option value="DROPDOWN">Dropdown</option>
-            <option value="BUTTON">Button</option>
+            <option value="SERVICE">Service</option>
+            <option value="BLOG">Blog</option>
+            <option value="GENERIC">Generic</option>
+            <option value="EXTERNAL">External</option>
           </select>
-        </div>
-        <div className="flex items-center gap-2">
-          <input id="isLoginLink" type="checkbox" className="h-4 w-4 rounded border-slate-300" {...register("isLoginLink")} />
-          <label htmlFor="isLoginLink" className="text-sm font-semibold text-slate-800">
-            Login link?
-          </label>
         </div>
       </div>
       <input type="hidden" value={region} {...register("region")} />

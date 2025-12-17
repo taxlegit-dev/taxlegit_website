@@ -10,6 +10,7 @@ export async function NavbarServer({ region }: NavbarServerProps) {
   const items = await prisma.navbarItem.findMany({
     where: {
       region,
+      pageType: "SERVICE",
       isActive: true,
     },
     include: {

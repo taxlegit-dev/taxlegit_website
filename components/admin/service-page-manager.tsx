@@ -49,7 +49,12 @@ type ServicePageWithNavItem = ServicePageWithSections & {
   navbarItem: NavbarItem | null;
 };
 
+type PageType = "SERVICE" | "GENERIC";
+
+
+
 type ServicePageManagerProps = {
+  pageType: PageType;
   region: "INDIA" | "US";
   navItems: NavbarItem[];
   selectedNavbarItemId?: string;
@@ -73,6 +78,7 @@ const servicePageFormSchema = z.object({
 type ServicePageForm = z.infer<typeof servicePageFormSchema>;
 
 export function ServicePageManager({
+  pageType,
   region,
   navItems,
   selectedNavbarItemId,
@@ -86,25 +92,37 @@ export function ServicePageManager({
     new Set([0])
   );
   const [savingSection, setSavingSection] = useState<number | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const selectedItemId = selectedNavbarItemId || "";
+  const pageLabel = pageType === "SERVICE" ? "Service Page" : "Generic Page";
+
+  const baseAdminPath =
+    pageType === "SERVICE"
+      ? "/admin/service-pages"
+      : "/admin/generic-pages";
+
+  const selectedItem = navItems.find(
+    (item) => item.id === (selectedItemId || selectedNavbarItemId)
+  );
 
   const form = useForm<ServicePageForm>({
     resolver: zodResolver(servicePageFormSchema),
     defaultValues: existingServicePage
       ? {
-          navbarItemId: existingServicePage.navbarItemId,
-          sections: existingServicePage.sections.map((s) => ({
-            id: s.id,
-            title: s.title,
-            content: s.content,
-            order: s.order,
-          })),
-        }
+        navbarItemId: existingServicePage.navbarItemId,
+        sections: existingServicePage.sections.map((s) => ({
+          id: s.id,
+          title: s.title,
+          content: s.content,
+          order: s.order,
+        })),
+      }
       : {
-          navbarItemId: selectedItemId || "",
-          sections: [{ title: "", content: "", order: 1 }],
-        },
+        navbarItemId: selectedItemId || "",
+        sections: [{ title: "", content: "", order: 1 }],
+      },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -154,13 +172,54 @@ export function ServicePageManager({
     const regionParam =
       searchParams?.get("region") || (region === "US" ? "US" : "INDIA");
     next.set("region", regionParam);
-    router.push(`/admin/service-pages?${next.toString()}`);
+    router.push(`${baseAdminPath}?${next.toString()}`);
   };
 
   const handleBackToNavbar = () => {
     const next = new URLSearchParams(searchParams?.toString() ?? "");
     next.delete("navbarItemId");
-    router.push(`/admin/service-pages?${next.toString()}`);
+    router.push(`${baseAdminPath}?${next.toString()}`);
+  };
+
+  const handleDeleteServicePage = async () => {
+    if (!existingServicePage?.id) {
+      setMessage("No service page to delete");
+      return;
+    }
+
+    setDeleting(true);
+    setMessage(null);
+
+    try {
+      const response = await fetch(`/api/admin/service-pages?id=${existingServicePage.id}`, {
+        method: "DELETE",
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        const errorMsg =
+          result.error?.message ||
+          (typeof result.error === "string"
+            ? result.error
+            : JSON.stringify(result.error)) ||
+          "Failed to delete service page";
+        setMessage(errorMsg);
+        return;
+      }
+
+      setMessage("Service page deleted successfully!");
+      setTimeout(() => {
+        // Navigate back to the list
+        handleBackToNavbar();
+      }, 2000);
+    } catch (error) {
+      setMessage("Network error. Please try again.");
+      console.error("Error deleting service page:", error);
+    } finally {
+      setDeleting(false);
+      setShowDeleteDialog(false);
+    }
   };
 
   const handleSectionUpdate = async (index: number) => {
@@ -267,7 +326,7 @@ export function ServicePageManager({
       <div className="space-y-6">
         <div className="rounded-3xl border border-blue-600 bg-white p-8 shadow-sm">
           <h2 className="text-xl font-semibold text-slate-900 mb-4">
-            Select a Service Page
+            Select a {pageLabel}
           </h2>
           <p className="text-sm text-slate-600 mb-6">
             Choose a navbar item to create or edit its service page with
@@ -295,32 +354,27 @@ export function ServicePageManager({
                     </div>
                     {hasServicePage && (
                       <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
-                        Has Service Page
+                        {pageLabel} Created
                       </span>
                     )}
                   </div>
                 </button>
               );
             })}
-          </div>
         </div>
       </div>
-    );
-  }
-
-  const selectedItem = navItems.find(
-    (item) => item.id === (selectedItemId || selectedNavbarItemId)
+    </div>
   );
+}
 
   return (
     <div className="space-y-6">
       {message && (
         <div
-          className={`rounded-lg p-4 border ${
-            message.includes("success")
-              ? "bg-green-50 text-green-800 border-green-200"
-              : "bg-red-50 text-red-800 border-red-200"
-          }`}
+          className={`rounded-lg p-4 border ${message.includes("success")
+            ? "bg-green-50 text-green-800 border-green-200"
+            : "bg-red-50 text-red-800 border-red-200"
+            }`}
         >
           <div className="flex items-center gap-2">
             {message.includes("success") ? (
@@ -351,8 +405,9 @@ export function ServicePageManager({
             <div>
               <h2 className="text-xl font-semibold text-slate-900">
                 {existingServicePage
-                  ? "Edit Service Page"
-                  : "Create Service Page"}
+                  ? `Edit ${pageLabel}`
+                  : `Create ${pageLabel}`}
+
               </h2>
               {selectedItem && (
                 <p className="text-sm text-slate-600 mt-1">
@@ -362,25 +417,48 @@ export function ServicePageManager({
                 </p>
               )}
             </div>
-            <button
-              onClick={handleBackToNavbar}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+            <div className="flex items-center gap-2">
+              {existingServicePage && (
+                <button
+                  onClick={() => setShowDeleteDialog(true)}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                  Delete Page
+                </button>
+              )}
+              <button
+                onClick={handleBackToNavbar}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-              Back to List
-            </button>
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                  />
+                </svg>
+                Back to List
+              </button>
+            </div>
           </div>
         </div>
 
@@ -465,9 +543,8 @@ export function ServicePageManager({
                       )}
 
                       <svg
-                        className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${
-                          isExpanded ? "rotate-180" : ""
-                        }`}
+                        className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""
+                          }`}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -590,8 +667,8 @@ export function ServicePageManager({
                         {savingSection === index
                           ? "Saving..."
                           : section?.id
-                          ? `Update Section ${index + 1}`
-                          : `Save Section ${index + 1}`}
+                            ? `Update Section ${index + 1}`
+                            : `Save Section ${index + 1}`}
                       </button>
                     </div>
                   )}
@@ -604,7 +681,7 @@ export function ServicePageManager({
           {existingServicePage?.id && (
             <div className="border-t border-slate-200 pt-8">
               <SEOMetaEditor
-                pageType="SERVICE"
+                pageType={pageType}
                 pageId={existingServicePage.id}
                 pageName={selectedItem?.label}
               />
@@ -612,6 +689,62 @@ export function ServicePageManager({
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-red-100">
+                <svg
+                  className="w-5 h-5 text-red-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">
+                  Delete Service Page
+                </h3>
+                <p className="text-sm text-slate-600">
+                  This action cannot be undone.
+                </p>
+              </div>
+            </div>
+
+            <p className="text-sm text-slate-700 mb-6">
+              Are you sure you want to delete the service page for{" "}
+              <span className="font-semibold">{selectedItem?.label}</span>? This will
+              permanently delete the page and all its sections.
+            </p>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowDeleteDialog(false)}
+                className="flex-1 px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
+                disabled={deleting}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteServicePage}
+                disabled={deleting}
+                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition"
+              >
+                {deleting ? "Deleting..." : "Delete Page"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
