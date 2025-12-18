@@ -43,7 +43,7 @@ export default function RunningLogoCarousel() {
 
   return (
     <div
-      className="w-full bg-purple-600 py-4 overflow-hidden"
+      className="w-full bg-purple-600 py-4 overflow-hidden mt-6 md:mt-0"
       data-aos="fade-up"
     >
       <div className="mx-auto max-w-6xl px-4 text-center text-white">

@@ -124,7 +124,7 @@ export default function CashManagementDiagram() {
   };
 
   return (
-    <section className="w-full -mb-16 md:-mb-32 ">
+    <section className="w-full md:-mb-32 hidden md:block">
       <style
         dangerouslySetInnerHTML={{
           __html: `
@@ -141,7 +141,7 @@ export default function CashManagementDiagram() {
       />
       <div
         ref={containerRef}
-        className="relative mx-auto max-w-6xl h-[400px] md:h-[480px]"
+        className="relative mx-auto max-w-6xl h-[400px] md:h-[480px] hidden md:block"
       >
         {/* SVG CONNECTORS */}
         {dimensions.width > 0 && (
@@ -237,20 +237,22 @@ export default function CashManagementDiagram() {
         ))}
       </div>
 
-      {/* MOBILE FALLBACK */}
-      <div className="mt-12 md:hidden space-y-4 px-6">
+      {/* MOBILE CARDS */}
+      {/* <div className="mt-8 md:hidden space-y-4 px-6">
         {features.map((f) => (
           <div
             key={`mobile-${f.id}`}
             className="rounded-xl bg-white border border-slate-200 shadow p-4"
           >
-            <div className="font-medium text-slate-800">{f.title}</div>
-            <div className="mt-2 text-xs text-slate-500">
-              Powered by AI Cash Engine
+            <div className="flex items-center gap-3 font-medium text-slate-800">
+              <span className="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-200">
+                {f.icon}
+              </span>
+              <span className="font-semibold">{f.title}</span>
             </div>
           </div>
         ))}
-      </div>
+      </div> */}
     </section>
   );
 }
