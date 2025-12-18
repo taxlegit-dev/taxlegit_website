@@ -1,10 +1,8 @@
-import { Region } from "@prisma/client";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ProviderTree } from "@/components/providers/provider-tree";
-import { NavbarServer } from "@/components/navigation/navbar-server";
-import Footer from "@/components/footer";
+import "aos/dist/aos.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,17 +26,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const region = Region.INDIA;
-
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="min-h-screen bg-white text-black antialiased ">
-        <ProviderTree>
-          <NavbarServer region={region} />
-          {children}
-
-          <Footer />
-        </ProviderTree>
+        <ProviderTree>{children}</ProviderTree>
       </body>
     </html>
   );

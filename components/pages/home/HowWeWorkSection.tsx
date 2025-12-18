@@ -89,7 +89,7 @@ export default function WorkTimeline() {
           style={{ height: getLineHeight() }}
         />
 
-        <div className="flex flex-col gap-20">
+        <div className="flex flex-col gap-12">
           {steps.map((step, i) => (
             <div
               key={i}
@@ -114,7 +114,7 @@ export default function WorkTimeline() {
                     alt={step.title}
                     width={500}
                     height={300}
-                    className="object-cover w-full h-40 md:h-60"
+                    className="object-cover w-full h-24 md:h-36"
                   />
                 </div>
               </div>
@@ -163,14 +163,17 @@ export default function WorkTimeline() {
 
               {/* CONTENT BLOCK */}
               <div className="w-full md:w-1/2 p-6 rounded-xl bg-white shadow-md border border-gray-100 transition-all duration-300 hover:shadow-lg hover:border-blue-100">
-                {/* ICON */}
-                <div className={`mb-3 transition-transform duration-300 `}>
-                  {step.icon}
+                {/* ICON + TITLE */}
+                <div className="mb-3 flex items-center gap-3">
+                  <span className="text-blue-600 flex-shrink-0">
+                    {step.icon}
+                  </span>
+                  <span className="text-xl font-bold text-gray-900">
+                    {step.title}
+                  </span>
                 </div>
 
-                <h3 className="text-xl font-bold text-gray-900 mb-3">
-                  {step.title}
-                </h3>
+                {/* DESCRIPTION */}
                 <p className="text-gray-700 leading-relaxed">{step.desc}</p>
               </div>
             </div>

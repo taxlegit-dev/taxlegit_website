@@ -17,6 +17,7 @@ export async function NavbarServer({ region }: NavbarServerProps) {
       children: {
         where: {
           isActive: true,
+          pageType: "SERVICE",
         },
         orderBy: { order: "asc" },
       },
@@ -32,17 +33,14 @@ export async function NavbarServer({ region }: NavbarServerProps) {
     const children = item.children;
 
     // Group children by groupLabel
-    const groupedChildren = children.reduce(
-      (acc, child) => {
-        const groupKey = child.groupLabel || "default";
-        if (!acc[groupKey]) {
-          acc[groupKey] = [];
-        }
-        acc[groupKey].push(child);
-        return acc;
-      },
-      {} as Record<string, typeof children>
-    );
+    const groupedChildren = children.reduce((acc, child) => {
+      const groupKey = child.groupLabel || "default";
+      if (!acc[groupKey]) {
+        acc[groupKey] = [];
+      }
+      acc[groupKey].push(child);
+      return acc;
+    }, {} as Record<string, typeof children>);
 
     return {
       id: item.id,
@@ -65,4 +63,3 @@ export async function NavbarServer({ region }: NavbarServerProps) {
 
   return <MegaNavbar region={region} initialItems={structuredItems} />;
 }
-

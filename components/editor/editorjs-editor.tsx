@@ -4,7 +4,6 @@ import { useCallback, useRef, useEffect, useState } from "react";
 import type { OutputData } from "@editorjs/editorjs";
 import EditorJS from "@editorjs/editorjs";
 
-// Core tools
 import Header from "@editorjs/header";
 import List from "@editorjs/list";
 import Table from "@editorjs/table";
@@ -19,6 +18,7 @@ import ImageLinkTune from "./editorjs-blocks/image-link-tune";
 // Custom inline tools
 import FontSizeInlineTool from "./editorjs-blocks/font-size-inline-tool";
 import TextColorInlineTool from "./editorjs-blocks/text-color-inline-tool";
+import CTAButtonBlock from "./editorjs-blocks/cta-button-block";
 
 type EditorJsEditorProps = {
   value?: OutputData | null;
@@ -125,6 +125,7 @@ export function EditorJsEditor({
           class: Paragraph as unknown as never,
           inlineToolbar: ["bold", "italic", "link", "fontSize", "textColor"],
         },
+
         header: {
           class: Header as unknown as never,
           inlineToolbar: ["bold", "italic", "link", "fontSize", "textColor"],
@@ -194,7 +195,11 @@ export function EditorJsEditor({
               }
             : undefined,
         },
+        cta: {
+          class: CTAButtonBlock as unknown as never,
+        },
       },
+
       onChange: async () => {
         if (editor) {
           try {

@@ -324,7 +324,7 @@ export function ServicePageManager({
   if (!selectedItemId && !selectedNavbarItemId) {
     return (
       <div className="space-y-6">
-        <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="rounded-3xl border border-blue-600 bg-white p-8 shadow-sm">
           <h2 className="text-xl font-semibold text-slate-900 mb-4">
             Select a {pageLabel}
           </h2>
@@ -500,10 +500,7 @@ export function ServicePageManager({
               const section = form.watch(`sections.${index}`);
 
               return (
-                <div
-                  key={field.id}
-                  className="rounded-lg border border-slate-200 overflow-hidden"
-                >
+                <div key={field.id} className="rounded-lg">
                   {/* Section Header - Collapsible */}
                   <button
                     type="button"
