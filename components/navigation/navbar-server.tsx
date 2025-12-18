@@ -24,7 +24,6 @@ export async function NavbarServer({ region }: NavbarServerProps) {
     },
     orderBy: { order: "asc" },
   });
-  console.log(items);
 
   // Separate top-level items and their children
   const topLevelItems = items.filter((item) => !item.parentId);

@@ -60,25 +60,24 @@ function renderBlock(
     case "header":
       const level = block.data.level || 2;
       const headerProps = {
-        key: block.id,
         className: `mb-4 font-semibold ${headingColor}`,
         dangerouslySetInnerHTML: { __html: block.data.text || "" },
       };
       switch (level) {
         case 1:
-          return <h1 {...headerProps} />;
+          return <h1 key={block.id} {...headerProps} />;
         case 2:
-          return <h2 {...headerProps} />;
+          return <h2 key={block.id} {...headerProps} />;
         case 3:
-          return <h3 {...headerProps} />;
+          return <h3 key={block.id} {...headerProps} />;
         case 4:
-          return <h4 {...headerProps} />;
+          return <h4 key={block.id} {...headerProps} />;
         case 5:
-          return <h5 {...headerProps} />;
+          return <h5 key={block.id} {...headerProps} />;
         case 6:
-          return <h6 {...headerProps} />;
+          return <h6 key={block.id} {...headerProps} />;
         default:
-          return <h2 {...headerProps} />;
+          return <h2 key={block.id} {...headerProps} />;
       }
 
     case "list":

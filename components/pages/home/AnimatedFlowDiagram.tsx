@@ -72,6 +72,7 @@ export default function CashManagementDiagram() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isHovered, setIsHovered] = useState(false);
+  const [isAutoActive, setIsAutoActive] = useState(false);
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -86,6 +87,16 @@ export default function CashManagementDiagram() {
     updateDimensions();
     window.addEventListener("resize", updateDimensions);
     return () => window.removeEventListener("resize", updateDimensions);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsAutoActive(true);
+      const timeout = setTimeout(() => setIsAutoActive(false), 1600);
+      return () => clearTimeout(timeout);
+    }, 2000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const getPath = (feature: Feature) => {
@@ -172,7 +183,7 @@ export default function CashManagementDiagram() {
                   fill="none"
                   className="transition-all duration-300"
                 />
-                {isHovered && (
+                {(isHovered || isAutoActive) && (
                   <path
                     d={getPath(f)}
                     stroke="url(#lineGradient)"
