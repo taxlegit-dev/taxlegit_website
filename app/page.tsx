@@ -8,6 +8,8 @@ import Testimonial from "@/components/pages/home/ReviewSlider";
 import RecentBlogsSection from "@/components/pages/home/RecentBlogsSection";
 import { FAQSection } from "@/components/faq/faq-section";
 // import AboutUs from "@/components/pages/about/AboutTaxlegit";
+import AnimatedFlowDiagram from "@/components/pages/home/AnimatedFlowDiagram";
+import RunningLogoCarousel from "@/components/pages/common/RunningLogoCarousel";
 import { NavbarServer } from "@/components/navigation/navbar-server";
 import Footer from "@/components/footer";
 export default async function IndiaHomePage() {
@@ -31,8 +33,9 @@ export default async function IndiaHomePage() {
     <div className="min-h-screen bg-white text-black">
       <div>
         <NavbarServer region={region} />
-
         <TaxLegitHero />
+        <AnimatedFlowDiagram />
+        <RunningLogoCarousel />
         {/* <AboutUs /> */}
         <ServicesSection />
         <HowWeWorkSection />
