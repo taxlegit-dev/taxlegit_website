@@ -11,8 +11,8 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <div>
-        <NavbarServer region={region} />
+      <NavbarServer region={region} />
+      <div className="pt-[72px]">
         <AboutUsSection />
         <OurServicesSection />
         {/* <WhyChooseUs /> */}

@@ -60,7 +60,6 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
 
   return (
     <div className="min-h-screen ">
-      <StatsBar />
 
       {/* Sticky TOC Bar - Below Fixed Navbar */}
       <div
