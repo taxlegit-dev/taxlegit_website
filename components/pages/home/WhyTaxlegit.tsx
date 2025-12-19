@@ -32,7 +32,7 @@ export default function WhyChooseTaxlegit() {
       <div
         className="
         hidden md:block absolute right-0 top-0 h-full w-[55%]
-        bg-gradient-to-br from-blue-100 to-blue-300
+        bg-gradient-to-br from-purple-600 to-purple-700
         shadow-2xl
         "
         style={{
@@ -43,10 +43,10 @@ export default function WhyChooseTaxlegit() {
       <div className="relative max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20 items-center">
         {/* LEFT SIDE TEXT */}
         <div className="">
-          <span className="text-xs md:text-sm font-medium px-3 py-1 rounded-full inline-block bg-blue-200 text-indigo-700">
+          <span className="text-xs md:text-sm font-medium px-3 py-1 rounded-full inline-block bg-purple-200 text-indigo-700">
             Start Your Business
           </span>
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight font-[Gilroy] mt-3">
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight  mt-3">
             Why Choose Taxlegit?
           </h2>
 
@@ -62,7 +62,7 @@ export default function WhyChooseTaxlegit() {
               key={i}
               className="
     flex items-start md:items-center gap-3 md:gap-4 p-1 md:p-2 rounded-xl
-    bg-blue-600/90 md:bg-white/10 md:backdrop-blur-xl
+    bg-purple-700/90 md:bg-white/10 md:backdrop-blur-xl
     border border-white/20 shadow-xl
     text-white
   "
@@ -70,7 +70,7 @@ export default function WhyChooseTaxlegit() {
               <div
                 className="
       w-12 md:w-14 h-12 md:h-14 rounded-full flex items-center justify-center
-      bg-gradient-to-br from-blue-700 to-blue-500
+      bg-gradient-to-br from-purple-100 to-purple-500
       shadow-xl flex-shrink-0
     "
               >
@@ -78,11 +78,11 @@ export default function WhyChooseTaxlegit() {
               </div>
 
               <div>
-                <h3 className="text-blue-600 text-base md:text-lg font-semibold">
+                <h3 className="text-white text-base md:text-lg font-semibold">
                   {item.title}
                 </h3>
 
-                <p className="text-slate-600 text-xs md:text-sm mt-1">
+                <p className="text-slate-100 text-xs md:text-sm mt-1">
                   {item.desc}
                 </p>
               </div>

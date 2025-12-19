@@ -18,10 +18,10 @@ export function UsHero({ hero }: UsHeroProps) {
   const description = hero.description || "";
 
   return (
-    <section className="relative min-h-[5 00px] flex items-center justify-center bg-gradient-to-br from-white via-blue-50 to-purple-50 overflow-hidden">
+    <section className="relative min-h-[5 00px] flex items-center justify-center bg-gradient-to-br from-white via-purple-50 to-purple-50 overflow-hidden">
       {/* Background Blur Shapes */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
+        <div className="absolute top-20 left-20 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
         <div className="absolute top-40 right-20 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
       </div>
 

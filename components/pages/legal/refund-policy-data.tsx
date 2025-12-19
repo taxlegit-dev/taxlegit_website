@@ -37,7 +37,7 @@ export const refundPolicyData = {
           </p>
 
           <div className="grid md:grid-cols-2 gap-4">
-            <div className="p-5 border border-blue-100 rounded-lg bg-blue-50">
+            <div className="p-5 border border-purple-100 rounded-lg bg-purple-50">
               <h4 className="font-semibold text-gray-900 mb-2">
                 ⏰ Time Frame
               </h4>
@@ -48,7 +48,7 @@ export const refundPolicyData = {
               </p>
             </div>
 
-            <div className="p-5 border border-blue-100 rounded-lg bg-blue-50">
+            <div className="p-5 border border-purple-100 rounded-lg bg-purple-50">
               <h4 className="font-semibold text-gray-900 mb-2">
                 📋 Service Status
               </h4>
@@ -59,7 +59,7 @@ export const refundPolicyData = {
               </p>
             </div>
 
-            <div className="p-5 border border-blue-100 rounded-lg bg-blue-50 md:col-span-2">
+            <div className="p-5 border border-purple-100 rounded-lg bg-purple-50 md:col-span-2">
               <h4 className="font-semibold text-gray-900 mb-2">
                 🛡️ Required Information
               </h4>
@@ -92,9 +92,7 @@ export const refundPolicyData = {
             <li>
               Government fees paid to authorities for registrations or licenses.
             </li>
-            <li>
-              Customized services once work has already begun.
-            </li>
+            <li>Customized services once work has already begun.</li>
           </ul>
         </div>
       ),
@@ -107,16 +105,12 @@ export const refundPolicyData = {
       content: (
         <div className="space-y-4">
           <ol className="list-decimal pl-6 space-y-3 text-gray-700">
-            <li>
-              Contact our support team within 14 days of your purchase.
-            </li>
+            <li>Contact our support team within 14 days of your purchase.</li>
             <li>
               Share your order number, purchase date, and reason for the refund
               request.
             </li>
-            <li>
-              Attach any required documents such as invoices or receipts.
-            </li>
+            <li>Attach any required documents such as invoices or receipts.</li>
             <li>
               We&apos;ll review your request and respond within 5–7 business
               days.
@@ -127,15 +121,12 @@ export const refundPolicyData = {
             Email:{" "}
             <a
               href="mailto:121@taxlegit.com"
-              className="text-blue-600 underline"
+              className="text-purple-600 underline"
             >
               121@taxlegit.com
             </a>{" "}
             | Phone:{" "}
-            <a
-              href="tel:+918929218091"
-              className="text-blue-600 underline"
-            >
+            <a href="tel:+918929218091" className="text-purple-600 underline">
               +91 89292 18091
             </a>
           </p>
@@ -186,9 +177,7 @@ export const refundPolicyData = {
           <p>
             If canceled during service delivery, a partial refund may apply.
           </p>
-          <p>
-            No refunds are available once services are fully completed.
-          </p>
+          <p>No refunds are available once services are fully completed.</p>
         </div>
       ),
     },
@@ -202,7 +191,9 @@ export const refundPolicyData = {
           <li>Refund requests made after 14 days.</li>
           <li>Services already completed.</li>
           <li>Missing or insufficient documentation.</li>
-          <li>Non-refundable services such as consultations or government fees.</li>
+          <li>
+            Non-refundable services such as consultations or government fees.
+          </li>
         </ul>
       ),
     },
@@ -249,7 +240,6 @@ export const refundPolicyData = {
         value: "Mon–Sat: 9AM–7PM | Response within 24 hours",
       },
     ],
-    note:
-      "Please keep your order number and purchase details ready for faster assistance.",
+    note: "Please keep your order number and purchase details ready for faster assistance.",
   },
 };

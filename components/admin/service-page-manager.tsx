@@ -51,8 +51,6 @@ type ServicePageWithNavItem = ServicePageWithSections & {
 
 type PageType = "SERVICE" | "GENERIC";
 
-
-
 type ServicePageManagerProps = {
   pageType: PageType;
   region: "INDIA" | "US";
@@ -99,9 +97,7 @@ export function ServicePageManager({
   const pageLabel = pageType === "SERVICE" ? "Service Page" : "Generic Page";
 
   const baseAdminPath =
-    pageType === "SERVICE"
-      ? "/admin/service-pages"
-      : "/admin/generic-pages";
+    pageType === "SERVICE" ? "/admin/service-pages" : "/admin/generic-pages";
 
   const selectedItem = navItems.find(
     (item) => item.id === (selectedItemId || selectedNavbarItemId)
@@ -111,18 +107,18 @@ export function ServicePageManager({
     resolver: zodResolver(servicePageFormSchema),
     defaultValues: existingServicePage
       ? {
-        navbarItemId: existingServicePage.navbarItemId,
-        sections: existingServicePage.sections.map((s) => ({
-          id: s.id,
-          title: s.title,
-          content: s.content,
-          order: s.order,
-        })),
-      }
+          navbarItemId: existingServicePage.navbarItemId,
+          sections: existingServicePage.sections.map((s) => ({
+            id: s.id,
+            title: s.title,
+            content: s.content,
+            order: s.order,
+          })),
+        }
       : {
-        navbarItemId: selectedItemId || "",
-        sections: [{ title: "", content: "", order: 1 }],
-      },
+          navbarItemId: selectedItemId || "",
+          sections: [{ title: "", content: "", order: 1 }],
+        },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -191,9 +187,12 @@ export function ServicePageManager({
     setMessage(null);
 
     try {
-      const response = await fetch(`/api/admin/service-pages?id=${existingServicePage.id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/admin/service-pages?id=${existingServicePage.id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       const result = await response.json();
 
@@ -324,7 +323,7 @@ export function ServicePageManager({
   if (!selectedItemId && !selectedNavbarItemId) {
     return (
       <div className="space-y-6">
-        <div className="rounded-3xl border border-blue-600 bg-white p-8 shadow-sm">
+        <div className="rounded-3xl border border-purple-600 bg-white p-8 shadow-sm">
           <h2 className="text-xl font-semibold text-slate-900 mb-4">
             Select a {pageLabel}
           </h2>
@@ -361,20 +360,21 @@ export function ServicePageManager({
                 </button>
               );
             })}
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <div className="space-y-6">
       {message && (
         <div
-          className={`rounded-lg p-4 border ${message.includes("success")
-            ? "bg-green-50 text-green-800 border-green-200"
-            : "bg-red-50 text-red-800 border-red-200"
-            }`}
+          className={`rounded-lg p-4 border ${
+            message.includes("success")
+              ? "bg-green-50 text-green-800 border-green-200"
+              : "bg-red-50 text-red-800 border-red-200"
+          }`}
         >
           <div className="flex items-center gap-2">
             {message.includes("success") ? (
@@ -407,7 +407,6 @@ export function ServicePageManager({
                 {existingServicePage
                   ? `Edit ${pageLabel}`
                   : `Create ${pageLabel}`}
-
               </h2>
               {selectedItem && (
                 <p className="text-sm text-slate-600 mt-1">
@@ -543,8 +542,9 @@ export function ServicePageManager({
                       )}
 
                       <svg
-                        className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""
-                          }`}
+                        className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${
+                          isExpanded ? "rotate-180" : ""
+                        }`}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -667,8 +667,8 @@ export function ServicePageManager({
                         {savingSection === index
                           ? "Saving..."
                           : section?.id
-                            ? `Update Section ${index + 1}`
-                            : `Save Section ${index + 1}`}
+                          ? `Update Section ${index + 1}`
+                          : `Save Section ${index + 1}`}
                       </button>
                     </div>
                   )}
@@ -722,8 +722,8 @@ export function ServicePageManager({
 
             <p className="text-sm text-slate-700 mb-6">
               Are you sure you want to delete the service page for{" "}
-              <span className="font-semibold">{selectedItem?.label}</span>? This will
-              permanently delete the page and all its sections.
+              <span className="font-semibold">{selectedItem?.label}</span>? This
+              will permanently delete the page and all its sections.
             </p>
 
             <div className="flex items-center gap-3">

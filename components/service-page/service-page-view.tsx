@@ -75,8 +75,8 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
                 onClick={() => scrollToSection(index)}
                 className={`whitespace-nowrap px-5 py-2 text-base font-bold transition-all duration-200 ${
                   activeSection === index
-                    ? "border-b-3 border-blue-600 text-blue-700 text-lg"
-                    : "text-slate-700 hover:text-blue-600 hover:border-b-1 hover:border-blue-300"
+                    ? "border-b-3 border-purple-600 text-purple-700 text-lg"
+                    : "text-slate-700 hover:text-purple-600 hover:border-b-1 hover:border-purple-300"
                 }`}
               >
                 {section.title}

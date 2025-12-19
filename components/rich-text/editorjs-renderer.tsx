@@ -372,12 +372,12 @@ function renderBlock(
             className="
           inline-flex items-center justify-center
           rounded-full
-          bg-blue-500
+          bg-purple-500
           px-6 py-3
           text-lg font-bold text-white
           shadow-lg
           transition-all duration-200
-          hover:bg-blue-700 hover:scale-105
+          hover:bg-purple-700 hover:scale-105
         "
           >
             {text}

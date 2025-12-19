@@ -6,6 +6,8 @@ export default function RunningLogoCarousel() {
   useEffect(() => {
     AOS.init({
       duration: 800,
+      once: false,
+      mirror: true,
     });
   }, []);
   const logos = [
@@ -47,11 +49,8 @@ export default function RunningLogoCarousel() {
       data-aos="fade-up"
     >
       <div className="mx-auto max-w-6xl px-4 text-center text-white">
-        <div className="text-xl font-semibold uppercase tracking-[0.2em]">
-          Trusted by
-        </div>
-        <div className="mt-1 text-md text-purple-100">
-          Growing businesses across India use TaxLegit
+        <div className="text-3xl md:text-4xl lg:text-5xl font-semibold py-3">
+          Trusted By
         </div>
       </div>
       <div className="relative">

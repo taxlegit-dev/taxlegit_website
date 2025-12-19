@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function AboutUsSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-white to-blue-50 py-20">
+    <section className="relative overflow-hidden bg-gradient-to-b from-white to-purple-50 py-20">
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid items-center gap-14 lg:grid-cols-2">
           {/* LEFT – IMAGE STACK */}
@@ -29,7 +29,7 @@ export default function AboutUsSection() {
             </div>
 
             {/* Badge */}
-            <div className="absolute right-1 -top-16 z-20 rounded-2xl bg-blue-600 px-6 py-4 text-center text-white shadow-lg">
+            <div className="absolute right-1 -top-16 z-20 rounded-2xl bg-purple-600 px-6 py-4 text-center text-white shadow-lg">
               <p className="text-sm font-medium">Trusted by</p>
               <p className="text-xl font-bold">10,000+</p>
               <p className="text-sm">Businesses</p>
@@ -38,7 +38,7 @@ export default function AboutUsSection() {
 
           {/* RIGHT – CONTENT */}
           <div>
-            <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-blue-600">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-purple-600">
               About Us
             </p>
 
@@ -88,7 +88,7 @@ function ServiceItem({
 }) {
   return (
     <div className="flex gap-4">
-      <div className="mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white">
+      <div className="mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-purple-600 text-white">
         ✓
       </div>
       <div>

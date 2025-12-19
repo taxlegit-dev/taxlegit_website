@@ -1,5 +1,6 @@
 "use client";
 import React, { useRef, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   FiBarChart2,
   FiFileText,
@@ -15,6 +16,7 @@ type Feature = {
   x: number;
   y: number;
   icon: React.ReactNode;
+  link?: string;
 };
 
 const features: Feature[] = [
@@ -25,6 +27,7 @@ const features: Feature[] = [
     x: 15,
     y: 18,
     icon: <FiBarChart2 size={20} />,
+    link: "/services/pvt",
   },
   {
     id: 2,
@@ -33,6 +36,7 @@ const features: Feature[] = [
     x: 15,
     y: 36,
     icon: <FiFileText size={20} />,
+    link: "/services/tds-return",
   },
   {
     id: 4,
@@ -41,6 +45,7 @@ const features: Feature[] = [
     x: 85,
     y: 18,
     icon: <FiDollarSign size={20} />,
+    link: "/services/section-8",
   },
   {
     id: 5,
@@ -49,6 +54,7 @@ const features: Feature[] = [
     x: 85,
     y: 35,
     icon: <FiTrendingUp size={20} />,
+    link: "/services/audit-itr",
   },
   {
     id: 6,
@@ -57,6 +63,7 @@ const features: Feature[] = [
     x: 85,
     y: 54,
     icon: <FiCreditCard size={20} />,
+    link: "/services/llp",
   },
   {
     id: 3,
@@ -65,6 +72,7 @@ const features: Feature[] = [
     x: 15,
     y: 55,
     icon: <FiCreditCard size={20} />,
+    link: "/services/ngo-darpan",
   },
 ];
 
@@ -73,6 +81,7 @@ export default function CashManagementDiagram() {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isHovered, setIsHovered] = useState(false);
   const [isAutoActive, setIsAutoActive] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -131,6 +140,25 @@ export default function CashManagementDiagram() {
       const cp2Y = endY;
 
       return `M ${startX} ${startY} C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${endX} ${endY}`;
+    }
+  };
+
+  const handleCardClick = (feature: Feature) => {
+    if (!feature.link) return;
+    if (feature.link.startsWith("http")) {
+      window.open(feature.link, "_blank", "noopener,noreferrer");
+    } else {
+      router.push(feature.link);
+    }
+  };
+
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLDivElement>,
+    feature: Feature
+  ) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleCardClick(feature);
     }
   };
 
@@ -217,14 +245,19 @@ export default function CashManagementDiagram() {
         {features.map((f) => (
           <div
             key={f.id}
-            className="absolute z-10 w-44 rounded-xl bg-white border border-slate-200
-                       shadow-md px-4 py-3 text-sm transition-all
-                       hover:-translate-y-1 hover:shadow-xl"
             style={{
               left: `${f.x}%`,
               top: `${f.y}%`,
               transform: "translate(-50%, -50%)",
             }}
+            role={f.link ? "button" : undefined}
+            tabIndex={f.link ? 0 : -1}
+            onClick={() => handleCardClick(f)}
+            onKeyDown={(event) => handleKeyDown(event, f)}
+            className={`absolute z-10 w-44 rounded-xl bg-white border border-slate-200 shadow-md px-4 py-3 text-sm transition-all hover:-translate-y-1 hover:shadow-xl ${
+              f.link ? "cursor-pointer" : "cursor-default"
+            }`}
+            aria-label={f.link ? `Open details for ${f.title}` : undefined}
           >
             <div className="flex items-center gap-2 font-medium text-slate-800">
               <span
@@ -247,23 +280,6 @@ export default function CashManagementDiagram() {
           </div>
         ))}
       </div>
-
-      {/* MOBILE CARDS */}
-      {/* <div className="mt-8 md:hidden space-y-4 px-6">
-        {features.map((f) => (
-          <div
-            key={`mobile-${f.id}`}
-            className="rounded-xl bg-white border border-slate-200 shadow p-4"
-          >
-            <div className="flex items-center gap-3 font-medium text-slate-800">
-              <span className="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-200">
-                {f.icon}
-              </span>
-              <span className="font-semibold">{f.title}</span>
-            </div>
-          </div>
-        ))}
-      </div> */}
     </section>
   );
 }

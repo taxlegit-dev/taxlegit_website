@@ -291,12 +291,12 @@ export default function ServiceSection() {
       ref={sectionRef}
       className="w-full bg-gradient-to-b from-slate-50 to-white overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto px-4 py-8 md:py-16 md:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 pt-8 md:pt-16 md:px-6 lg:px-8">
         {/* Header Section */}
         <div className="text-center mb-2 md:mb-4">
           <div className="overflow-hidden">
             <h1
-              className={`font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-6 md:mb-8 leading-tight transition-all duration-1000 ${
+              className={` text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-6 md:mb-8 leading-tight transition-all duration-1000 ${
                 isVisible
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-10"

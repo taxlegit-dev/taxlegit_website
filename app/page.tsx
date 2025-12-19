@@ -12,6 +12,7 @@ import AnimatedFlowDiagram from "@/components/pages/home/AnimatedFlowDiagram";
 import RunningLogoCarousel from "@/components/pages/common/RunningLogoCarousel";
 import { NavbarServer } from "@/components/navigation/navbar-server";
 import Footer from "@/components/footer";
+import OurProduct from "@/components/pages/home/OurProduct";
 export default async function IndiaHomePage() {
   const region = Region.INDIA;
 
@@ -39,6 +40,7 @@ export default async function IndiaHomePage() {
         {/* <AboutUs /> */}
         <ServicesSection />
         <HowWeWorkSection />
+        <OurProduct />
         <WhyChooseTaxLegitMinimal />
         <RecentBlogsSection />
         <Testimonial />

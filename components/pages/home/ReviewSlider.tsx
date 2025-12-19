@@ -130,7 +130,7 @@ export default function ReviewSlider() {
   return (
     <div className="relative bg-white text-black py-16 px-4 overflow-hidden">
       {/* Decorative Elements */}
-      <div className="absolute top-0 left-0 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
+      <div className="absolute top-0 left-0 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
       <div className="absolute bottom-0 right-0 w-72 h-72 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse delay-700"></div>
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -160,11 +160,11 @@ export default function ReviewSlider() {
             {getVisibleReviews().map((review, idx) => (
               <div
                 key={`${review.id}-${idx}`}
-                className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl p-8 flex flex-col justify-between transform hover:scale-105 hover:shadow-2xl transition-all duration-300 border border-blue-100 relative overflow-hidden group"
+                className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl p-8 flex flex-col justify-between transform hover:scale-105 hover:shadow-2xl transition-all duration-300 border border-purple-100 relative overflow-hidden group"
               >
                 {/* Quote Icon */}
                 <div className="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                  <Quote className="w-16 h-16 text-blue-600" />
+                  <Quote className="w-16 h-16 text-purple-600" />
                 </div>
 
                 {/* Profile Section */}
@@ -180,7 +180,7 @@ export default function ReviewSlider() {
                       />
                     </div>
                   ) : (
-                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-xl shadow-lg">
                       {review.name.charAt(0)}
                     </div>
                   )}
@@ -220,7 +220,7 @@ export default function ReviewSlider() {
             <button
               type="button"
               onClick={handlePrev}
-              className="pointer-events-auto h-12 w-12 rounded-full bg-white shadow-lg text-blue-600 grid place-items-center hover:bg-blue-800 hover:text-white transform hover:scale-110 active:scale-95 transition-all duration-300 -ml-6"
+              className="pointer-events-auto h-12 w-12 rounded-full bg-white shadow-lg text-purple-600 grid place-items-center hover:bg-purple-800 hover:text-white transform hover:scale-110 active:scale-95 transition-all duration-300 -ml-6"
               aria-label="Previous"
             >
               <ChevronLeft className="w-6 h-6" />
@@ -228,7 +228,7 @@ export default function ReviewSlider() {
             <button
               type="button"
               onClick={handleNext}
-              className="pointer-events-auto h-12 w-12 rounded-full bg-white shadow-lg text-blue-600 grid place-items-center hover:bg-blue-700 hover:text-white transform hover:scale-110 active:scale-95 transition-all duration-300 -mr-6"
+              className="pointer-events-auto h-12 w-12 rounded-full bg-white shadow-lg text-purple-600 grid place-items-center hover:bg-purple-700 hover:text-white transform hover:scale-110 active:scale-95 transition-all duration-300 -mr-6"
               aria-label="Next"
             >
               <ChevronRight className="w-6 h-6" />
@@ -244,7 +244,7 @@ export default function ReviewSlider() {
               onClick={() => setCurrentIndex(idx)}
               className={`transition-all duration-300 rounded-full ${
                 idx === currentIndex
-                  ? "w-8 h-3 bg-blue-600"
+                  ? "w-8 h-3 bg-purple-600"
                   : "w-3 h-3 bg-gray-300 hover:bg-gray-400"
               }`}
               aria-label={`Go to slide ${idx + 1}`}

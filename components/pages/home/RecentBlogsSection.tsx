@@ -47,7 +47,7 @@ export default async function RecentBlogsSection() {
               href={`/blog/${blog.id}`}
               className="group block h-full"
             >
-              <article className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-blue-100 hover:-translate-y-2 h-full flex flex-col">
+              <article className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-purple-100 hover:-translate-y-2 h-full flex flex-col">
                 {/* Blog Image */}
                 <div className="relative h-52 overflow-hidden bg-gray-100">
                   <Image
@@ -64,7 +64,7 @@ export default async function RecentBlogsSection() {
                 <div className="p-5 flex flex-col flex-grow">
                   {/* Category Badge */}
                   <div className="mb-3">
-                    <span className="inline-block px-3 py-1 bg-gradient-to-r from-blue-50 to-sky-50 text-blue-700 text-xs font-medium rounded-full border border-blue-100">
+                    <span className="inline-block px-3 py-1 bg-gradient-to-r from-purple-50 to-purple-50 text-purple-700 text-xs font-medium rounded-full border border-purple-100">
                       {blog.blogGroup.name}
                     </span>
                   </div>
@@ -75,7 +75,7 @@ export default async function RecentBlogsSection() {
                   </h3>
 
                   {/* Read More Link */}
-                  <div className="mt-4 flex items-center text-sm font-semibold text-blue-700 group-hover:text-sky-500 transition-colors duration-300">
+                  <div className="mt-4 flex items-center text-sm font-semibold text-purple-700 group-hover:text-purple-500 transition-colors duration-300">
                     <span>Read Article</span>
                     <svg
                       className="ml-2 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
@@ -101,7 +101,7 @@ export default async function RecentBlogsSection() {
         <div className="flex justify-center mt-12 md:mt-16">
           <Link
             href="/blogs"
-            className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-700 to-sky-400 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+            className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-700 to-purple-400 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
           >
             <span className="text-base md:text-lg">View All Blogs</span>
             <div className="relative w-6 h-6 flex items-center justify-center">

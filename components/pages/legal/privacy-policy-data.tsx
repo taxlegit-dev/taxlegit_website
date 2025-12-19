@@ -98,7 +98,7 @@ export const privacyPolicyData = {
             <li>Prevent fraud and strengthen system security</li>
           </ul>
 
-          <div className="bg-blue-50 p-4 rounded-lg">
+          <div className="bg-purple-50 p-4 rounded-lg">
             <p className="text-gray-900 font-semibold">
               Important: We never sell your personal information.
             </p>
@@ -179,7 +179,7 @@ export const privacyPolicyData = {
             Contact us at{" "}
             <a
               href="mailto:121@taxlegit.com"
-              className="text-blue-600 underline"
+              className="text-purple-600 underline"
             >
               121@taxlegit.com
             </a>{" "}
@@ -216,7 +216,11 @@ export const privacyPolicyData = {
     description:
       "For questions regarding privacy or data protection, reach out to us.",
     items: [
-      { title: "Email", value: "121@taxlegit.com", href: "mailto:121@taxlegit.com" },
+      {
+        title: "Email",
+        value: "121@taxlegit.com",
+        href: "mailto:121@taxlegit.com",
+      },
       { title: "Phone", value: "+91-8929218091", href: "tel:+918929218091" },
       { title: "Website", value: "taxlegit.com", href: "https://taxlegit.com" },
     ],

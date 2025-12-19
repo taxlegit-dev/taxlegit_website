@@ -48,25 +48,25 @@ const Footer = () => {
       icon: <FaInstagram />,
       href: "#",
       label: "Instagram",
-      color: "hover:bg-blue-600",
+      color: "hover:bg-purple-600",
     },
     {
       icon: <FaTwitter />,
       href: "#",
       label: "Twitter",
-      color: "hover:bg-blue-500",
+      color: "hover:bg-purple-500",
     },
     {
       icon: <FaFacebookF />,
       href: "#",
       label: "Facebook",
-      color: "hover:bg-blue-700",
+      color: "hover:bg-purple-700",
     },
     {
       icon: <FaLinkedinIn />,
       href: "#",
       label: "LinkedIn",
-      color: "hover:bg-blue-800",
+      color: "hover:bg-purple-800",
     },
     {
       icon: <FaYoutube />,
@@ -87,7 +87,7 @@ const Footer = () => {
             <div
               className="
         max-w-6xl mx-auto relative z-10 
-        bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl 
+        bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl 
         px-8 md:px-16 py-0
         flex flex-col md:flex-row items-center justify-between 
         shadow-2xl
@@ -121,7 +121,7 @@ const Footer = () => {
                 <button
                   className="
             group relative w-full md:w-auto
-            bg-white text-blue-700 font-bold 
+            bg-white text-purple-700 font-bold 
             px-6 md:px-10 py-3 md:py-4 rounded-lg md:rounded-xl 
             shadow-lg hover:shadow-2xl 
             transition-all duration-300
@@ -141,7 +141,7 @@ const Footer = () => {
               className="
         absolute -bottom-4 left-1/2 transform -translate-x-1/2
         w-3/4 h-8
-        bg-gradient-to-t from-blue-900/30 to-transparent
+        bg-gradient-to-t from-purple-900/30 to-transparent
         rounded-full
         blur-md
       "
@@ -158,7 +158,7 @@ const Footer = () => {
               <div className="lg:col-span-2 space-y-6">
                 <div>
                   <h2 className="text-2xl font-bold text-white mb-4">
-                    Tax<span className="text-blue-400">legit</span>
+                    Tax<span className="text-purple-400">legit</span>
                   </h2>
                   <p className="text-gray-400 leading-relaxed max-w-md">
                     Your trusted partner for business registrations, compliance,
@@ -171,23 +171,23 @@ const Footer = () => {
                   <div className="space-y-2">
                     <a
                       href="tel:+918929218091"
-                      className="flex items-center gap-3 text-white hover:text-blue-400 transition-colors"
+                      className="flex items-center gap-3 text-white hover:text-purple-400 transition-colors"
                     >
-                      <FaPhoneAlt className="text-blue-400" />
+                      <FaPhoneAlt className="text-purple-400" />
                       <span>+91 89292 18091</span>
                     </a>
                     <a
                       href="https://mail.google.com/mail/?view=cm&fs=1&to=info@taxlegit.com"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 text-white hover:text-blue-400 transition-colors"
+                      className="flex items-center gap-3 text-white hover:text-purple-400 transition-colors"
                     >
-                      <FaEnvelope className="text-blue-400" />
+                      <FaEnvelope className="text-purple-400" />
                       <span>info@taxlegit.com</span>
                     </a>
                   </div>
                   <div className="flex items-start gap-3">
-                    <FaMapMarkerAlt className="text-blue-400 mt-1 flex-shrink-0" />
+                    <FaMapMarkerAlt className="text-purple-400 mt-1 flex-shrink-0" />
                     <div>
                       <p className="font-medium text-white">
                         Registered Office
@@ -221,7 +221,7 @@ const Footer = () => {
 
               {/* Popular Registration */}
               <div className="space-y-6">
-                <h3 className="text-lg font-semibold text-white border-l-4 border-blue-500 pl-3">
+                <h3 className="text-lg font-semibold text-white border-l-4 border-purple-500 pl-3">
                   Popular Registration
                 </h3>
                 <ul className="space-y-3">
@@ -231,7 +231,7 @@ const Footer = () => {
                         href={item.href}
                         className="group flex items-center text-gray-400 hover:text-white transition-colors duration-300"
                       >
-                        <FaChevronRight className="mr-2 text-blue-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <FaChevronRight className="mr-2 text-purple-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity" />
                         <span>{item.name}</span>
                       </a>
                     </li>
@@ -262,7 +262,7 @@ const Footer = () => {
               {/* Quick Links */}
               <div className="space-y-8">
                 <div>
-                  <h3 className="text-lg font-semibold text-white border-l-4 border-blue-400 pl-3">
+                  <h3 className="text-lg font-semibold text-white border-l-4 border-purple-400 pl-3">
                     Company
                   </h3>
                   <ul className="space-y-3 mt-4">
@@ -272,7 +272,7 @@ const Footer = () => {
                           href={item.href}
                           className="group flex items-center text-gray-400 hover:text-white transition-colors duration-300"
                         >
-                          <FaChevronRight className="mr-2 text-blue-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <FaChevronRight className="mr-2 text-purple-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity" />
                           <span>{item.name}</span>
                         </a>
                       </li>
