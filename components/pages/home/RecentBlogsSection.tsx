@@ -26,8 +26,8 @@ export default async function RecentBlogsSection() {
   const blogs: Blog[] = data.blogs.slice(0, 4); // Get first 4 blogs
 
   return (
-    <section className="w-full bg-gradient-to-b from-gray-50 to-white py-8 md:py-16 lg:py-20">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+    <section className="w-full bg-white py-8 md:py-16 lg:py-20">
+      <div className="max-w-7xl mx-auto ">
         {/* Heading */}
         <div className="text-center mb-12 md:mb-16">
           <h2 className="font-[Gilroy] text-3xl md:text-4xl lg:text-5xl font-bold text-slate-700 mb-4">

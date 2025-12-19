@@ -9,7 +9,7 @@ interface FeaturedBlogProps {
 export default function FeaturedBlog({ blog }: FeaturedBlogProps) {
   return (
     <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 md:px-8 md:py-12 lg:px-10">
-      <div className="grid gap-6 md:gap-8 lg:gap-10 rounded-3xl bg-[#eef2f5] p-4 sm:p-6 md:p-8 lg:p-10 lg:grid-cols-2">
+      <div className="grid gap-6 md:gap-8 lg:gap-10 rounded-3xl lg:grid-cols-2 ">
         {/* LEFT : IMAGE */}
         {blog.image && (
           <div className="relative h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 w-full overflow-hidden rounded-2xl order-1 lg:order-1">
@@ -45,12 +45,6 @@ export default function FeaturedBlog({ blog }: FeaturedBlogProps) {
           <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-tight sm:leading-snug text-slate-900">
             {blog.title}
           </h2>
-
-          {/* DESCRIPTION */}
-          <p className="max-w-lg text-sm sm:text-base text-slate-600">
-            Discover effective strategies that boost visibility and drive
-            organic traffic. Learn tips and tricks from our experts.
-          </p>
 
           {/* AUTHOR */}
           <div className="flex items-center gap-3 pt-1 sm:pt-2">

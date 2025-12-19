@@ -79,14 +79,14 @@ export default async function AuthorCard({
                 className="group flex items-start gap-3 rounded-lg p-2 transition-colors hover:bg-slate-50"
               >
                 {/* Blog Image */}
-                <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-md bg-slate-100">
+                <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-md bg-slate-100">
                   {blog.image ? (
                     <Image
                       src={blog.image}
                       alt={blog.title}
-                      fill
-                      sizes="48px"
-                      className="object-cover"
+                      width={48}
+                      height={48}
+                      className="object-contain bg-white"
                     />
                   ) : (
                     <div className="h-full w-full bg-gradient-to-br from-slate-300 to-slate-400" />
