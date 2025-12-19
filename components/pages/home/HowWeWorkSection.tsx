@@ -104,24 +104,6 @@ const HowWeWork: React.FC = () => {
             </div>
           ))}
         </div>
-
-        {/* Process Flow for Mobile */}
-        <div className="mt-12 lg:hidden">
-          <div className="flex justify-center">
-            <div className="flex flex-col items-center">
-              {steps.map((_, index) => (
-                <React.Fragment key={index}>
-                  <div className="w-8 h-8 flex items-center justify-center bg-purple-600 text-white rounded-full">
-                    {index + 1}
-                  </div>
-                  {index < steps.length - 1 && (
-                    <div className="w-0.5 h-12 bg-purple-600 my-2"></div>
-                  )}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

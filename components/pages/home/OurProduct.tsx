@@ -33,7 +33,7 @@ const features = [
 export default function OurProduct() {
   useEffect(() => {
     AOS.init({
-      duration: 900,
+      duration: 700,
       once: false,
       mirror: true,
     });
