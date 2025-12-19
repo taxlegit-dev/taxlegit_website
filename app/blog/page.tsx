@@ -25,7 +25,7 @@ export default async function BlogListingPage() {
   return (
     <div className="min-h-screen bg-white text-black">
       <NavbarServer region={region} />
-      <main className="mx-auto w-full">
+      <main className="mx-auto w-full pt-[72px]">
         <BlogHero />
         {!featuredBlog ? (
           <div className="py-12 text-center">

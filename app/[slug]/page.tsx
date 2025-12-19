@@ -158,10 +158,10 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
         <MetaDataRenderer pageType={metaPageType} pageId={metaPageId} />
       )}
 
-      <div className="min-h-screen bg-white text-black pt-16">
+      <div className="min-h-screen bg-white text-black">
         <NavbarServer region={region} />
 
-        <main>
+        <main className="pt-[72px]">
           {hero && hero.status === "PUBLISHED" && <IndiaHero hero={hero} />}
 
           {servicePage &&

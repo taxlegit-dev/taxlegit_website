@@ -11,6 +11,7 @@ function normalizeUrl(url?: string): string {
   }
   return `https://${url}`;
 }
+
 interface EditorJsRendererProps {
   data: OutputData;
   theme?: "light" | "dark";
@@ -24,18 +25,25 @@ export function EditorJsRenderer({
     return null;
   }
 
-  const baseClass =
+  const containerClass =
+    theme === "dark" ? "bg-slate-950 min-h-screen" : "bg-slate-50 min-h-screen";
+
+  const contentClass =
     theme === "dark"
-      ? "prose prose-invert prose-emerald max-w-none"
-      : "prose prose-indigo max-w-none";
+      ? "prose prose-invert prose-slate max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-blue-400 prose-a:no-underline hover:prose-a:text-blue-300 prose-a:transition-colors prose-strong:text-slate-100 prose-strong:font-semibold prose-code:text-blue-400 prose-code:bg-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded"
+      : "prose prose-slate max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-blue-600 prose-a:no-underline hover:prose-a:text-blue-700 prose-a:transition-colors prose-strong:text-slate-900 prose-strong:font-semibold prose-code:text-blue-600 prose-code:bg-slate-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded";
 
   return (
-    <div className={baseClass}>
-      {data.blocks.map((block, index) => (
-        <React.Fragment key={block.id || index}>
-          {renderBlock(block, theme)}
-        </React.Fragment>
-      ))}
+    <div className={containerClass}>
+      <div className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 py-16">
+        <article className={contentClass}>
+          {data.blocks.map((block, index) => (
+            <React.Fragment key={block.id || index}>
+              {renderBlock(block, theme)}
+            </React.Fragment>
+          ))}
+        </article>
+      </div>
     </div>
   );
 }
@@ -44,23 +52,36 @@ function renderBlock(
   block: OutputData["blocks"][0],
   theme: "light" | "dark"
 ): React.ReactNode {
-  const textColor = theme === "dark" ? "text-slate-200" : "text-zinc-600";
-  const headingColor = theme === "dark" ? "text-white" : "text-zinc-900";
+  const textColor = theme === "dark" ? "text-slate-300" : "text-slate-700";
+  const headingColor = theme === "dark" ? "text-slate-50" : "text-slate-900";
+  const cardBg = theme === "dark" ? "bg-slate-900" : "bg-white";
+  const borderColor =
+    theme === "dark" ? "border-slate-800" : "border-slate-200";
 
   switch (block.type) {
     case "paragraph":
       return (
         <div
           key={block.id}
-          className={`mb-4 ${textColor}`}
+          className={`mb-5 text-base leading-relaxed ${textColor}`}
           dangerouslySetInnerHTML={{ __html: block.data.text || "" }}
         />
       );
 
     case "header":
       const level = block.data.level || 2;
+      const headerSizes = {
+        1: "text-4xl md:text-5xl mb-6 mt-12 leading-tight",
+        2: "text-3xl md:text-4xl mb-5 mt-10 leading-tight",
+        3: "text-2xl md:text-3xl mb-4 mt-8 leading-snug",
+        4: "text-xl md:text-2xl mb-4 mt-7 leading-snug",
+        5: "text-lg md:text-xl mb-3 mt-6 leading-snug",
+        6: "text-base md:text-lg mb-3 mt-5 leading-snug",
+      };
       const headerProps = {
-        className: `mb-4 font-semibold ${headingColor}`,
+        className: `font-semibold ${headingColor} ${
+          headerSizes[level as keyof typeof headerSizes] || headerSizes[2]
+        } tracking-tight`,
         dangerouslySetInnerHTML: { __html: block.data.text || "" },
       };
       switch (level) {
@@ -87,12 +108,12 @@ function renderBlock(
       return (
         <ListTag
           key={block.id}
-          className={`mb-4 pl-6 ${listClass} ${textColor}`}
+          className={`mb-5 pl-6 space-y-2 ${listClass} ${textColor} text-base marker:text-slate-400`}
         >
           {block.data.items?.map((item: string, idx: number) => (
             <li
               key={idx}
-              className="mb-1"
+              className="leading-relaxed pl-1"
               dangerouslySetInnerHTML={{ __html: item }}
             />
           ))}
@@ -101,22 +122,50 @@ function renderBlock(
 
     case "table":
       return (
-        <div key={block.id} className="mb-4 overflow-x-auto">
-          <table className="min-w-full border-collapse border border-slate-300">
-            <tbody>
-              {block.data.content?.map((row: string[], rowIdx: number) => (
-                <tr key={rowIdx}>
-                  {row.map((cell: string, cellIdx: number) => (
-                    <td
-                      key={cellIdx}
-                      className={`border border-slate-300 px-4 py-2 ${textColor}`}
-                      dangerouslySetInnerHTML={{ __html: cell }}
-                    />
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div
+          key={block.id}
+          className="mb-8 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800"
+        >
+          <div className="overflow-x-auto">
+            <table
+              className={`min-w-full divide-y ${
+                theme === "dark" ? "divide-slate-800" : "divide-slate-200"
+              }`}
+            >
+              <tbody
+                className={
+                  theme === "dark"
+                    ? "divide-y divide-slate-800"
+                    : "divide-y divide-slate-200"
+                }
+              >
+                {block.data.content?.map((row: string[], rowIdx: number) => (
+                  <tr
+                    key={rowIdx}
+                    className={`${
+                      rowIdx === 0
+                        ? theme === "dark"
+                          ? "bg-slate-900"
+                          : "bg-slate-50"
+                        : theme === "dark"
+                        ? "bg-slate-950"
+                        : "bg-white"
+                    }`}
+                  >
+                    {row.map((cell: string, cellIdx: number) => (
+                      <td
+                        key={cellIdx}
+                        className={`px-4 py-3 text-sm ${
+                          rowIdx === 0 ? "font-medium" : ""
+                        } ${textColor}`}
+                        dangerouslySetInnerHTML={{ __html: cell }}
+                      />
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       );
 
@@ -132,19 +181,17 @@ function renderBlock(
         stretched?: boolean;
       };
 
-      // Get link from tune data
       const tuneData = block.tunes?.imageLink as { url?: string } | undefined;
       const linkUrl = tuneData?.url;
 
       const imageUrl = imageData.file?.url || imageData.url || "";
       if (!imageUrl) return null;
 
-      // Determine image alignment and styling
       const alignmentClass =
         imageData.alignment === "left"
-          ? "float-left mr-4"
+          ? "float-left mr-6 mb-4"
           : imageData.alignment === "right"
-          ? "float-right ml-4"
+          ? "float-right ml-6 mb-4"
           : "mx-auto";
 
       const containerClass = imageData.stretched
@@ -156,18 +203,22 @@ function renderBlock(
       const imageElement = (
         <div
           className={`relative ${containerClass} ${
-            imageData.stretched ? "" : "max-w-4xl"
-          } mb-4`}
+            imageData.stretched ? "" : "max-w-3xl"
+          } mb-8 overflow-hidden rounded-lg`}
         >
           <Image
             src={imageUrl}
             alt={imageData.caption || ""}
             width={1200}
             height={800}
-            className={`rounded-lg ${
+            className={`${
               imageData.stretched ? "w-full" : "w-full max-w-full"
-            } ${imageData.withBorder ? "border-2 border-slate-300" : ""} ${
-              imageData.withBackground ? "bg-slate-100 p-2" : ""
+            } ${imageData.withBorder ? `border ${borderColor}` : ""} ${
+              imageData.withBackground
+                ? theme === "dark"
+                  ? "bg-slate-900 p-3"
+                  : "bg-slate-100 p-3"
+                : ""
             }`}
             style={{
               objectFit: "cover",
@@ -180,7 +231,7 @@ function renderBlock(
       return (
         <figure
           key={block.id}
-          className={`mb-6 ${alignmentClass} ${
+          className={`mb-8 ${alignmentClass} ${
             imageData.stretched ? "w-full" : ""
           }`}
         >
@@ -197,7 +248,11 @@ function renderBlock(
             imageElement
           )}
           {imageData.caption && (
-            <figcaption className={`text-sm text-center mt-2 ${textColor}`}>
+            <figcaption
+              className={`text-sm text-center mt-3 ${
+                theme === "dark" ? "text-slate-400" : "text-slate-600"
+              }`}
+            >
               {imageData.caption}
             </figcaption>
           )}
@@ -213,19 +268,22 @@ function renderBlock(
 
       const gridCols =
         columnsData.layout === "33-67"
-          ? "grid-cols-[1fr_2fr]"
+          ? "grid-cols-1 md:grid-cols-[1fr_2fr]"
           : columnsData.layout === "67-33"
-          ? "grid-cols-[2fr_1fr]"
-          : "grid-cols-2";
+          ? "grid-cols-1 md:grid-cols-[2fr_1fr]"
+          : "grid-cols-1 md:grid-cols-2";
 
       return (
-        <div key={block.id} className={`mb-4 grid ${gridCols} gap-4`}>
+        <div
+          key={block.id}
+          className={`mb-8 grid ${gridCols} gap-6 rounded-lg ${cardBg} border ${borderColor} p-6`}
+        >
           <div
-            className={`p-4 ${textColor}`}
+            className={`${textColor} text-base leading-relaxed`}
             dangerouslySetInnerHTML={{ __html: columnsData.leftContent || "" }}
           />
           <div
-            className={`p-4 ${textColor}`}
+            className={`${textColor} text-base leading-relaxed`}
             dangerouslySetInnerHTML={{ __html: columnsData.rightContent || "" }}
           />
         </div>
@@ -239,7 +297,6 @@ function renderBlock(
 
       if (!youtubeData.url) return null;
 
-      // Extract video ID from URL
       const extractVideoId = (url: string): string | null => {
         const patterns = [
           /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
@@ -258,10 +315,10 @@ function renderBlock(
       const embedUrl = `https://www.youtube.com/embed/${videoId}`;
 
       return (
-        <figure key={block.id} className="mb-4">
+        <figure key={block.id} className="mb-8">
           <div
-            className="relative w-full"
-            style={{ paddingBottom: "56.25%", height: 0, overflow: "hidden" }}
+            className="relative w-full overflow-hidden rounded-lg"
+            style={{ paddingBottom: "56.25%", height: 0 }}
           >
             <iframe
               src={embedUrl}
@@ -272,7 +329,11 @@ function renderBlock(
             />
           </div>
           {youtubeData.caption && (
-            <figcaption className={`text-sm text-center mt-2 ${textColor}`}>
+            <figcaption
+              className={`text-sm text-center mt-3 ${
+                theme === "dark" ? "text-slate-400" : "text-slate-600"
+              }`}
+            >
               {youtubeData.caption}
             </figcaption>
           )}
@@ -289,40 +350,51 @@ function renderBlock(
       };
 
       const flexDirection =
-        columnData.imagePosition === "right" ? "flex-row-reverse" : "flex-row";
+        columnData.imagePosition === "right"
+          ? "md:flex-row-reverse"
+          : "md:flex-row";
 
       return (
         <div
           key={block.id}
-          className={`mb-6 flex gap-6 items-start ${flexDirection} flex-wrap`}
+          className={`mb-8 flex flex-col ${flexDirection} gap-8 items-start ${cardBg} border ${borderColor} rounded-lg p-6`}
         >
-          {/* Image Column */}
-          <div className="flex-1 min-w-[250px]">
+          <div className="flex-1 min-w-0">
             {columnData.imageUrl && (
-              <Image
-                src={columnData.imageUrl}
-                alt={columnData.heading || "Column image"}
-                width={800} // required by Next.js (actual number)
-                height={600} // required by Next.js
-                className="w-full h-auto rounded-lg object-cover"
-              />
+              <div className="overflow-hidden rounded-lg">
+                <Image
+                  src={columnData.imageUrl}
+                  alt={columnData.heading || "Column image"}
+                  width={800}
+                  height={600}
+                  className="w-full h-auto object-cover"
+                />
+              </div>
             )}
           </div>
 
-          {/* Text Column */}
-          <div className="flex-1 min-w-[250px]">
+          <div className="flex-1 min-w-0">
             {columnData.heading && (
-              <h3 className={`text-xl font-semibold mb-3 ${headingColor}`}>
+              <h3 className={`text-2xl font-semibold mb-3 ${headingColor}`}>
                 {columnData.heading}
               </h3>
             )}
             {columnData.description && (
-              <p className={`mb-4 ${textColor}`}>{columnData.description}</p>
+              <p className={`mb-4 text-base leading-relaxed ${textColor}`}>
+                {columnData.description}
+              </p>
             )}
             {columnData.points && columnData.points.length > 0 && (
-              <ul className={`list-disc pl-6 space-y-2 ${textColor}`}>
+              <ul className={`space-y-2 ${textColor}`}>
                 {columnData.points.map((point, idx) => (
-                  <li key={idx}>{point}</li>
+                  <li key={idx} className="flex items-start">
+                    <span
+                      className={`mr-2 mt-2 flex-shrink-0 w-1.5 h-1.5 rounded-full ${
+                        theme === "dark" ? "bg-blue-400" : "bg-blue-600"
+                      }`}
+                    />
+                    <span className="text-base leading-relaxed">{point}</span>
+                  </li>
                 ))}
               </ul>
             )}
@@ -364,21 +436,28 @@ function renderBlock(
           : "justify-center";
 
       return (
-        <div key={block.id} className={`my-5 flex ${alignmentClass}`}>
+        <div key={block.id} className={`my-8 flex ${alignmentClass}`}>
           <a
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className="
-          inline-flex items-center justify-center
-          rounded-full
-          bg-purple-500
-          px-6 py-3
-          text-lg font-bold text-white
-          shadow-lg
-          transition-all duration-200
-          hover:bg-purple-700 hover:scale-105
-        "
+            className={`
+              inline-flex items-center justify-center
+              rounded-lg
+              ${
+                theme === "dark"
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }
+              px-6 py-3
+              text-base font-medium text-white
+              transition-colors duration-200
+              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                theme === "dark"
+                  ? "focus:ring-offset-slate-950"
+                  : "focus:ring-offset-white"
+              }
+            `}
           >
             {text}
           </a>
