@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import type { ServicePageSection } from "@prisma/client";
 import { EditorJsRenderer } from "@/components/rich-text/editorjs-renderer";
 import type { OutputData } from "@editorjs/editorjs";
-import StatsBar from "../pages/common/StatsBar";
 
 type ServicePageViewProps = {
   sections: ServicePageSection[];
@@ -60,11 +59,10 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
 
   return (
     <div className="min-h-screen ">
-
       {/* Sticky TOC Bar - Below Fixed Navbar */}
       <div
         ref={tocRef}
-        className="sticky top-[72px] z-40 border-b bg-white border-slate-200 shadow-sm"
+        className="sticky top-[72px] z-40 border-b bg-white border-slate-200 shadow-sm max-w-6xl mx-auto"
       >
         <div className="mx-auto w-full max-w-6xl px-6">
           <div className="flex gap-2 overflow-x-auto scrollbar-hide py-2">
@@ -74,8 +72,8 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
                 onClick={() => scrollToSection(index)}
                 className={`whitespace-nowrap px-5 py-2 text-base font-bold transition-all duration-200 ${
                   activeSection === index
-                    ? "border-b-3 border-purple-600 text-purple-700 text-lg"
-                    : "text-slate-700 hover:text-purple-600 hover:border-b-1 hover:border-purple-300"
+                    ? "border-b-1 border-purple-400  text-lg"
+                    : "text-slate-700  hover:border-b-2 hover:border-purple-300"
                 }`}
               >
                 {section.title}
@@ -84,8 +82,9 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
           </div>
         </div>
       </div>
+
       {/* Sections Content */}
-      <div className="mx-auto w-full max-w-6xl px-6 py-12">
+      <div className="mx-auto w-full max-w-6xl py-8">
         {sortedSections.map((section, index) => (
           <div
             key={section.id}

@@ -26,7 +26,7 @@ export function EditorJsRenderer({
   }
 
   const containerClass =
-    theme === "dark" ? "bg-slate-950 min-h-screen" : "bg-slate-50 min-h-screen";
+    theme === "dark" ? "bg-slate-950 min-h-screen" : "bg-white min-h-screen";
 
   const contentClass =
     theme === "dark"
@@ -35,7 +35,7 @@ export function EditorJsRenderer({
 
   return (
     <div className={containerClass}>
-      <div className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 py-16">
+      <div className="max-w-6xl mx-auto ">
         <article className={contentClass}>
           {data.blocks.map((block, index) => (
             <React.Fragment key={block.id || index}>

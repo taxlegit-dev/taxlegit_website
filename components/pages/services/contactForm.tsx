@@ -86,7 +86,7 @@ export default function ContactForm() {
         {/* Submit button */}
         <button
           type="submit"
-          className="w-full bg-zinc-900 text-white rounded-lg px-4 py-3 font-semibold 
+          className="w-full bg-slate-800 text-white rounded-lg px-4 py-3 font-semibold 
           hover:bg-zinc-800 transition"
         >
           Book Free Consultation
