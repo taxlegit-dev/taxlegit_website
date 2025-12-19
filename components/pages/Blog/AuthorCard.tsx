@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Newsletter from "@/components/pages/common/newsletter";
 import FollowUs from "@/components/pages/common/FollowUs";
+
 interface Blog {
   id: string;
   title: string;
@@ -44,32 +45,11 @@ export default async function AuthorCard({
 
   return (
     <div className="sticky top-6 space-y-8 mt-8">
-      {/* Author Profile Card */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <div className="text-center">
-          <div className="mx-auto mb-3 h-20 w-20 overflow-hidden rounded-full border-4 border-white shadow-md">
-            <div className="h-full w-full bg-gradient-to-br from-indigo-400 to-purple-500" />
-          </div>
-          <h3 className="text-lg font-bold text-slate-900">James Anderson</h3>
-          <p className="text-sm text-slate-600">SEO Specialist & Writer</p>
-        </div>
-      </div>
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <div className="text-center">
-          <div className="mx-auto mb-3 h-20 w-20 overflow-hidden rounded-full border-4 border-white shadow-md">
-            <div className="h-full w-full bg-gradient-to-br from-indigo-400 to-purple-500" />
-          </div>
-          <h3 className="text-lg font-bold text-slate-900">James Anderson</h3>
-          <p className="text-sm text-slate-600">SEO Specialist & Writer</p>
-        </div>
-      </div>
-
       {/* Recent Articles Widget - Dynamic */}
       <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm">
         <h3 className="mb-4 text-lg font-bold text-slate-900">
           Recent Articles
         </h3>
-
         {recentBlogs.length > 0 ? (
           <div className="space-y-3 sm:space-y-4">
             {recentBlogs.map((blog) => (

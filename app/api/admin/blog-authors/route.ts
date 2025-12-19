@@ -1,22 +1,18 @@
 import { NextResponse } from "next/server";
-import { Region, ContentStatus, Prisma } from "@prisma/client";
+import { Region } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
-const blogSchema = z.object({
+const blogAuthorSchema = z.object({
   id: z.string().optional(),
-  title: z.string().min(1, "Title is required"),
+  name: z.string().min(1, "Author name is required"),
   image: z.string().optional(),
-  content: z.string().min(1, "Content is required"),
-  blogGroupId: z.string().min(1, "Blog group is required"),
-  authorId: z.string().optional(),
-  readTime: z.string().optional(),
+  description: z.string().optional(),
   region: z.enum(["INDIA", "US"]),
-  status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]).optional(),
 });
 
-// GET - Fetch all blogs for a region
+// GET - Fetch all blog authors for a region
 export async function GET(request: Request) {
   const session = await auth();
 
@@ -26,33 +22,22 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const regionParam = searchParams.get("region");
-  const blogGroupId = searchParams.get("blogGroupId");
-  const blogId = searchParams.get("id");
+  const region = regionParam === "US" ? Region.US : Region.INDIA;
 
-  const where: Prisma.BlogWhereInput = {};
-  if (regionParam) {
-    where.region = regionParam === "US" ? Region.US : Region.INDIA;
-  }
-  if (blogGroupId) {
-    where.blogGroupId = blogGroupId;
-  }
-  if (blogId) {
-    where.id = blogId;
-  }
-
-  const blogs = await prisma.blog.findMany({
-    where,
+  const blogAuthors = await prisma.blogAuthor.findMany({
+    where: { region },
     include: {
-      blogGroup: true,
-      author: true,
+      blogs: {
+        orderBy: { createdAt: "desc" },
+      },
     },
     orderBy: { createdAt: "desc" },
   });
 
-  return NextResponse.json({ blogs });
+  return NextResponse.json({ blogAuthors });
 }
 
-// POST - Create a new blog
+// POST - Create a new blog author
 export async function POST(request: Request) {
   const session = await auth();
 
@@ -62,7 +47,7 @@ export async function POST(request: Request) {
 
   try {
     const payload = await request.json();
-    const parsed = blogSchema.safeParse(payload);
+    const parsed = blogAuthorSchema.safeParse(payload);
 
     if (!parsed.success) {
       return NextResponse.json(
@@ -72,37 +57,29 @@ export async function POST(request: Request) {
     }
 
     const region = parsed.data.region === "US" ? Region.US : Region.INDIA;
-    const status = parsed.data.status
-      ? (parsed.data.status as ContentStatus)
-      : ContentStatus.DRAFT;
 
-    const blog = await prisma.blog.create({
+    const blogAuthor = await prisma.blogAuthor.create({
       data: {
-        title: parsed.data.title,
+        name: parsed.data.name,
         image: parsed.data.image,
-        content: parsed.data.content,
-        blogGroupId: parsed.data.blogGroupId,
-        authorId: parsed.data.authorId || null,
-        readTime: parsed.data.readTime || null,
+        description: parsed.data.description,
         region,
-        status,
       },
       include: {
-        blogGroup: true,
-        author: true,
+        blogs: true,
       },
     });
 
-    return NextResponse.json({ blog });
+    return NextResponse.json({ blogAuthor });
   } catch (error: unknown) {
-    console.error("Error creating blog:", error);
+    console.error("Error creating blog author:", error);
     const errorMessage =
-      error instanceof Error ? error.message : "Failed to create blog";
+      error instanceof Error ? error.message : "Failed to create blog author";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 
-// PUT - Update a blog
+// PUT - Update a blog author
 export async function PUT(request: Request) {
   const session = await auth();
 
@@ -112,7 +89,7 @@ export async function PUT(request: Request) {
 
   try {
     const payload = await request.json();
-    const parsed = blogSchema.safeParse(payload);
+    const parsed = blogAuthorSchema.safeParse(payload);
 
     if (!parsed.success || !parsed.data.id) {
       return NextResponse.json(
@@ -121,39 +98,30 @@ export async function PUT(request: Request) {
       );
     }
 
-    const region = parsed.data.region === "US" ? Region.US : Region.INDIA;
-    const status = parsed.data.status
-      ? (parsed.data.status as ContentStatus)
-      : undefined;
-
-    const blog = await prisma.blog.update({
+    const blogAuthor = await prisma.blogAuthor.update({
       where: { id: parsed.data.id },
       data: {
-        title: parsed.data.title,
+        name: parsed.data.name,
         image: parsed.data.image,
-        content: parsed.data.content,
-        blogGroupId: parsed.data.blogGroupId,
-        authorId: parsed.data.authorId || null,
-        readTime: parsed.data.readTime || null,
-        region,
-        ...(status && { status }),
+        description: parsed.data.description,
       },
       include: {
-        blogGroup: true,
-        author: true,
+        blogs: {
+          orderBy: { createdAt: "desc" },
+        },
       },
     });
 
-    return NextResponse.json({ blog });
+    return NextResponse.json({ blogAuthor });
   } catch (error: unknown) {
-    console.error("Error updating blog:", error);
+    console.error("Error updating blog author:", error);
     const errorMessage =
-      error instanceof Error ? error.message : "Failed to update blog";
+      error instanceof Error ? error.message : "Failed to update blog author";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 
-// DELETE - Delete a blog
+// DELETE - Delete a blog author
 export async function DELETE(request: Request) {
   const session = await auth();
 
@@ -167,20 +135,36 @@ export async function DELETE(request: Request) {
 
     if (!id) {
       return NextResponse.json(
-        { error: "Blog ID is required" },
+        { error: "Blog author ID is required" },
         { status: 400 }
       );
     }
 
-    await prisma.blog.delete({
+    // Check if author has blogs
+    const author = await prisma.blogAuthor.findUnique({
+      where: { id },
+      include: { blogs: true },
+    });
+
+    if (author && author.blogs.length > 0) {
+      return NextResponse.json(
+        {
+          error:
+            "Cannot delete author with existing blogs. Please remove or reassign blogs first.",
+        },
+        { status: 400 }
+      );
+    }
+
+    await prisma.blogAuthor.delete({
       where: { id },
     });
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
-    console.error("Error deleting blog:", error);
+    console.error("Error deleting blog author:", error);
     const errorMessage =
-      error instanceof Error ? error.message : "Failed to delete blog";
+      error instanceof Error ? error.message : "Failed to delete blog author";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

@@ -16,6 +16,7 @@ export default async function BlogListingPage() {
     },
     include: {
       blogGroup: true,
+      author: true,
     },
     orderBy: { createdAt: "desc" },
   });

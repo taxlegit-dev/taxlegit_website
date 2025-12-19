@@ -234,6 +234,21 @@ model BlogGroup {
   @@index([region, order])
 }
 
+/// Blog Author - Authors who write blog posts
+model BlogAuthor {
+  id          String   @id @default(cuid())
+  name        String
+  image       String? // Author image URL
+  description String? // Author description/bio
+  region      Region   @default(INDIA)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  blogs Blog[]
+
+  @@index([region])
+}
+
 /// Blog Post - Individual blog posts
 model Blog {
   id          String        @id @default(cuid())
@@ -241,15 +256,20 @@ model Blog {
   image       String? // Image URL
   content     String // Blog content (Editor.js JSON or HTML)
   blogGroupId String
+  authorId    String? // Optional author reference
+  readTime    String? // Read time (e.g., "3 min")
+  viewCount   Int           @default(0) // View count
   region      Region        @default(INDIA)
   status      ContentStatus @default(DRAFT)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
   blogGroup BlogGroup @relation(fields: [blogGroupId], references: [id], onDelete: Cascade)
+  author    BlogAuthor? @relation(fields: [authorId], references: [id], onDelete: SetNull)
 
   @@index([region, status])
   @@index([blogGroupId])
+  @@index([authorId])
 }
 
 /// Static Page - For static pages like Home, About

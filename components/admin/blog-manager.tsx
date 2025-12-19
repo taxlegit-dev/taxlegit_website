@@ -18,6 +18,9 @@ type Blog = {
   image: string | null;
   content: string;
   blogGroupId: string;
+  authorId: string | null;
+  readTime: string | null;
+  viewCount: number;
   region: "INDIA" | "US";
   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   createdAt: Date;
@@ -29,6 +32,16 @@ type BlogGroup = {
   name: string;
   region: "INDIA" | "US";
   order: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type BlogAuthor = {
+  id: string;
+  name: string;
+  image: string | null;
+  description: string | null;
+  region: "INDIA" | "US";
   createdAt: Date;
   updatedAt: Date;
 };
@@ -64,6 +77,7 @@ function tryParseEditorJson(content: string): OutputData | null {
 
 type BlogWithGroup = Blog & {
   blogGroup: BlogGroup;
+  author?: BlogAuthor | null;
 };
 
 type BlogGroupWithBlogs = BlogGroup & {
@@ -79,15 +93,24 @@ const blogGroupSchema = z.object({
   name: z.string().min(1, "Group name is required"),
 });
 
+const blogAuthorSchema = z.object({
+  name: z.string().min(1, "Author name is required"),
+  image: z.string().optional(),
+  description: z.string().optional(),
+});
+
 const blogSchema = z.object({
   title: z.string().min(1, "Title is required"),
   image: z.string().optional(),
   content: z.string().min(1, "Content is required"),
   blogGroupId: z.string().min(1, "Blog group is required"),
+  authorId: z.string().optional(),
+  readTime: z.string().optional(),
   status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]).optional(),
 });
 
 type BlogGroupForm = z.infer<typeof blogGroupSchema>;
+type BlogAuthorForm = z.infer<typeof blogAuthorSchema>;
 type BlogForm = z.infer<typeof blogSchema>;
 
 export function BlogManager({
@@ -108,9 +131,14 @@ export function BlogManager({
   );
   const [showGroupForm, setShowGroupForm] = useState(false);
   const [showBlogForm, setShowBlogForm] = useState(false);
+  const [showAuthorForm, setShowAuthorForm] = useState(false);
   const [editingGroup, setEditingGroup] = useState<BlogGroup | null>(null);
   const [editingBlog, setEditingBlog] = useState<BlogWithGroup | null>(null);
+  const [editingAuthor, setEditingAuthor] = useState<BlogAuthor | null>(null);
+  const [blogAuthors, setBlogAuthors] = useState<BlogAuthor[]>([]);
   const [isEditorReady, setIsEditorReady] = useState(false);
+  const [authorImageFile, setAuthorImageFile] = useState<File | null>(null);
+  const [authorImagePreview, setAuthorImagePreview] = useState<string | null>(null);
 
   const groupForm = useForm<BlogGroupForm>({
     resolver: zodResolver(blogGroupSchema),
@@ -126,7 +154,18 @@ export function BlogManager({
       image: "",
       content: "",
       blogGroupId: selectedBlogGroupId || "",
+      authorId: "",
+      readTime: "",
       status: "DRAFT",
+    },
+  });
+
+  const authorForm = useForm<BlogAuthorForm>({
+    resolver: zodResolver(blogAuthorSchema),
+    defaultValues: {
+      name: "",
+      image: "",
+      description: "",
     },
   });
 
@@ -143,8 +182,22 @@ export function BlogManager({
     }
   };
 
+  // Fetch blog authors
+  const fetchAuthors = async () => {
+    try {
+      const response = await fetch(`/api/admin/blog-authors?region=${region}`);
+      const result = await response.json();
+      if (response.ok) {
+        setBlogAuthors(result.blogAuthors || []);
+      }
+    } catch (error) {
+      console.error("Error fetching blog authors:", error);
+    }
+  };
+
   useEffect(() => {
     fetchData();
+    fetchAuthors();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [region]);
 
@@ -169,6 +222,8 @@ export function BlogManager({
         image: (editingBlog.image as string | null) || "",
         content: editingBlog.content as string,
         blogGroupId: editingBlog.blogGroupId,
+        authorId: (editingBlog as any).authorId || "",
+        readTime: (editingBlog as any).readTime || "",
         status: editingBlog.status,
       });
 
@@ -185,6 +240,8 @@ export function BlogManager({
         image: "",
         content: "",
         blogGroupId: selectedBlogGroupId || "",
+        authorId: "",
+        readTime: "",
         status: "DRAFT",
       });
 
@@ -204,6 +261,22 @@ export function BlogManager({
       });
     }
   }, [editingGroup, groupForm]);
+
+  // Update author form when editing
+  useEffect(() => {
+    if (editingAuthor) {
+      authorForm.reset({
+        name: editingAuthor.name,
+        image: editingAuthor.image || "",
+        description: editingAuthor.description || "",
+      });
+      setAuthorImagePreview(editingAuthor.image || null);
+      setAuthorImageFile(null);
+    } else {
+      setAuthorImagePreview(null);
+      setAuthorImageFile(null);
+    }
+  }, [editingAuthor, authorForm]);
 
   const handleCreateGroup = groupForm.handleSubmit((data) => {
     startTransition(async () => {
@@ -241,6 +314,71 @@ export function BlogManager({
       }
     });
   });
+
+  const handleCreateAuthor = authorForm.handleSubmit(async (data) => {
+    startTransition(async () => {
+      setMessage(null);
+      try {
+        let imageUrl = data.image;
+
+        // Upload image if a new file was selected
+        if (authorImageFile) {
+          try {
+            imageUrl = await handleImageUpload(authorImageFile);
+          } catch (error) {
+            setMessage("Failed to upload image. Please try again.");
+            console.error("Error uploading image:", error);
+            return;
+          }
+        }
+
+        const url = editingAuthor
+          ? "/api/admin/blog-authors"
+          : "/api/admin/blog-authors";
+        const method = editingAuthor ? "PUT" : "POST";
+        const payload = editingAuthor
+          ? { ...data, image: imageUrl, id: editingAuthor.id, region }
+          : { ...data, image: imageUrl, region };
+
+        const response = await fetch(url, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          setMessage(result.error?.message || "Failed to save blog author");
+          return;
+        }
+
+        setMessage("Blog author saved successfully!");
+        setShowAuthorForm(false);
+        setEditingAuthor(null);
+        setAuthorImageFile(null);
+        setAuthorImagePreview(null);
+        authorForm.reset();
+        await fetchAuthors();
+      } catch (error) {
+        setMessage("Network error. Please try again.");
+        console.error("Error saving blog author:", error);
+      }
+    });
+  });
+
+  const handleAuthorImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAuthorImageFile(file);
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAuthorImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleCreateBlog = blogForm.handleSubmit((data) => {
     startTransition(async () => {
@@ -327,6 +465,30 @@ export function BlogManager({
     } catch (error) {
       setMessage("Network error. Please try again.");
       console.error("Error deleting blog:", error);
+    }
+  };
+
+  const handleDeleteAuthor = async (authorId: string) => {
+    if (!confirm("Are you sure you want to delete this author?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/blog-authors?id=${authorId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const result = await response.json();
+        setMessage(result.error || "Failed to delete author");
+        return;
+      }
+
+      setMessage("Author deleted successfully!");
+      await fetchAuthors();
+    } catch (error) {
+      setMessage("Network error. Please try again.");
+      console.error("Error deleting author:", error);
     }
   };
 
@@ -588,6 +750,28 @@ export function BlogManager({
 
             <div>
               <label className="block text-sm font-semibold text-slate-900 mb-2">
+                Author
+              </label>
+              <select
+                {...blogForm.register("authorId")}
+                className="w-full rounded-lg border border-slate-200 px-4 py-2"
+              >
+                <option value="">Select an author (optional)</option>
+                {blogAuthors.map((author) => (
+                  <option key={author.id} value={author.id}>
+                    {author.name}
+                  </option>
+                ))}
+              </select>
+              {blogForm.formState.errors.authorId && (
+                <p className="text-xs text-red-600 mt-1">
+                  {blogForm.formState.errors.authorId.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-900 mb-2">
                 Title <span className="text-red-500">*</span>
               </label>
               <input
@@ -614,6 +798,22 @@ export function BlogManager({
               {blogForm.formState.errors.image && (
                 <p className="text-xs text-red-600 mt-1">
                   {blogForm.formState.errors.image.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-900 mb-2">
+                Read Time
+              </label>
+              <input
+                {...blogForm.register("readTime")}
+                className="w-full rounded-lg border border-slate-200 px-4 py-2"
+                placeholder="e.g., 3 min"
+              />
+              {blogForm.formState.errors.readTime && (
+                <p className="text-xs text-red-600 mt-1">
+                  {blogForm.formState.errors.readTime.message}
                 </p>
               )}
             </div>
@@ -732,8 +932,120 @@ export function BlogManager({
           >
             + Create Blog
           </button>
+          <button
+            onClick={() => {
+              setShowAuthorForm(true);
+              setEditingAuthor(null);
+              authorForm.reset();
+            }}
+            className="px-4 py-2 text-sm font-semibold text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+          >
+            + Add Author
+          </button>
         </div>
       </div>
+
+      {showAuthorForm && (
+        <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">
+            {editingAuthor ? "Edit Blog Author" : "Create Blog Author"}
+          </h3>
+          <form onSubmit={handleCreateAuthor} className="space-y-4">
+            <div>
+              <label className="block text-sm font-semibold text-slate-900 mb-2">
+                Author Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                {...authorForm.register("name")}
+                className="w-full rounded-lg border border-slate-200 px-4 py-2"
+                placeholder="e.g., John Doe"
+              />
+              {authorForm.formState.errors.name && (
+                <p className="text-xs text-red-600 mt-1">
+                  {authorForm.formState.errors.name.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-900 mb-2">
+                Author Image
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAuthorImageChange}
+                className="w-full rounded-lg border border-slate-200 px-4 py-2"
+              />
+              {authorImagePreview && (
+                <div className="mt-3">
+                  <Image
+                    src={authorImagePreview}
+                    alt="Preview"
+                    width={100}
+                    height={100}
+                    className="rounded-lg object-cover"
+                  />
+                </div>
+              )}
+              {editingAuthor?.image && !authorImagePreview && (
+                <div className="mt-3">
+                  <p className="text-xs text-slate-500 mb-2">Current image:</p>
+                  <Image
+                    src={editingAuthor.image}
+                    alt="Current"
+                    width={100}
+                    height={100}
+                    className="rounded-lg object-cover"
+                  />
+                </div>
+              )}
+              {authorForm.formState.errors.image && (
+                <p className="text-xs text-red-600 mt-1">
+                  {authorForm.formState.errors.image.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-900 mb-2">
+                Description
+              </label>
+              <textarea
+                {...authorForm.register("description")}
+                className="w-full rounded-lg border border-slate-200 px-4 py-2"
+                placeholder="Author bio/description"
+                rows={4}
+              />
+              {authorForm.formState.errors.description && (
+                <p className="text-xs text-red-600 mt-1">
+                  {authorForm.formState.errors.description.message}
+                </p>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="submit"
+                disabled={isPending}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+              >
+                {isPending ? "Saving..." : editingAuthor ? "Update" : "Create"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAuthorForm(false);
+                  setEditingAuthor(null);
+                  setAuthorImageFile(null);
+                  setAuthorImagePreview(null);
+                  authorForm.reset();
+                }}
+                className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {showGroupForm && (
         <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
@@ -777,6 +1089,60 @@ export function BlogManager({
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* Authors List Section */}
+      {blogAuthors.length > 0 && (
+        <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+          <h3 className="text-xl font-semibold text-slate-900 mb-4">
+            Blog Authors
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {blogAuthors.map((author) => (
+              <div
+                key={author.id}
+                className="rounded-lg border border-slate-200 p-4"
+              >
+                {author.image && (
+                  <div className="w-full h-32 overflow-hidden mb-3 rounded-lg">
+                    <Image
+                      src={author.image}
+                      alt={author.name}
+                      width={200}
+                      height={200}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                <h4 className="font-semibold text-slate-900 mb-2">
+                  {author.name}
+                </h4>
+                {author.description && (
+                  <p className="text-sm text-slate-600 mb-3 line-clamp-2">
+                    {author.description}
+                  </p>
+                )}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setEditingAuthor(author);
+                      setShowAuthorForm(true);
+                    }}
+                    className="px-3 py-1 text-sm text-indigo-600 hover:bg-indigo-50 rounded-lg"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteAuthor(author.id)}
+                    className="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded-lg"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

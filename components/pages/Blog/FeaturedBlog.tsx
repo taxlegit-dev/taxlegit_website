@@ -47,13 +47,29 @@ export default function FeaturedBlog({ blog }: FeaturedBlogProps) {
           </h2>
 
           {/* AUTHOR */}
-          <div className="flex items-center gap-3 pt-1 sm:pt-2">
-            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-slate-300" />
-            <div className="text-xs sm:text-sm">
-              <p className="font-medium text-slate-900">James Anderson</p>
-              <p className="text-slate-500">SEO Specialist</p>
+          {blog.author && (
+            <div className="flex items-center gap-3 pt-1 sm:pt-2">
+              {blog.author.image ? (
+                <Image
+                  src={blog.author.image}
+                  alt={blog.author.name}
+                  width={36}
+                  height={36}
+                  className="h-8 w-8 sm:h-9 sm:w-9 rounded-full object-cover"
+                />
+              ) : (
+                <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-slate-300" />
+              )}
+              <div className="text-xs sm:text-sm">
+                <p className="font-medium text-slate-900">{blog.author.name}</p>
+                {blog.author.description && (
+                  <p className="text-slate-500 line-clamp-1">
+                    {blog.author.description}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* CTA */}
           <Link

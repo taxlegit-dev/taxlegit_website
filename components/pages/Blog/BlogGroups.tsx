@@ -1,17 +1,46 @@
 import BlogCard from "./BlogCard";
 import AuthorCard from "./AuthorCard";
 import { BlogWithGroup } from "@/types/blog";
+import { prisma } from "@/lib/prisma";
+import { Region } from "@prisma/client";
+import Image from "next/image";
+
+type BlogAuthor = {
+  id: string;
+  name: string;
+  image: string | null;
+  description: string | null;
+  region: Region;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 interface BlogGroupsProps {
   blogs: BlogWithGroup[];
+  region?: string;
 }
 
-export default function BlogGroups({ blogs }: BlogGroupsProps) {
+export default async function BlogGroups({
+  blogs,
+  region = "INDIA",
+}: BlogGroupsProps) {
   if (blogs.length === 0) {
     return (
       <p className="text-center py-8 text-slate-500">No more articles yet.</p>
     );
   }
+
+  // Fetch all authors for the region
+  const regionEnum = region === "US" ? Region.US : Region.INDIA;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const authors = (await (prisma as any).blogAuthor.findMany({
+    where: {
+      region: regionEnum,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  })) as BlogAuthor[];
 
   // Group blogs by category
   const groupedBlogs = blogs.reduce((groups, blog) => {
@@ -34,7 +63,6 @@ export default function BlogGroups({ blogs }: BlogGroupsProps) {
             Showing {blogs.length} article{blogs.length !== 1 ? "s" : ""}
           </span>
         </div>
-
         <div className="lg:grid lg:grid-cols-3 lg:gap-8">
           {/* Left Column - 75% width (2 of 3 columns) */}
           <div className="lg:col-span-2 space-y-16">
@@ -56,7 +84,6 @@ export default function BlogGroups({ blogs }: BlogGroupsProps) {
                     Latest insights and updates from {groupName.toLowerCase()}
                   </p>
                 </div>
-
                 {/* Blog Cards Grid - 2 columns for desktop */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
                   {groupBlogs.map((blog) => (
@@ -69,7 +96,51 @@ export default function BlogGroups({ blogs }: BlogGroupsProps) {
 
           {/* Right Column - 25% width (1 of 3 columns) */}
           <div className="mt-12 lg:mt-0">
-            <AuthorCard />
+            {/* Authors Section */}
+            {authors.length > 0 && (
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm mb-8">
+                <h3 className="mb-4 text-lg font-bold text-slate-900">
+                  Our Authors
+                </h3>
+                <div className="space-y-4">
+                  {authors.map((author) => (
+                    <div
+                      key={author.id}
+                      className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                    >
+                      <div className="text-center">
+                        {author.image ? (
+                          <div className="mx-auto mb-3 h-20 w-20 overflow-hidden rounded-full border-4 border-white shadow-md">
+                            <Image
+                              src={author.image}
+                              alt={author.name}
+                              width={80}
+                              height={80}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="mx-auto mb-3 h-20 w-20 overflow-hidden rounded-full border-4 border-white shadow-md">
+                            <div className="h-full w-full bg-gradient-to-br from-indigo-400 to-purple-500" />
+                          </div>
+                        )}
+                        <h3 className="text-lg font-bold text-slate-900">
+                          {author.name}
+                        </h3>
+                        {author.description && (
+                          <p className="text-sm text-slate-600 line-clamp-2">
+                            {author.description}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* AuthorCard component with Recent Articles */}
+            <AuthorCard region={region} />
           </div>
         </div>
       </div>

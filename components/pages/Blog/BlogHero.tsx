@@ -2,12 +2,7 @@ export default function BlogHero() {
   return (
     <section className="relative overflow-hidden shadow-xl">
       {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: "url('/blog-hero.jpg')",
-        }}
-      />
+      <div className="absolute inset-0 bg-cover bg-center" />
 
       {/* Dark purple Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-800/85 to-slate-700/70" />

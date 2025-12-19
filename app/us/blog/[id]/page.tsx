@@ -9,6 +9,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { MetaDataRenderer } from "@/components/seo/meta-data-renderer";
 import { parseMetaBlockForMetadata } from "@/lib/seo-utils";
+import { BlogViewCounter } from "@/components/pages/Blog/BlogViewCounter";
 
 type UsBlogDetailPageProps = {
   params: Promise<{ id: string }>;
@@ -28,6 +29,7 @@ export async function generateMetadata({
     },
     include: {
       blogGroup: true,
+      author: true,
     },
   });
 
@@ -131,7 +133,7 @@ export default async function UsBlogDetailPage({
               {blog.blogGroup.name}
             </span>
             <h1 className="text-4xl font-semibold mb-4">{blog.title}</h1>
-            <div className="flex items-center gap-4 text-sm text-slate-400">
+            <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400">
               <span>
                 {new Date(blog.createdAt).toLocaleDateString("en-US", {
                   year: "numeric",
@@ -139,11 +141,30 @@ export default async function UsBlogDetailPage({
                   day: "numeric",
                 })}
               </span>
+              {blog.readTime && (
+                <span className="flex items-center gap-1">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  {blog.readTime}
+                </span>
+              )}
+              <BlogViewCounter blogId={blog.id} initialCount={blog.viewCount} />
             </div>
           </div>
 
           {blog.image && (
-            <div className="w-full h-48 overflow-hidden">
+            <div className="w-full h-48 overflow-hidden mb-8">
               <Image
                 src={blog.image}
                 alt={blog.title}
@@ -151,6 +172,34 @@ export default async function UsBlogDetailPage({
                 height={500}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
+            </div>
+          )}
+
+          {/* Author Information */}
+          {blog.author && (
+            <div className="mb-8 rounded-xl border border-white/10 bg-white/5 p-6">
+              <h3 className="mb-4 font-semibold text-white">About the Author</h3>
+              <div className="flex items-start gap-4">
+                {blog.author.image && (
+                  <Image
+                    src={blog.author.image}
+                    alt={blog.author.name}
+                    width={80}
+                    height={80}
+                    className="rounded-full object-cover"
+                  />
+                )}
+                <div>
+                  <h4 className="font-semibold text-white mb-2">
+                    {blog.author.name}
+                  </h4>
+                  {blog.author.description && (
+                    <p className="text-sm text-slate-300">
+                      {blog.author.description}
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 

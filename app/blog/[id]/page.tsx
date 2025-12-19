@@ -12,6 +12,7 @@ import { MetaDataRenderer } from "@/components/seo/meta-data-renderer";
 import { parseMetaBlockForMetadata } from "@/lib/seo-utils";
 import AuthorCard from "@/components/pages/Blog/AuthorCard";
 import RecentBlogsSection from "@/components/pages/home/RecentBlogsSection";
+import { BlogViewCounter } from "@/components/pages/Blog/BlogViewCounter";
 
 type BlogDetailPageProps = {
   params: Promise<{ id: string }>;
@@ -73,6 +74,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
     },
     include: {
       blogGroup: true,
+      author: true,
     },
   });
 
@@ -119,12 +121,36 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
                   {blog.title}
                 </h1>
 
-                <div className="text-sm text-slate-500">
-                  {new Date(blog.createdAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
+                  <span>
+                    {new Date(blog.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
+                  {blog.readTime && (
+                    <span className="flex items-center gap-1">
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      {blog.readTime}
+                    </span>
+                  )}
+                  <BlogViewCounter
+                    blogId={blog.id}
+                    initialCount={blog.viewCount}
+                  />
                 </div>
               </div>
 
@@ -157,7 +183,35 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
 
             {/* RIGHT : AUTHOR CARD - 25% */}
             <aside className="lg:w-1/4">
-              <div className="sticky top-28">
+              <div className="sticky top-28 space-y-6">
+                {/* Author Information */}
+                {blog.author && (
+                  <div className="rounded-xl border border-slate-200 bg-white p-6">
+                    <h3 className="mb-4 font-semibold text-slate-900">
+                      About the Author
+                    </h3>
+                    {blog.author.image && (
+                      <div className="mb-4">
+                        <Image
+                          src={blog.author.image}
+                          alt={blog.author.name}
+                          width={100}
+                          height={100}
+                          className="rounded-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <h4 className="font-semibold text-slate-900 mb-2">
+                      {blog.author.name}
+                    </h4>
+                    {blog.author.description && (
+                      <p className="text-sm text-slate-600">
+                        {blog.author.description}
+                      </p>
+                    )}
+                  </div>
+                )}
+
                 <AuthorCard />
 
                 {/* Optional: Additional sidebar content */}
