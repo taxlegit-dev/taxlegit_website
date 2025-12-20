@@ -31,6 +31,10 @@ export async function generateMetadata({
       region,
       status: ContentStatus.PUBLISHED,
     },
+    include: {
+      blogGroup: true,
+      author: true,
+    },
   });
 
   if (!blog) {

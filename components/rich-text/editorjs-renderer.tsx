@@ -44,7 +44,7 @@ function extractTextAlign(html?: string): React.CSSProperties {
   return {};
 }
 
-const WORD_LIMIT = 25;
+const WORD_LIMIT = 60;
 
 function stripHtml(html: string): string {
   return html
@@ -401,7 +401,6 @@ function renderBlock(
         </figure>
       );
 
-    case "columns":
       const columnsData = block.data as {
         leftContent?: string;
         rightContent?: string;
@@ -421,7 +420,7 @@ function renderBlock(
           className={`mb-8 grid ${gridCols} gap-6 rounded-lg ${cardBg} border ${borderColor} p-6`}
         >
           <div
-            className={`${textColor} text-base leading-relaxed`}
+            className={`${textColor} text-2xl leading-relaxed`}
             dangerouslySetInnerHTML={{ __html: columnsData.leftContent || "" }}
           />
           <div
@@ -495,7 +494,7 @@ function renderBlock(
 
       const columnContent = (
         <div
-          className={`mb-8 flex flex-col ${flexDirection} gap-8 items-center ${columnBgClass} rounded-lg`}
+          className={`mb-8 flex flex-col ${flexDirection} gap-8 items-center ${columnBgClass} rounded-lg py-8`}
         >
           <div className="flex-1 min-w-0">
             {columnData.imageUrl && (
@@ -529,14 +528,14 @@ function renderBlock(
 
           <div className="flex-1 min-w-0">
             {columnData.heading && (
-              <h3 className={`text-2xl font-semibold mb-3 ${headingColor}`}>
+              <h3 className={`text-3xl  mb-3 ${headingColor}`}>
                 {columnData.heading}
               </h3>
             )}
             {columnData.description && (
               <ReadMoreText
                 text={columnData.description}
-                className={`mb-4 text-base leading-relaxed ${textColor}`}
+                className={`mb-4 text-lg ${textColor}`}
               />
             )}
             {columnData.points && columnData.points.length > 0 && (
@@ -557,7 +556,7 @@ function renderBlock(
               <div className="mt-5">
                 <a
                   href={normalizeUrl(columnData.ctaUrl)}
-                  className="inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-[#4b1b66] to-[#8b2bbd] hover:from-[#3f1655] hover:to-[#7a27a6]"
+                  className="inline-flex items-center justify-center rounded-lg px-8 lg:px-24 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-[#4b1b66] to-[#8b2bbd] hover:from-[#3f1655] hover:to-[#7a27a6]"
                 >
                   {columnData.ctaText}
                 </a>

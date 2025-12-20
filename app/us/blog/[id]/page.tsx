@@ -82,6 +82,7 @@ export default async function UsBlogDetailPage({
     },
     include: {
       blogGroup: true,
+      author: true,
     },
   });
 

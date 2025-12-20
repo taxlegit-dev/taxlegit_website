@@ -13,7 +13,6 @@ import {
   Apple,
   FileText,
   ChevronRight,
-  Shield,
   ArrowRight,
   Globe,
   Scale,

@@ -80,6 +80,15 @@ export default class TextAlignInlineTool implements InlineTool {
       },
     ];
 
+    if (!this.dropdown) {
+      return this.button;
+    }
+
+    const dropdown = this.dropdown;
+    if (!dropdown) {
+      return this.button;
+    }
+
     alignments.forEach((align) => {
       const option = document.createElement("button");
       option.type = "button";
@@ -126,11 +135,11 @@ export default class TextAlignInlineTool implements InlineTool {
         }
       });
 
-      this.dropdown.appendChild(option);
+      dropdown.appendChild(option);
     });
 
     // Append dropdown to body instead of button
-    document.body.appendChild(this.dropdown);
+    document.body.appendChild(dropdown);
 
     this.button.addEventListener("click", (e) => {
       e.preventDefault();
