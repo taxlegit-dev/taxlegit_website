@@ -1,11 +1,17 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import type { OutputData } from "@editorjs/editorjs";
 import Image from "next/image";
 
 function normalizeUrl(url?: string): string {
   if (!url) return "";
+  if (url.startsWith("/")) {
+    return url;
+  }
+  if (url.startsWith("#")) {
+    return url;
+  }
   if (url.startsWith("http://") || url.startsWith("https://")) {
     return url;
   }
@@ -13,6 +19,18 @@ function normalizeUrl(url?: string): string {
 }
 
 // ✅ Helper function to extract text-align from HTML
+function extractVideoId(url: string): string | null {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+    /youtube\.com\/watch\?.*v=([^&\n?#]+)/,
+  ];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) return match[1];
+  }
+  return null;
+}
+
 function extractTextAlign(html?: string): React.CSSProperties {
   if (!html) return {};
 
@@ -26,12 +44,87 @@ function extractTextAlign(html?: string): React.CSSProperties {
   return {};
 }
 
+const WORD_LIMIT = 25;
+
+function stripHtml(html: string): string {
+  return html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function ReadMoreHtml({
+  html,
+  className,
+  style,
+}: {
+  html: string;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const text = stripHtml(html || "");
+  const words = text.length > 0 ? text.split(" ") : [];
+  const isLong = words.length > WORD_LIMIT;
+  const preview = isLong ? `${words.slice(0, WORD_LIMIT).join(" ")}...` : text;
+
+  return (
+    <div className={className} style={style}>
+      {expanded || !isLong ? (
+        <span dangerouslySetInnerHTML={{ __html: html || "" }} />
+      ) : (
+        <span>{preview}</span>
+      )}
+      {isLong && (
+        <button
+          type="button"
+          className="ml-2 text-sm text-purple-600 hover:text-purple-700"
+          onClick={() => setExpanded(!expanded)}
+        >
+          {expanded ? "Read less" : "Read more"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function ReadMoreText({
+  text,
+  className,
+  style,
+}: {
+  text: string;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const words = text ? text.split(/\s+/) : [];
+  const isLong = words.length > WORD_LIMIT;
+  const preview = isLong ? `${words.slice(0, WORD_LIMIT).join(" ")}...` : text;
+
+  return (
+    <div className={className} style={style}>
+      <span>{expanded || !isLong ? text : preview}</span>
+      {isLong && (
+        <button
+          type="button"
+          className="ml-2 text-sm text-purple-600 hover:text-purple-700"
+          onClick={() => setExpanded(!expanded)}
+        >
+          {expanded ? "Read less" : "Read more"}
+        </button>
+      )}
+    </div>
+  );
+}
+
 function getBlockAlignment(
   block: OutputData["blocks"][0],
   html?: string
 ): React.CSSProperties {
-  const tunes = (block as { tunes?: { textAlignTune?: { alignment?: string } } })
-    .tunes;
+  const tunes = (
+    block as { tunes?: { textAlignTune?: { alignment?: string } } }
+  ).tunes;
   const tuneAlignment = tunes?.textAlignTune?.alignment;
   if (tuneAlignment) {
     return { textAlign: tuneAlignment as React.CSSProperties["textAlign"] };
@@ -57,12 +150,12 @@ export function EditorJsRenderer({
 
   const contentClass =
     theme === "dark"
-      ? "prose prose-invert prose-slate max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-blue-400 prose-a:no-underline hover:prose-a:text-blue-300 prose-a:transition-colors prose-strong:text-slate-100 prose-strong:font-semibold prose-code:text-blue-400 prose-code:bg-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded"
-      : "prose prose-slate max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-blue-600 prose-a:no-underline hover:prose-a:text-blue-700 prose-a:transition-colors prose-strong:text-slate-900 prose-strong:font-semibold prose-code:text-blue-600 prose-code:bg-slate-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded";
+      ? "prose prose-invert prose-slate max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-purple-400 prose-a:no-underline hover:prose-a:text-purple-300 prose-a:transition-colors prose-strong:text-slate-100 prose-strong:font-semibold prose-code:text-purple-400 prose-code:bg-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded"
+      : "prose prose-slate max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-purple-600 prose-a:no-underline hover:prose-a:text-purple-700 prose-a:transition-colors prose-strong:text-slate-900 prose-strong:font-semibold prose-code:text-purple-600 prose-code:bg-slate-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded";
 
   return (
     <div className={containerClass}>
-      <div className="max-w-6xl mx-auto ">
+      <div className="max-w-6xl mx-auto p-4">
         <article className={contentClass}>
           {data.blocks.map((block, index) => (
             <React.Fragment key={block.id || index}>
@@ -90,11 +183,11 @@ function renderBlock(
       const paragraphAlign = getBlockAlignment(block, block.data.text);
 
       return (
-        <div
+        <ReadMoreHtml
           key={block.id}
           className={`mb-5 text-base leading-relaxed ${textColor}`}
           style={paragraphAlign} // ✅ Apply alignment
-          dangerouslySetInnerHTML={{ __html: block.data.text || "" }}
+          html={block.data.text || ""}
         />
       );
 
@@ -346,18 +439,6 @@ function renderBlock(
 
       if (!youtubeData.url) return null;
 
-      const extractVideoId = (url: string): string | null => {
-        const patterns = [
-          /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
-          /youtube\.com\/watch\?.*v=([^&\n?#]+)/,
-        ];
-        for (const pattern of patterns) {
-          const match = url.match(pattern);
-          if (match && match[1]) return match[1];
-        }
-        return null;
-      };
-
       const videoId = extractVideoId(youtubeData.url);
       if (!videoId) return null;
 
@@ -392,32 +473,56 @@ function renderBlock(
     case "column":
       const columnData = block.data as {
         imageUrl?: string;
+        youtubeUrl?: string;
         imagePosition?: "left" | "right";
         heading?: string;
         description?: string;
         points?: string[];
+        ctaText?: string;
+        ctaUrl?: string;
       };
 
       const flexDirection =
         columnData.imagePosition === "right"
           ? "md:flex-row-reverse"
           : "md:flex-row";
+      const columnBgClass =
+        columnData.imagePosition === "left" ? "bg-purple-50" : "bg-white";
+      const isLeftAligned = columnData.imagePosition === "left";
+      const youtubeId = columnData.youtubeUrl
+        ? extractVideoId(columnData.youtubeUrl)
+        : null;
 
-      return (
+      const columnContent = (
         <div
-          key={block.id}
-          className={`mb-8 flex flex-col ${flexDirection} gap-8 items-start ${cardBg} border ${borderColor} rounded-lg p-6`}
+          className={`mb-8 flex flex-col ${flexDirection} gap-8 items-center ${columnBgClass} rounded-lg`}
         >
           <div className="flex-1 min-w-0">
             {columnData.imageUrl && (
-              <div className="overflow-hidden rounded-lg">
+              <div className="overflow-hidden rounded-lg flex items-center justify-center">
                 <Image
                   src={columnData.imageUrl}
                   alt={columnData.heading || "Column image"}
-                  width={800}
+                  width={700}
                   height={600}
-                  className="w-full h-auto object-cover"
+                  className="w-full max-h-full object-contain"
                 />
+              </div>
+            )}
+            {youtubeId && (
+              <div className="mt-4 overflow-hidden rounded-lg">
+                <div
+                  className="relative w-full"
+                  style={{ paddingBottom: "56.25%" }}
+                >
+                  <iframe
+                    src={`https://www.youtube.com/embed/${youtubeId}`}
+                    className="absolute inset-0 h-full w-full"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
               </div>
             )}
           </div>
@@ -429,9 +534,10 @@ function renderBlock(
               </h3>
             )}
             {columnData.description && (
-              <p className={`mb-4 text-base leading-relaxed ${textColor}`}>
-                {columnData.description}
-              </p>
+              <ReadMoreText
+                text={columnData.description}
+                className={`mb-4 text-base leading-relaxed ${textColor}`}
+              />
             )}
             {columnData.points && columnData.points.length > 0 && (
               <ul className={`space-y-2 ${textColor}`}>
@@ -439,7 +545,7 @@ function renderBlock(
                   <li key={idx} className="flex items-start">
                     <span
                       className={`mr-2 mt-2 flex-shrink-0 w-1.5 h-1.5 rounded-full ${
-                        theme === "dark" ? "bg-blue-400" : "bg-blue-600"
+                        theme === "dark" ? "bg-purple-400" : "bg-purple-600"
                       }`}
                     />
                     <span className="text-base leading-relaxed">{point}</span>
@@ -447,7 +553,30 @@ function renderBlock(
                 ))}
               </ul>
             )}
+            {columnData.ctaText && columnData.ctaUrl && (
+              <div className="mt-5">
+                <a
+                  href={normalizeUrl(columnData.ctaUrl)}
+                  className="inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-[#4b1b66] to-[#8b2bbd] hover:from-[#3f1655] hover:to-[#7a27a6]"
+                >
+                  {columnData.ctaText}
+                </a>
+              </div>
+            )}
           </div>
+        </div>
+      );
+
+      if (!isLeftAligned) {
+        return <div key={block.id}>{columnContent}</div>;
+      }
+
+      return (
+        <div
+          key={block.id}
+          className="relative left-1/2 right-1/2 w-screen -ml-[50vw] -mr-[50vw] bg-purple-50"
+        >
+          <div className="max-w-6xl mx-auto px-6">{columnContent}</div>
         </div>
       );
 
@@ -490,23 +619,7 @@ function renderBlock(
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className={`
-              inline-flex items-center justify-center
-              rounded-lg
-              ${
-                theme === "dark"
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-blue-600 hover:bg-blue-700"
-              }
-              px-6 py-3
-              text-base font-medium text-white
-              transition-colors duration-200
-              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                theme === "dark"
-                  ? "focus:ring-offset-slate-950"
-                  : "focus:ring-offset-white"
-              }
-            `}
+            className="inline-flex items-center justify-center rounded-lg px-6 py-3 text-base font-medium text-white bg-gradient-to-r from-[#4b1b66] to-[#8b2bbd] hover:from-[#3f1655] hover:to-[#7a27a6] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-white"
           >
             {text}
           </a>
