@@ -1,21 +1,65 @@
-import React from "react";
+import { Target, Eye, Heart } from "lucide-react";
 
-export default function MissionStatement() {
+export default function MissionVisionValues() {
   return (
-    <section className="py-16 px-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-slate-200">
-          <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">
-              Our Mission
+    <section className="bg-white py-20">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="grid gap-14 lg:grid-cols-2 items-center">
+          {/* LEFT – CARDS */}
+          <div className="space-y-6">
+            {/* Mission */}
+            <div className="flex items-start gap-5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white shadow-lg">
+              <div className="rounded-lg bg-white/20 p-3">
+                <Target className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold">Our Mission</h3>
+                <p className="mt-1 text-sm text-white/90">
+                  To simplify legal, tax, and compliance services for startups
+                  and businesses with transparency and speed.
+                </p>
+              </div>
+            </div>
+
+            {/* Vision */}
+            <div className="flex items-start gap-5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white shadow-lg">
+              <div className="rounded-lg bg-white/20 p-3">
+                <Eye className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold">Our Vision</h3>
+                <p className="mt-1 text-sm text-white/90">
+                  To become India’s most trusted digital platform for business
+                  registrations and compliance solutions.
+                </p>
+              </div>
+            </div>
+
+            {/* Values */}
+            <div className="flex items-start gap-5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white shadow-lg">
+              <div className="rounded-lg bg-white/20 p-3">
+                <Heart className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold">Our Values</h3>
+                <p className="mt-1 text-sm text-white/90">
+                  Integrity, customer-first approach, accountability, and
+                  continuous innovation.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT – CONTENT */}
+          <div>
+            <h2 className="text-4xl font-extrabold text-gray-900">
+              Mission, Vision <br />
+              <span className="text-indigo-600">& Values</span>
             </h2>
-            <p className="text-lg text-slate-600 leading-relaxed">
-              At TaxLegit, we understand that navigating legal compliance and
-              regulatory paperwork can be daunting for entrepreneurs. Our
-              mission is to transform this complexity into simplicity, enabling
-              you to launch, scale, and manage your business with confidence and
-              ease. We&apos;re not just service providers—we&apos;re your
-              partners in growth.
+
+            <p className="mt-4 max-w-md text-gray-600">
+              These principles define who we are, guide how we work, and shape
+              every decision we make for our clients and partners.
             </p>
           </div>
         </div>

@@ -12,6 +12,33 @@ function normalizeUrl(url?: string): string {
   return `https://${url}`;
 }
 
+// ✅ Helper function to extract text-align from HTML
+function extractTextAlign(html?: string): React.CSSProperties {
+  if (!html) return {};
+
+  const styleMatch = html.match(/style="([^"]*)"/);
+  if (styleMatch) {
+    const textAlignMatch = styleMatch[1].match(/text-align:\s*([^;]+)/);
+    if (textAlignMatch) {
+      return { textAlign: textAlignMatch[1].trim() as any };
+    }
+  }
+  return {};
+}
+
+function getBlockAlignment(
+  block: OutputData["blocks"][0],
+  html?: string
+): React.CSSProperties {
+  const tunes = (block as { tunes?: { textAlignTune?: { alignment?: string } } })
+    .tunes;
+  const tuneAlignment = tunes?.textAlignTune?.alignment;
+  if (tuneAlignment) {
+    return { textAlign: tuneAlignment as React.CSSProperties["textAlign"] };
+  }
+  return extractTextAlign(html);
+}
+
 interface EditorJsRendererProps {
   data: OutputData;
   theme?: "light" | "dark";
@@ -60,16 +87,21 @@ function renderBlock(
 
   switch (block.type) {
     case "paragraph":
+      const paragraphAlign = getBlockAlignment(block, block.data.text);
+
       return (
         <div
           key={block.id}
           className={`mb-5 text-base leading-relaxed ${textColor}`}
+          style={paragraphAlign} // ✅ Apply alignment
           dangerouslySetInnerHTML={{ __html: block.data.text || "" }}
         />
       );
 
     case "header":
       const level = block.data.level || 2;
+      const headerAlign = getBlockAlignment(block, block.data.text);
+
       const headerSizes = {
         1: "text-4xl md:text-5xl mb-6 mt-12 leading-tight",
         2: "text-3xl md:text-4xl mb-5 mt-10 leading-tight",
@@ -78,12 +110,15 @@ function renderBlock(
         5: "text-lg md:text-xl mb-3 mt-6 leading-snug",
         6: "text-base md:text-lg mb-3 mt-5 leading-snug",
       };
+
       const headerProps = {
         className: `font-semibold ${headingColor} ${
           headerSizes[level as keyof typeof headerSizes] || headerSizes[2]
         } tracking-tight`,
+        style: headerAlign, // ✅ Apply alignment
         dangerouslySetInnerHTML: { __html: block.data.text || "" },
       };
+
       switch (level) {
         case 1:
           return <h1 key={block.id} {...headerProps} />;
@@ -105,10 +140,16 @@ function renderBlock(
       const ListTag = block.data.style === "ordered" ? "ol" : "ul";
       const listClass =
         block.data.style === "ordered" ? "list-decimal" : "list-disc";
+
+      // ✅ Extract alignment from tune or first list item (if any)
+      const firstItem = block.data.items?.[0] || "";
+      const listAlign = getBlockAlignment(block, firstItem);
+
       return (
         <ListTag
           key={block.id}
           className={`mb-5 pl-6 space-y-2 ${listClass} ${textColor} text-base marker:text-slate-400`}
+          style={listAlign} // ✅ Apply alignment
         >
           {block.data.items?.map((item: string, idx: number) => (
             <li
@@ -121,6 +162,7 @@ function renderBlock(
       );
 
     case "table":
+      const tableAlign = getBlockAlignment(block);
       return (
         <div
           key={block.id}
@@ -131,6 +173,7 @@ function renderBlock(
               className={`min-w-full divide-y ${
                 theme === "dark" ? "divide-slate-800" : "divide-slate-200"
               }`}
+              style={tableAlign}
             >
               <tbody
                 className={
@@ -152,15 +195,21 @@ function renderBlock(
                         : "bg-white"
                     }`}
                   >
-                    {row.map((cell: string, cellIdx: number) => (
-                      <td
-                        key={cellIdx}
-                        className={`px-4 py-3 text-sm ${
-                          rowIdx === 0 ? "font-medium" : ""
-                        } ${textColor}`}
-                        dangerouslySetInnerHTML={{ __html: cell }}
-                      />
-                    ))}
+                    {row.map((cell: string, cellIdx: number) => {
+                      // ✅ Extract alignment for each cell
+                      const cellAlign = extractTextAlign(cell);
+
+                      return (
+                        <td
+                          key={cellIdx}
+                          className={`px-4 py-3 text-sm ${
+                            rowIdx === 0 ? "font-medium" : ""
+                          } ${textColor}`}
+                          style={cellAlign} // ✅ Apply alignment
+                          dangerouslySetInnerHTML={{ __html: cell }}
+                        />
+                      );
+                    })}
                   </tr>
                 ))}
               </tbody>

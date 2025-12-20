@@ -27,7 +27,7 @@ export async function generateMetadata({
   const navbarItem = await prisma.navbarItem.findFirst({
     where: {
       region,
-      href: `${slug}`,
+      href: `/${slug}`,
       isActive: true,
     },
   });

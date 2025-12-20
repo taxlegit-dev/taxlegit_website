@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-
 const services = [
   "TDS Return Filing Online",
   "GST Returns Filing Online",
@@ -20,7 +18,7 @@ const services = [
 
 export default function ContactForm() {
   return (
-    <div className="bg-white rounded-2xl border border-zinc-200 p-8 shadow-lg">
+    <div className="bg-white rounded-2xl border border-zinc-200 p-8 shadow-lg text-black">
       <h2 className="text-2xl font-bold text-slate-800 mb-2 relative pb-4 text-center inline-block w-full">
         Start Your Business with free consultation
         <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-purple-800 rounded-full"></span>

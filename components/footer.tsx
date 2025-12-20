@@ -32,15 +32,13 @@ const Footer = () => {
   const companyLinks = [
     { name: "About Us", href: "about" },
     { name: "Blog", href: "blog" },
-    { name: "Careers", href: "#careers" },
-    { name: "Contact Us", href: "#contact" },
+    { name: "Contact Us", href: "contact-us" },
   ];
 
   const legalLinks = [
     { name: "Privacy Policy", href: "privacy-policy" },
     { name: "Terms of Service", href: "terms-and-conditions" },
     { name: "Refund Policy", href: "refund-policy" },
-    { name: "Disclaimer", href: "#disclaimer" },
   ];
 
   const socialLinks = [

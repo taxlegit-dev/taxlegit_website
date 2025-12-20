@@ -5,7 +5,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaYoutube } from "react-icons/fa";
 import Link from "next/link";
 import type { PageHero } from "@prisma/client";
-import ContactForm from "@/components/pages/services/contactForm";
+import ContactForm from "@/components/pages/common/contactForm";
 import RunningLogoCarousel from "../pages/common/RunningLogoCarousel";
 type IndiaHeroProps = {
   hero: PageHero;
@@ -103,7 +103,7 @@ export function IndiaHero({ hero }: IndiaHeroProps) {
   }, []);
 
   return (
-    <section className="bg-gradient-to-br from-indigo-50 via-white to-slate-50 py-20 ">
+    <section className="bg-gradient-to-br from-indigo-50 via-white to-slate-50 py-10 ">
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid lg:grid-cols-5 gap-12 items-start">
           {/* Left Content */}
