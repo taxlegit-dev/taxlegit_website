@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTransition } from "react";
 
-type MetaPageType = "SERVICE" | "BLOG";
+type MetaPageType = "SERVICE" | "BLOG" | "GENERIC";
 
 type SEOMetaEditorProps = {
   pageType: MetaPageType;

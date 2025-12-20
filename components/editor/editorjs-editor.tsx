@@ -4,7 +4,6 @@ import { useCallback, useRef, useEffect, useState } from "react";
 import type { OutputData } from "@editorjs/editorjs";
 import EditorJS from "@editorjs/editorjs";
 
-// Core tools
 import Header from "@editorjs/header";
 import List from "@editorjs/list";
 import Table from "@editorjs/table";
@@ -19,6 +18,8 @@ import ImageLinkTune from "./editorjs-blocks/image-link-tune";
 // Custom inline tools
 import FontSizeInlineTool from "./editorjs-blocks/font-size-inline-tool";
 import TextColorInlineTool from "./editorjs-blocks/text-color-inline-tool";
+import TextAlignTune from "./editorjs-blocks/text-align-tune";
+import CTAButtonBlock from "./editorjs-blocks/cta-button-block";
 
 type EditorJsEditorProps = {
   value?: OutputData | null;
@@ -124,10 +125,13 @@ export function EditorJsEditor({
         paragraph: {
           class: Paragraph as unknown as never,
           inlineToolbar: ["bold", "italic", "link", "fontSize", "textColor"],
+          tunes: ["textAlignTune"],
         },
+
         header: {
           class: Header as unknown as never,
           inlineToolbar: ["bold", "italic", "link", "fontSize", "textColor"],
+          tunes: ["textAlignTune"],
           config: {
             placeholder: "Section title",
             levels: [2, 3, 4],
@@ -137,10 +141,12 @@ export function EditorJsEditor({
         list: {
           class: List as unknown as never,
           inlineToolbar: ["bold", "italic", "link", "fontSize", "textColor"],
+          tunes: ["textAlignTune"],
         },
         table: {
           class: Table as unknown as never,
           inlineToolbar: ["bold", "italic", "link", "fontSize", "textColor"],
+          tunes: ["textAlignTune"],
           config: {
             rows: 2,
             cols: 3,
@@ -152,6 +158,11 @@ export function EditorJsEditor({
         textColor: {
           class: TextColorInlineTool as unknown as never,
         },
+
+        textAlignTune: {
+          class: TextAlignTune as unknown as never,
+        },
+
         image: {
           class: ImageTool as unknown as never,
           tunes: ["imageLink"],
@@ -194,7 +205,11 @@ export function EditorJsEditor({
               }
             : undefined,
         },
+        cta: {
+          class: CTAButtonBlock as unknown as never,
+        },
       },
+
       onChange: async () => {
         if (editor) {
           try {

@@ -10,6 +10,8 @@ const blogSchema = z.object({
   image: z.string().optional(),
   content: z.string().min(1, "Content is required"),
   blogGroupId: z.string().min(1, "Blog group is required"),
+  authorId: z.string().optional(),
+  readTime: z.string().optional(),
   region: z.enum(["INDIA", "US"]),
   status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]).optional(),
 });
@@ -42,6 +44,7 @@ export async function GET(request: Request) {
     where,
     include: {
       blogGroup: true,
+      author: true,
     },
     orderBy: { createdAt: "desc" },
   });
@@ -79,11 +82,14 @@ export async function POST(request: Request) {
         image: parsed.data.image,
         content: parsed.data.content,
         blogGroupId: parsed.data.blogGroupId,
+        authorId: parsed.data.authorId || null,
+        readTime: parsed.data.readTime || null,
         region,
         status,
       },
       include: {
         blogGroup: true,
+        author: true,
       },
     });
 
@@ -127,11 +133,14 @@ export async function PUT(request: Request) {
         image: parsed.data.image,
         content: parsed.data.content,
         blogGroupId: parsed.data.blogGroupId,
+        authorId: parsed.data.authorId || null,
+        readTime: parsed.data.readTime || null,
         region,
         ...(status && { status }),
       },
       include: {
         blogGroup: true,
+        author: true,
       },
     });
 

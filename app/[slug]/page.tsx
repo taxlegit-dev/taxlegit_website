@@ -22,6 +22,7 @@ export async function generateMetadata({
 }: DynamicPageProps): Promise<Metadata> {
   const { slug } = await params;
   const region = Region.INDIA;
+  console.log(slug, region);
 
   const navbarItem = await prisma.navbarItem.findFirst({
     where: {
@@ -30,6 +31,7 @@ export async function generateMetadata({
       isActive: true,
     },
   });
+  console.log(navbarItem);
 
   if (!navbarItem) {
     return { title: "Page Not Found" };
@@ -159,7 +161,7 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
       <div className="min-h-screen bg-white text-black">
         <NavbarServer region={region} />
 
-        <main>
+        <main className="pt-[72px]">
           {hero && hero.status === "PUBLISHED" && <IndiaHero hero={hero} />}
 
           {servicePage &&

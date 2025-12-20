@@ -12,10 +12,11 @@ export default async function AdminServicePagesPage({ searchParams }: AdminServi
   const selectedRegion = params?.region === "US" ? Region.US : Region.INDIA;
   const selectedNavbarItemId = params?.navbarItemId;
 
-  // Fetch all navbar items for the selected region (only LINK type items with href)
+  // Fetch all navbar items for the selected region (only SERVICE pageType items with href)
   const navItems = await prisma.navbarItem.findMany({
     where: {
       region: selectedRegion,
+      pageType: "SERVICE",
       type: "LINK",
       href: { not: null },
       isActive: true,
@@ -80,6 +81,7 @@ export default async function AdminServicePagesPage({ searchParams }: AdminServi
         <RegionFilter value={selectedRegion === Region.US ? "US" : "INDIA"} />
       </div>
       <ServicePageManager
+        pageType="SERVICE"
         region={selectedRegion === Region.US ? "US" : "INDIA"}
         navItems={navItems}
         selectedNavbarItemId={selectedNavbarItemId || undefined}
