@@ -1,6 +1,6 @@
-import { Region } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { MegaNavbar } from "@/components/navigation/mega-navbar";
+import { Region } from "@prisma/client";
 
 type NavbarServerProps = {
   region: Region;
