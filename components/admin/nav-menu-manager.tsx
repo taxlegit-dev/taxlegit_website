@@ -27,7 +27,7 @@ type NavMenuManagerProps = {
 
 const navFormSchema = createNavItemSchema.extend({
   order: z.preprocess((value) => Number(value ?? 0), z.number().int().min(0)),
-  type: z.enum(["LINK", "DROPDOWN", "BUTTON"]).default("LINK"),
+  type: z.enum(["LINK", "DROPDOWN"]).default("LINK"),
   isLoginLink: z.boolean().default(false),
 });
 
@@ -151,7 +151,7 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
       href: item.href || "",
       order: item.order,
       pageType: "GENERIC", // Default, since we don't have it in NavItem type
-      type: item.type as "LINK" | "DROPDOWN" | "BUTTON",
+      type: item.type as "LINK" | "DROPDOWN",
       isLoginLink: item.isLoginLink,
       region,
       parentId: item.parentId || undefined,
@@ -263,7 +263,7 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
             </div>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-4">
             <div className="space-y-1">
               <label className="text-sm font-semibold text-slate-800">
                 Order
@@ -273,6 +273,18 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
                 className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                 {...registerCreate("order")}
               />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-semibold text-slate-800">
+                Item Type
+              </label>
+              <select
+                className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                {...registerCreate("type")}
+              >
+                <option value="LINK">Link</option>
+                <option value="DROPDOWN">Dropdown</option>
+              </select>
             </div>
             <div className="space-y-1">
               <label className="text-sm font-semibold text-slate-800">
@@ -363,7 +375,7 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-4">
               <div className="space-y-1">
                 <label className="text-sm font-semibold text-slate-800">
                   Order
@@ -373,6 +385,18 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
                   className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                   {...registerUpdate("order")}
                 />
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm font-semibold text-slate-800">
+                  Item Type
+                </label>
+                <select
+                  className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  {...registerUpdate("type")}
+                >
+                  <option value="LINK">Link</option>
+                  <option value="DROPDOWN">Dropdown</option>
+                </select>
               </div>
               <div className="space-y-1">
                 <label className="text-sm font-semibold text-slate-800">

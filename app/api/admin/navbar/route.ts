@@ -8,10 +8,9 @@ import {
   reorderNavItemsSchema,
 } from "@/lib/validators";
 
-const navTypeMap: Record<"LINK" | "DROPDOWN" | "BUTTON", NavbarItemType> = {
+const navTypeMap: Record<"LINK" | "DROPDOWN", NavbarItemType> = {
   LINK: NavbarItemType.LINK,
   DROPDOWN: NavbarItemType.DROPDOWN,
-  BUTTON: NavbarItemType.BUTTON,
 };
 
 const pageTypeMap: Record<"SERVICE" | "GENERIC", NavbarPageType> = {
