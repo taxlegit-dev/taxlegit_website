@@ -20,7 +20,6 @@ enum Region {
 enum NavbarItemType {
   LINK
   DROPDOWN
-  BUTTON
 }
 
 enum ContentStatus {

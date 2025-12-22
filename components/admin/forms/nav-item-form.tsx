@@ -9,7 +9,7 @@ import { createNavItemSchema } from "@/lib/validators";
 
 const navFormSchema = createNavItemSchema.extend({
   order: z.preprocess((value) => Number(value ?? 0), z.number().int().min(0)),
-  type: z.enum(["LINK", "DROPDOWN", "BUTTON"]).default("LINK"),
+  type: z.enum(["LINK", "DROPDOWN"]).default("LINK"),
   isLoginLink: z.boolean().default(false),
 });
 

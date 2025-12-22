@@ -27,7 +27,7 @@ type NavMenuManagerProps = {
 
 const navFormSchema = createNavItemSchema.extend({
   order: z.preprocess((value) => Number(value ?? 0), z.number().int().min(0)),
-  type: z.enum(["LINK", "DROPDOWN", "BUTTON"]).default("LINK"),
+  type: z.enum(["LINK", "DROPDOWN"]).default("LINK"),
   isLoginLink: z.boolean().default(false),
 });
 
@@ -151,7 +151,7 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
       href: item.href || "",
       order: item.order,
       pageType: "GENERIC", // Default, since we don't have it in NavItem type
-      type: item.type as "LINK" | "DROPDOWN" | "BUTTON",
+      type: item.type as "LINK" | "DROPDOWN",
       isLoginLink: item.isLoginLink,
       region,
       parentId: item.parentId || undefined,
@@ -284,7 +284,6 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
               >
                 <option value="LINK">Link</option>
                 <option value="DROPDOWN">Dropdown</option>
-                <option value="BUTTON">Button</option>
               </select>
             </div>
             <div className="space-y-1">
@@ -397,7 +396,6 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
                 >
                   <option value="LINK">Link</option>
                   <option value="DROPDOWN">Dropdown</option>
-                  <option value="BUTTON">Button</option>
                 </select>
               </div>
               <div className="space-y-1">

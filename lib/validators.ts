@@ -12,7 +12,7 @@ export const createNavItemSchema = z.object({
   label: z.string().min(2),
   href: z.string().optional(),
   order: z.number().int().min(0).default(0),
-  type: z.enum(["LINK", "DROPDOWN", "BUTTON"]).default("LINK"),
+  type: z.enum(["LINK", "DROPDOWN"]).default("LINK"),
   pageType: z.enum(["SERVICE", "GENERIC"]).default("GENERIC"),
   region: regionEnum,
   parentId: z.string().optional(),
@@ -23,7 +23,7 @@ export const createNavItemSchema = z.object({
 export const updateNavItemSchema = createNavItemSchema.extend({
   id: z.string().min(1),
   isActive: z.boolean().optional(),
-  type: z.enum(["LINK", "DROPDOWN", "BUTTON"]).optional(),
+  type: z.enum(["LINK", "DROPDOWN"]).optional(),
   isLoginLink: z.boolean().optional(),
 });
 
