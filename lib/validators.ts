@@ -13,7 +13,7 @@ export const createNavItemSchema = z.object({
   href: z.string().optional(),
   order: z.number().int().min(0).default(0),
   type: z.enum(["LINK", "DROPDOWN", "BUTTON"]).default("LINK"),
-  pageType: z.enum(["SERVICE", "BLOG", "GENERIC", "EXTERNAL"]).default("GENERIC"),
+  pageType: z.enum(["SERVICE", "GENERIC"]).default("GENERIC"),
   region: regionEnum,
   parentId: z.string().optional(),
   groupLabel: z.string().optional(), // For grouping submenu items in mega-menu

@@ -118,7 +118,11 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
   });
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this item? All children will also be deleted.")) {
+    if (
+      !confirm(
+        "Are you sure you want to delete this item? All children will also be deleted."
+      )
+    ) {
       return;
     }
 
@@ -156,7 +160,6 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
     });
   };
 
-
   // Get all items flattened for parent selection
   const getAllItems = (items: NavItem[]): NavItem[] => {
     const result: NavItem[] = [];
@@ -173,21 +176,32 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
   const topLevelItems = allItemsFlat.filter((item) => !item.parentId);
 
   const renderItem = (item: NavItem, level: number = 0) => (
-    <div key={item.id} className={`${level > 0 ? "ml-6 border-l-2 border-zinc-200 pl-4" : ""}`}>
+    <div
+      key={item.id}
+      className={`${level > 0 ? "ml-6 border-l-2 border-zinc-200 pl-4" : ""}`}
+    >
       <div className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-4 mb-2">
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            <span className="text-xs font-medium text-zinc-400">#{item.order}</span>
+            <span className="text-xs font-medium text-zinc-400">
+              #{item.order}
+            </span>
             <span className="font-semibold text-zinc-900">{item.label}</span>
-            <span className="text-xs px-2 py-1 rounded-full bg-zinc-100 text-zinc-600">{item.type}</span>
+            <span className="text-xs px-2 py-1 rounded-full bg-zinc-100 text-zinc-600">
+              {item.type}
+            </span>
             {item.groupLabel && (
               <span className="text-xs px-2 py-1 rounded-full bg-indigo-100 text-indigo-600">
                 Group: {item.groupLabel}
               </span>
             )}
-            {!item.isActive && <span className="text-xs text-red-500">(Inactive)</span>}
+            {!item.isActive && (
+              <span className="text-xs text-red-500">(Inactive)</span>
+            )}
           </div>
-          {item.href && <p className="text-xs text-zinc-500 mt-1">{item.href}</p>}
+          {item.href && (
+            <p className="text-xs text-zinc-500 mt-1">{item.href}</p>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -216,20 +230,30 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
     <div className="space-y-8">
       {/* Create Form */}
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-xl font-semibold text-slate-900 mb-4">Add New Menu Item</h2>
+        <h2 className="text-xl font-semibold text-slate-900 mb-4">
+          Add New Menu Item
+        </h2>
         <form onSubmit={onSubmitCreate} className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-1">
-              <label className="text-sm font-semibold text-slate-800">Label *</label>
+              <label className="text-sm font-semibold text-slate-800">
+                Label *
+              </label>
               <input
                 type="text"
                 className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                 {...registerCreate("label")}
               />
-              {createErrors.label && <p className="text-xs text-red-500">{createErrors.label.message}</p>}
+              {createErrors.label && (
+                <p className="text-xs text-red-500">
+                  {createErrors.label.message}
+                </p>
+              )}
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-semibold text-slate-800">Href</label>
+              <label className="text-sm font-semibold text-slate-800">
+                Href
+              </label>
               <input
                 type="text"
                 placeholder="/services"
@@ -241,7 +265,9 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
 
           <div className="grid gap-4 md:grid-cols-3">
             <div className="space-y-1">
-              <label className="text-sm font-semibold text-slate-800">Order</label>
+              <label className="text-sm font-semibold text-slate-800">
+                Order
+              </label>
               <input
                 type="number"
                 className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
@@ -249,19 +275,21 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-semibold text-slate-800">Page Type</label>
+              <label className="text-sm font-semibold text-slate-800">
+                Page Type
+              </label>
               <select
                 className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                 {...registerCreate("pageType")}
               >
                 <option value="SERVICE">Service</option>
-                <option value="BLOG">Blog</option>
                 <option value="GENERIC">Generic</option>
-                <option value="EXTERNAL">External</option>
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-semibold text-slate-800">Parent Menu</label>
+              <label className="text-sm font-semibold text-slate-800">
+                Parent Menu
+              </label>
               <select
                 className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                 {...registerCreate("parentId")}
@@ -276,7 +304,9 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
             </div>
           </div>
           <div className="space-y-1">
-            <label className="text-sm font-semibold text-slate-800">Group Label</label>
+            <label className="text-sm font-semibold text-slate-800">
+              Group Label
+            </label>
             <input
               type="text"
               placeholder="Company Registration"
@@ -285,7 +315,6 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
             />
             <p className="text-xs text-zinc-500">For grouping submenu items</p>
           </div>
-
 
           <input type="hidden" value={region} {...registerCreate("region")} />
           <button
@@ -301,21 +330,31 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
       {/* Edit Form (shown when editing) */}
       {editingItem && (
         <div className="rounded-3xl border border-indigo-200 bg-indigo-50 p-6 shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900 mb-4">Edit Menu Item</h2>
+          <h2 className="text-xl font-semibold text-slate-900 mb-4">
+            Edit Menu Item
+          </h2>
           <form onSubmit={onSubmitUpdate} className="space-y-4">
             <input type="hidden" {...registerUpdate("id")} />
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-1">
-                <label className="text-sm font-semibold text-slate-800">Label *</label>
+                <label className="text-sm font-semibold text-slate-800">
+                  Label *
+                </label>
                 <input
                   type="text"
                   className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                   {...registerUpdate("label")}
                 />
-                {updateErrors.label && <p className="text-xs text-red-500">{updateErrors.label.message}</p>}
+                {updateErrors.label && (
+                  <p className="text-xs text-red-500">
+                    {updateErrors.label.message}
+                  </p>
+                )}
               </div>
               <div className="space-y-1">
-                <label className="text-sm font-semibold text-slate-800">Href</label>
+                <label className="text-sm font-semibold text-slate-800">
+                  Href
+                </label>
                 <input
                   type="text"
                   className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
@@ -326,7 +365,9 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
 
             <div className="grid gap-4 md:grid-cols-3">
               <div className="space-y-1">
-                <label className="text-sm font-semibold text-slate-800">Order</label>
+                <label className="text-sm font-semibold text-slate-800">
+                  Order
+                </label>
                 <input
                   type="number"
                   className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
@@ -334,19 +375,21 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-sm font-semibold text-slate-800">Page Type</label>
+                <label className="text-sm font-semibold text-slate-800">
+                  Page Type
+                </label>
                 <select
                   className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                   {...registerUpdate("pageType")}
                 >
                   <option value="SERVICE">Service</option>
-                  <option value="BLOG">Blog</option>
                   <option value="GENERIC">Generic</option>
-                  <option value="EXTERNAL">External</option>
                 </select>
               </div>
               <div className="space-y-1">
-                <label className="text-sm font-semibold text-slate-800">Parent Menu</label>
+                <label className="text-sm font-semibold text-slate-800">
+                  Parent Menu
+                </label>
                 <select
                   className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                   {...registerUpdate("parentId")}
@@ -363,7 +406,9 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
               </div>
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-semibold text-slate-800">Group Label</label>
+              <label className="text-sm font-semibold text-slate-800">
+                Group Label
+              </label>
               <input
                 type="text"
                 className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
@@ -378,7 +423,10 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
                 className="h-4 w-4 rounded border-slate-300"
                 {...registerUpdate("isActive")}
               />
-              <label htmlFor="isActive" className="text-sm font-semibold text-slate-800">
+              <label
+                htmlFor="isActive"
+                className="text-sm font-semibold text-slate-800"
+              >
                 Active?
               </label>
             </div>
@@ -409,18 +457,26 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
 
       {/* Current Items List */}
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-xl font-semibold text-slate-900 mb-4">Current Menu Items</h2>
+        <h2 className="text-xl font-semibold text-slate-900 mb-4">
+          Current Menu Items
+        </h2>
         {items.length === 0 ? (
-          <p className="text-sm text-zinc-500">No menu items yet. Add one above to get started.</p>
+          <p className="text-sm text-zinc-500">
+            No menu items yet. Add one above to get started.
+          </p>
         ) : (
-          <div className="space-y-2">{items.map((item) => renderItem(item))}</div>
+          <div className="space-y-2">
+            {items.map((item) => renderItem(item))}
+          </div>
         )}
       </div>
 
       {message && (
         <div
           className={`rounded-2xl p-4 text-sm font-medium ${
-            message.includes("success") ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+            message.includes("success")
+              ? "bg-green-50 text-green-700"
+              : "bg-red-50 text-red-700"
           }`}
         >
           {message}
@@ -429,4 +485,3 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
     </div>
   );
 }
-

@@ -14,11 +14,9 @@ const navTypeMap: Record<"LINK" | "DROPDOWN" | "BUTTON", NavbarItemType> = {
   BUTTON: NavbarItemType.BUTTON,
 };
 
-const pageTypeMap: Record<"SERVICE" | "BLOG" | "GENERIC" | "EXTERNAL", NavbarPageType> = {
+const pageTypeMap: Record<"SERVICE" | "GENERIC", NavbarPageType> = {
   SERVICE: NavbarPageType.SERVICE,
-  BLOG: NavbarPageType.BLOG,
   GENERIC: NavbarPageType.GENERIC,
-  EXTERNAL: NavbarPageType.EXTERNAL,
 };
 
 // GET - Fetch all navbar items for a region
@@ -49,10 +47,16 @@ export async function GET(request: Request) {
   const topLevelItems = items.filter((item) => !item.parentId);
   const structuredItems = topLevelItems.map((item) => ({
     ...item,
-    href: item.pageType === NavbarPageType.GENERIC ? `/gen/${item.href}` : item.href,
+    href:
+      item.pageType === NavbarPageType.GENERIC
+        ? `/gen/${item.href}`
+        : item.href,
     children: item.children.map((child) => ({
       ...child,
-      href: child.pageType === NavbarPageType.GENERIC ? `/gen/${child.href}` : child.href,
+      href:
+        child.pageType === NavbarPageType.GENERIC
+          ? `/gen/${child.href}`
+          : child.href,
     })),
   }));
 
@@ -214,7 +218,9 @@ export async function PUT(request: Request) {
     href: parsed.data.href,
     order: parsed.data.order,
     type: parsed.data.type ? navTypeMap[parsed.data.type] : undefined,
-    pageType: parsed.data.pageType ? pageTypeMap[parsed.data.pageType] : undefined,
+    pageType: parsed.data.pageType
+      ? pageTypeMap[parsed.data.pageType]
+      : undefined,
     isLoginLink: parsed.data.isLoginLink ?? false,
     groupLabel: parsed.data.groupLabel,
     isActive: parsed.data.isActive ?? existingItem.isActive,

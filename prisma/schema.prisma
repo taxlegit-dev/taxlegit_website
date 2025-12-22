@@ -35,9 +35,7 @@ enum PageKey {
 }
 enum NavbarPageType {
   SERVICE
-  BLOG
   GENERIC
-  EXTERNAL
 }
 
 enum MetaPageType {
