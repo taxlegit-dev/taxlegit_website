@@ -5,7 +5,7 @@ CREATE TYPE "Role" AS ENUM ('ADMIN', 'USER');
 CREATE TYPE "Region" AS ENUM ('INDIA', 'US');
 
 -- CreateEnum
-CREATE TYPE "NavbarItemType" AS ENUM ('LINK', 'DROPDOWN', 'BUTTON');
+CREATE TYPE "NavbarItemType" AS ENUM ('LINK', 'DROPDOWN');
 
 -- CreateEnum
 CREATE TYPE "ContentStatus" AS ENUM ('DRAFT', 'PUBLISHED', 'ARCHIVED');
