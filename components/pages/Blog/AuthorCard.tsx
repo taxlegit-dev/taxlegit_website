@@ -25,13 +25,11 @@ export default async function AuthorCard({
 
   try {
     const res = await fetch(
-      `${
-        process.env.NEXTAUTH_URL || "http://localhost:3000"
-      }/api/blogs?region=${region}&limit=3`,
-      {
-        next: { revalidate: 3600 }, // Revalidate every hour
-      }
-    );
+  `/api/blogs?region=${region}&limit=3`,
+  {
+    next: { revalidate: 3600 },
+  }
+);
 
     if (res.ok) {
       const data = await res.json();
