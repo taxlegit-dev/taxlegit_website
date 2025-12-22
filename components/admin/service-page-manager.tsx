@@ -496,7 +496,7 @@ export function ServicePageManager({
 
             {fields.map((field, index) => {
               const isExpanded = expandedSections.has(index);
-              const section = form.watch(`sections.${index}`);
+              // const section = form.watch(`sections.${index}`);
 
               return (
                 <div key={field.id} className="rounded-lg">
@@ -512,17 +512,35 @@ export function ServicePageManager({
                       </span>
                       <div className="text-left">
                         <h4 className="text-md font-semibold text-slate-900">
-                          {section?.title || `Section ${index + 1}`}
+                          {field.title || `Section ${index + 1}`}
                         </h4>
-                        {!isExpanded && section?.title && (
+                        {!isExpanded && field?.title && (
                           <p className="text-xs text-slate-500 mt-0.5">
-                            Order: {section.order || index + 1}
+                            Order: {field.order || index + 1}
                           </p>
                         )}
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setExpandedSections((prev) => {
+                            const next = new Set(prev);
+                            if (next.has(index)) {
+                              next.delete(index);
+                            } else {
+                              next.add(index);
+                            }
+                            return next;
+                          });
+                        }}
+                        className="px-3 py-1.5 text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                      >
+                        {isExpanded ? "Close" : "Edit"}
+                      </button>
                       {fields.length > 1 && (
                         <button
                           type="button"
@@ -612,7 +630,7 @@ export function ServicePageManager({
                           Content <span className="text-red-500">*</span>
                         </label>
                         <EditorJsEditor
-                          key={`section-${field.id}-${index}`}
+                          key={`section-editor-${field.id || index}`}
                           value={
                             field.content
                               ? typeof field.content === "string"
@@ -627,6 +645,7 @@ export function ServicePageManager({
                               {
                                 shouldDirty: true,
                                 shouldValidate: false,
+                                shouldTouch: false,
                               }
                             );
                           }}
@@ -666,7 +685,7 @@ export function ServicePageManager({
                       >
                         {savingSection === index
                           ? "Saving..."
-                          : section?.id
+                          : field?.id
                           ? `Update Section ${index + 1}`
                           : `Save Section ${index + 1}`}
                       </button>
