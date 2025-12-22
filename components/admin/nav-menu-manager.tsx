@@ -263,7 +263,7 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
             </div>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-4">
             <div className="space-y-1">
               <label className="text-sm font-semibold text-slate-800">
                 Order
@@ -273,6 +273,19 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
                 className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                 {...registerCreate("order")}
               />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-semibold text-slate-800">
+                Item Type
+              </label>
+              <select
+                className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                {...registerCreate("type")}
+              >
+                <option value="LINK">Link</option>
+                <option value="DROPDOWN">Dropdown</option>
+                <option value="BUTTON">Button</option>
+              </select>
             </div>
             <div className="space-y-1">
               <label className="text-sm font-semibold text-slate-800">
@@ -363,7 +376,7 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-4">
               <div className="space-y-1">
                 <label className="text-sm font-semibold text-slate-800">
                   Order
@@ -373,6 +386,19 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
                   className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                   {...registerUpdate("order")}
                 />
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm font-semibold text-slate-800">
+                  Item Type
+                </label>
+                <select
+                  className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  {...registerUpdate("type")}
+                >
+                  <option value="LINK">Link</option>
+                  <option value="DROPDOWN">Dropdown</option>
+                  <option value="BUTTON">Button</option>
+                </select>
               </div>
               <div className="space-y-1">
                 <label className="text-sm font-semibold text-slate-800">
