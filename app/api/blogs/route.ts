@@ -27,6 +27,7 @@ export async function GET(request: Request) {
     where,
     include: {
       blogGroup: true,
+      author: true,
     },
     orderBy: { createdAt: "desc" },
   });

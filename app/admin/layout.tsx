@@ -8,6 +8,7 @@ const navItems = [
   { label: "Create Hero Section", href: "/admin/hero" },
   { label: "Add FAQ", href: "/admin/faq" },
   { label: "Add Service Pages", href: "/admin/service-pages" },
+  { label: "Generic Pages", href: "/admin/generic-pages" },
   { label: "Blog Management", href: "/admin/blog" },
 ];
 

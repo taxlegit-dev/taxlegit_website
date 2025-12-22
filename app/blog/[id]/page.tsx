@@ -10,11 +10,15 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { MetaDataRenderer } from "@/components/seo/meta-data-renderer";
 import { parseMetaBlockForMetadata } from "@/lib/seo-utils";
+import AuthorCard from "@/components/pages/Blog/AuthorCard";
+import RecentBlogsSection from "@/components/pages/home/RecentBlogsSection";
+import { BlogViewCounter } from "@/components/pages/Blog/BlogViewCounter";
 
 type BlogDetailPageProps = {
   params: Promise<{ id: string }>;
 };
 
+/* ===================== SEO ===================== */
 export async function generateMetadata({
   params,
 }: BlogDetailPageProps): Promise<Metadata> {
@@ -29,16 +33,14 @@ export async function generateMetadata({
     },
     include: {
       blogGroup: true,
+      author: true,
     },
   });
 
   if (!blog) {
-    return {
-      title: "Blog Not Found",
-    };
+    return { title: "Blog Not Found" };
   }
 
-  // Check for custom meta data
   const metaData = await prisma.metaData.findUnique({
     where: {
       pageType_pageId: {
@@ -48,29 +50,26 @@ export async function generateMetadata({
     },
   });
 
-  // If custom meta data exists, parse it
   if (metaData?.metaBlock) {
     const parsedMeta = parseMetaBlockForMetadata(metaData.metaBlock);
     return {
       ...parsedMeta,
-      // Fallback to defaults if not in meta block
       title: parsedMeta.title || `${blog.title} | Taxlegit Blog`,
       description: parsedMeta.description || blog.title,
     };
   }
 
-  // Default metadata
   return {
     title: `${blog.title} | Taxlegit Blog`,
     description: blog.title,
   };
 }
 
+/* ===================== PAGE ===================== */
 export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   const { id } = await params;
   const region = Region.INDIA;
 
-  // Fetch the blog
   const blog = await prisma.blog.findFirst({
     where: {
       id,
@@ -79,6 +78,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
     },
     include: {
       blogGroup: true,
+      author: true,
     },
   });
 
@@ -86,7 +86,6 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
     notFound();
   }
 
-  // Try to parse content as Editor.js JSON
   let editorData: OutputData | null = null;
   try {
     const parsed = JSON.parse(blog.content);
@@ -94,80 +93,152 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
       editorData = parsed as OutputData;
     }
   } catch {
-    // Not JSON, will render as HTML
+    // fallback to HTML
   }
 
   return (
     <>
-      {/* Render meta tags server-side */}
       <MetaDataRenderer pageType="BLOG" pageId={blog.id} />
+
       <div className="min-h-screen bg-white text-black">
         <NavbarServer region={region} />
-      <main className="mx-auto w-full max-w-4xl px-6 py-12">
-        <Link
-          href="/blog"
-          className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 mb-8"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+
+        <main className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          {/* Back */}
+          <Link
+            href="/blog"
+            className="mb-8 inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          Back to Blogs
-        </Link>
+            ← Back to Blogs
+          </Link>
 
-        <article>
-          <div className="mb-6">
-            <span className="inline-block px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-sm font-medium mb-4">
-              {blog.blogGroup.name}
-            </span>
-            <h1 className="text-4xl font-semibold text-slate-900 mb-4">
-              {blog.title}
-            </h1>
-            <div className="flex items-center gap-4 text-sm text-slate-500">
-              <span>
-                {new Date(blog.createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </span>
-            </div>
+          {/* FLEX LAYOUT: 75% CONTENT | 25% AUTHOR */}
+          <div className="flex flex-col gap-8 lg:flex-row">
+            {/* LEFT : BLOG CONTENT - 75% */}
+            <article className="lg:w-3/4">
+              <div className="mb-6">
+                <span className="mb-4 inline-block rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-700">
+                  {blog.blogGroup.name}
+                </span>
+
+                <h1 className="mb-4 text-3xl font-semibold text-slate-900 md:text-4xl">
+                  {blog.title}
+                </h1>
+
+                <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
+                  <span>
+                    {new Date(blog.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
+                  {blog.readTime && (
+                    <span className="flex items-center gap-1">
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      {blog.readTime}
+                    </span>
+                  )}
+                  <BlogViewCounter
+                    blogId={blog.id}
+                    initialCount={blog.viewCount}
+                  />
+                </div>
+              </div>
+
+              {/* Featured Image */}
+              {blog.image && (
+                <div className="relative mb-8 h-64 w-full overflow-hidden rounded-xl md:h-80 lg:h-96">
+                  <Image
+                    src={blog.image}
+                    alt={blog.title}
+                    fill
+                    priority
+                    className="object-cover"
+                    sizes="(min-width: 1024px) 75vw, 100vw"
+                  />
+                </div>
+              )}
+
+              {/* Content */}
+              <div className="prose prose-lg max-w-none prose-slate prose-headings:text-slate-900 prose-p:text-slate-700">
+                {editorData ? (
+                  <EditorJsRenderer data={editorData} theme="light" />
+                ) : (
+                  <div
+                    dangerouslySetInnerHTML={{ __html: blog.content }}
+                    className="blog-content"
+                  />
+                )}
+              </div>
+            </article>
+
+            {/* RIGHT : AUTHOR CARD - 25% */}
+            <aside className="lg:w-1/4">
+              <div className="sticky top-28 space-y-6">
+                {/* Author Information */}
+                {blog.author && (
+                  <div className="rounded-xl border border-slate-200 bg-white p-6">
+                    <h3 className="mb-4 font-semibold text-slate-900">
+                      About the Author
+                    </h3>
+                    {blog.author.image && (
+                      <div className="mb-4">
+                        <Image
+                          src={blog.author.image}
+                          alt={blog.author.name}
+                          width={100}
+                          height={100}
+                          className="rounded-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <h4 className="font-semibold text-slate-900 mb-2">
+                      {blog.author.name}
+                    </h4>
+                    {blog.author.description && (
+                      <p className="text-sm text-slate-600">
+                        {blog.author.description}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                <AuthorCard />
+
+                {/* Optional: Additional sidebar content */}
+                <div className=" rounded-xl border border-slate-200 bg-slate-50 p-6">
+                  <h3 className="mb-4 font-semibold text-slate-900">
+                    Related Topics
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="rounded-full bg-slate-200 px-3 py-1 text-sm text-slate-700">
+                      {blog.blogGroup.name}
+                    </span>
+                    {/* Add more tags here if available */}
+                  </div>
+                </div>
+              </div>
+            </aside>
           </div>
 
-          {blog.image && (
-            <div className="w-full h-48 overflow-hidden">
-              <Image
-                src={blog.image}
-                alt={blog.title}
-                width={800}
-                height={500}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-          )}
+          {/* Recent Blogs Section */}
+          <RecentBlogsSection />
+        </main>
 
-          <div className="prose prose-lg max-w-none prose-slate prose-headings:text-slate-900 prose-p:text-slate-700">
-            {editorData ? (
-              <EditorJsRenderer data={editorData} theme="light" />
-            ) : (
-              <div
-                dangerouslySetInnerHTML={{ __html: blog.content }}
-                className="blog-content"
-              />
-            )}
-          </div>
-        </article>
-      </main>
-      <Footer />
+        <Footer />
       </div>
     </>
   );

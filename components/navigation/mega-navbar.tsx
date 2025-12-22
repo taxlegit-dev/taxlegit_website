@@ -198,7 +198,7 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
 
           <Link
             href="tel:+918929218091"
-            className="hidden h-[44px] items-center gap-2.5 rounded-[6px] bg-blue-600 px-5 text-[15px] font-semibold text-white shadow-sm transition-all hover:bg-[#DC2626] lg:flex"
+            className="hidden h-[44px] items-center gap-2.5 rounded-[6px] bg-purple-600 px-5 text-[15px] font-semibold text-white shadow-sm transition-all hover:bg-[#DC2626] lg:flex"
           >
             <svg
               className="h-[18px] w-[18px]"
@@ -333,7 +333,7 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
               <RegionSwitcher currentRegion={mappedRegion} />
               <Link
                 href="tel:+918929218091"
-                className="flex h-[44px] w-full items-center justify-center gap-2.5 rounded-[6px] bg-blue-600 px-5 text-[15px] font-semibold text-white shadow-sm transition-all hover:bg-[#DC2626]"
+                className="flex h-[44px] w-full items-center justify-center gap-2.5 rounded-[6px] bg-purple-600 px-5 text-[15px] font-semibold text-white shadow-sm transition-all hover:bg-[#DC2626]"
               >
                 <svg
                   className="h-[18px] w-[18px]"

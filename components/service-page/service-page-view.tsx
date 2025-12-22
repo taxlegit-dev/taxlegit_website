@@ -58,22 +58,22 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen ">
       {/* Sticky TOC Bar - Below Fixed Navbar */}
       <div
         ref={tocRef}
-        className="sticky top-[72px] z-40 border-b bg-white border-slate-200 shadow-sm"
+        className="sticky top-[88px] z-40 border bg-white border-slate-200 shadow-sm max-w-6xl mx-auto rounded-xl mt-4"
       >
         <div className="mx-auto w-full max-w-6xl px-6">
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide py-4">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide py-2">
             {sortedSections.map((section, index) => (
               <button
                 key={section.id}
                 onClick={() => scrollToSection(index)}
                 className={`whitespace-nowrap px-5 py-2 text-base font-bold transition-all duration-200 ${
                   activeSection === index
-                    ? "border-b-3 border-indigo-600 text-indigo-700 text-lg"
-                    : "text-slate-700 hover:text-indigo-600 hover:border-b-2 hover:border-indigo-300"
+                    ? "border-b-1 border-purple-400  text-lg"
+                    : "text-slate-700  hover:border-b-2 hover:border-purple-300"
                 }`}
               >
                 {section.title}
@@ -84,7 +84,7 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
       </div>
 
       {/* Sections Content */}
-      <div className="mx-auto w-full max-w-6xl px-6 py-12">
+      <div className="mx-auto w-full max-w-6xl py-8">
         {sortedSections.map((section, index) => (
           <div
             key={section.id}

@@ -7,20 +7,26 @@ import type {
 
 export interface ColumnBlockData extends BlockToolData {
   imageUrl: string;
+  youtubeUrl?: string;
   imagePosition: "left" | "right";
   heading: string;
   description: string;
   points: string[];
+  ctaText?: string;
+  ctaUrl?: string;
 }
 
 export default class ColumnBlock implements BlockTool {
   private data: ColumnBlockData;
   private wrapper: HTMLElement | null = null;
   private imageUrlInput: HTMLInputElement | null = null;
+  private youtubeUrlInput: HTMLInputElement | null = null;
   private imageFileInput: HTMLInputElement | null = null;
   private imagePreview: HTMLElement | null = null;
   private headingInput: HTMLInputElement | null = null;
   private descriptionTextarea: HTMLTextAreaElement | null = null;
+  private ctaTextInput: HTMLInputElement | null = null;
+  private ctaUrlInput: HTMLInputElement | null = null;
   private pointsContainer: HTMLElement | null = null;
   private imageUploadHandler?: (file: File) => Promise<string>;
   private api: API;
@@ -45,10 +51,13 @@ export default class ColumnBlock implements BlockTool {
   }) {
     this.data = {
       imageUrl: data?.imageUrl || "",
+      youtubeUrl: data?.youtubeUrl || "",
       imagePosition: data?.imagePosition || "left",
       heading: data?.heading || "",
       description: data?.description || "",
       points: data?.points || [],
+      ctaText: data?.ctaText || "",
+      ctaUrl: data?.ctaUrl || "",
     };
 
     this.api = api;
@@ -65,8 +74,7 @@ export default class ColumnBlock implements BlockTool {
   render(): HTMLElement {
     this.wrapper = document.createElement("div");
     this.wrapper.classList.add("column-block");
-    this.wrapper.style.cssText =
-      "padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px; margin: 10px 0;";
+    this.wrapper.style.cssText = "padding: 15px; margin: 10px 0;";
 
     // Image section
     const imageSection = this.createImageSection();
@@ -124,9 +132,21 @@ export default class ColumnBlock implements BlockTool {
     this.imageUrlInput.value = this.data.imageUrl;
     this.imageUrlInput.placeholder = "Image URL or upload file below";
     this.imageUrlInput.style.cssText =
-      "width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; margin-bottom: 8px;";
+      "width: 100%; padding: 8px; font-size: 14px; margin-bottom: 8px;";
     this.imageUrlInput.addEventListener("input", () => {
       this.data.imageUrl = this.imageUrlInput?.value || "";
+      this.updateImagePreview();
+    });
+
+    // YouTube URL input
+    this.youtubeUrlInput = document.createElement("input");
+    this.youtubeUrlInput.type = "text";
+    this.youtubeUrlInput.value = this.data.youtubeUrl || "";
+    this.youtubeUrlInput.placeholder = "YouTube URL (optional)";
+    this.youtubeUrlInput.style.cssText =
+      "width: 100%; padding: 8px; font-size: 14px; margin-bottom: 8px;";
+    this.youtubeUrlInput.addEventListener("input", () => {
+      this.data.youtubeUrl = this.youtubeUrlInput?.value || "";
       this.updateImagePreview();
     });
 
@@ -172,6 +192,7 @@ export default class ColumnBlock implements BlockTool {
 
     imageSection.appendChild(imageLabel);
     imageSection.appendChild(this.imageUrlInput);
+    imageSection.appendChild(this.youtubeUrlInput);
     fileInputContainer.appendChild(this.imageFileInput);
     imageSection.appendChild(fileInputContainer);
     imageSection.appendChild(this.imagePreview);
@@ -227,10 +248,30 @@ export default class ColumnBlock implements BlockTool {
     addPointButton.textContent = "+ Add Point";
     addPointButton.type = "button";
     addPointButton.style.cssText =
-      "padding: 6px 12px; background: #4f46e5; color: white; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; margin-top: 8px;";
+      "padding: 6px 12px; background: #262277ff; color: white;  none; border-radius: 4px; font-size: 12px; cursor: pointer; margin-top: 8px;";
     addPointButton.addEventListener("click", () => {
       this.addPoint();
     });
+
+    // CTA
+    const ctaLabel = document.createElement("label");
+    ctaLabel.textContent = "CTA (Optional):";
+    ctaLabel.style.cssText =
+      "display: block; font-size: 12px; font-weight: 500; margin-top: 8px;";
+
+    this.ctaTextInput = document.createElement("input");
+    this.ctaTextInput.type = "text";
+    this.ctaTextInput.value = this.data.ctaText || "";
+    this.ctaTextInput.placeholder = "CTA text (e.g., Contact us)";
+    this.ctaTextInput.style.cssText =
+      "width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;";
+
+    this.ctaUrlInput = document.createElement("input");
+    this.ctaUrlInput.type = "text";
+    this.ctaUrlInput.value = this.data.ctaUrl || "";
+    this.ctaUrlInput.placeholder = "CTA link (e.g., /contact)";
+    this.ctaUrlInput.style.cssText =
+      "width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;";
 
     textSection.appendChild(headingLabel);
     textSection.appendChild(this.headingInput);
@@ -239,6 +280,9 @@ export default class ColumnBlock implements BlockTool {
     textSection.appendChild(pointsLabel);
     textSection.appendChild(this.pointsContainer);
     textSection.appendChild(addPointButton);
+    textSection.appendChild(ctaLabel);
+    textSection.appendChild(this.ctaTextInput);
+    textSection.appendChild(this.ctaUrlInput);
 
     this.renderPoints();
 
@@ -317,19 +361,38 @@ export default class ColumnBlock implements BlockTool {
     if (!this.imagePreview) return;
 
     const url = this.data.imageUrl;
-    if (!url) {
+    const youtubeUrl = this.data.youtubeUrl || "";
+    const youtubeId = this.extractYoutubeId(youtubeUrl);
+
+    if (!url && !youtubeId) {
       this.imagePreview.innerHTML = "";
       return;
     }
 
-    this.imagePreview.innerHTML = `
+    const imageHtml = url
+      ? `
       <img 
         src="${url}" 
         alt="Preview" 
         style="width: 100%; height: auto; display: block; max-height: 300px; object-fit: contain;"
         onerror="this.style.display='none'; this.parentElement.innerHTML='<p style=\\'color: red; font-size: 12px; padding: 10px;\\'>Invalid image URL</p>';"
       />
-    `;
+    `
+      : "";
+
+    const youtubeHtml = youtubeId
+      ? `
+      <div style="position: relative; width: 100%; padding-bottom: 56.25%; margin-top: 10px;">
+        <iframe
+          src="https://www.youtube.com/embed/${youtubeId}"
+          style="position: absolute; inset: 0; width: 100%; height: 100%; border: 0;"
+          allowfullscreen
+        ></iframe>
+      </div>
+    `
+      : "";
+
+    this.imagePreview.innerHTML = `${imageHtml}${youtubeHtml}`;
   }
 
   private renderPoints() {
@@ -389,23 +452,42 @@ export default class ColumnBlock implements BlockTool {
     }
   }
 
+  private extractYoutubeId(url: string): string | null {
+    if (!url) return null;
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+      /youtube\.com\/watch\?.*v=([^&\n?#]+)/,
+    ];
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match && match[1]) return match[1];
+    }
+    return null;
+  }
+
   save(): ColumnBlockData {
     return {
       imageUrl: this.imageUrlInput?.value || "",
+      youtubeUrl: this.youtubeUrlInput?.value || "",
       imagePosition: this.data.imagePosition,
       heading: this.headingInput?.value || "",
       description: this.descriptionTextarea?.value || "",
       points: this.data.points.filter((p) => p.trim() !== ""),
+      ctaText: this.ctaTextInput?.value || "",
+      ctaUrl: this.ctaUrlInput?.value || "",
     };
   }
 
   static get sanitize() {
     return {
       imageUrl: {},
+      youtubeUrl: {},
       imagePosition: {},
       heading: {},
       description: {},
       points: {},
+      ctaText: {},
+      ctaUrl: {},
     };
   }
 }

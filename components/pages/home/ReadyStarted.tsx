@@ -10,7 +10,7 @@ export default function CallToActionBanner() {
       <div
         className="
         max-w-6xl mx-auto relative z-10 
-        bg-gradient-to-r from-blue-700 to-blue-600 rounded-2xl 
+        bg-gradient-to-r from-purple-700 to-purple-600 rounded-2xl 
         px-8 md:px-16 py-10 
         flex flex-col md:flex-row items-center justify-between 
         shadow-2xl
@@ -33,7 +33,7 @@ export default function CallToActionBanner() {
           <h2 className="text-3xl md:text-4xl font-bold leading-tight mb-3">
             Ready to Start Your Journey?
           </h2>
-          <p className="text-blue-100 text-lg md:text-xl max-w-xl">
+          <p className="text-purple-100 text-lg md:text-xl max-w-xl">
             Get expert guidance and seamless registration for your NGO with our
             professional team
           </p>
@@ -44,7 +44,7 @@ export default function CallToActionBanner() {
           <button
             className="
             group relative
-            bg-white text-blue-700 font-bold 
+            bg-white text-purple-700 font-bold 
             px-10 py-4 rounded-xl 
             shadow-lg hover:shadow-2xl 
             transition-all duration-300
@@ -69,7 +69,7 @@ export default function CallToActionBanner() {
             className="
             relative
             w-28 h-28
-            bg-gradient-to-br from-cyan-400 to-blue-500
+            bg-gradient-to-br from-cyan-400 to-purple-500
             rounded-full
             flex items-center justify-center
             shadow-2xl
@@ -82,7 +82,7 @@ export default function CallToActionBanner() {
             <div
               className="
               absolute inset-0
-              bg-gradient-to-br from-cyan-400 to-blue-500
+              bg-gradient-to-br from-cyan-400 to-purple-500
               rounded-full
               animate-ping
               opacity-30
@@ -102,7 +102,7 @@ export default function CallToActionBanner() {
         <div
           className="
           w-24 h-24
-          bg-gradient-to-br from-blue-500/20 to-cyan-400/20
+          bg-gradient-to-br from-purple-500/20 to-cyan-400/20
           rounded-full
           blur-xl
         "
@@ -118,7 +118,7 @@ export default function CallToActionBanner() {
         <div
           className="
           w-32 h-32
-          bg-gradient-to-br from-blue-600/10 to-cyan-500/10
+          bg-gradient-to-br from-purple-600/10 to-cyan-500/10
           rounded-full
           blur-2xl
         "
@@ -130,7 +130,7 @@ export default function CallToActionBanner() {
         className="
         absolute -bottom-4 left-1/2 transform -translate-x-1/2
         w-3/4 h-8
-        bg-gradient-to-t from-blue-900/30 to-transparent
+        bg-gradient-to-t from-purple-900/30 to-transparent
         rounded-full
         blur-md
       "
