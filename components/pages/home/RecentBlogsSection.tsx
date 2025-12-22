@@ -1,5 +1,10 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 interface Blog {
   id: string;
@@ -12,18 +17,30 @@ interface Blog {
   };
 }
 
-export default async function RecentBlogsSection() {
-  // Fetch recent 4 blogs for India region
+export default function RecentBlogsSection() {
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      once: false,
+      mirror: true,
+    });
+
+    // Fetch recent 4 blogs for India region
+    const fetchBlogs = async () => {
   const res = await fetch(
-    `${
-      process.env.NEXTAUTH_URL || "http://localhost:3000"
-    }/api/blogs?region=INDIA`,
+    `/api/blogs?region=INDIA`,
     {
-      cache: "no-store", // Ensure fresh data
+      cache: "no-store",
     }
   );
   const data = await res.json();
-  const blogs: Blog[] = data.blogs.slice(0, 4); // Get first 4 blogs
+  setBlogs(data.blogs.slice(0, 4));
+};
+
+    fetchBlogs();
+  }, []);
 
   return (
     <section className="w-full bg-white py-8 md:py-16 lg:py-20">
@@ -47,7 +64,10 @@ export default async function RecentBlogsSection() {
               href={`/blog/${blog.id}`}
               className="group block h-full"
             >
-              <article className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-purple-100 hover:-translate-y-2 h-full flex flex-col">
+              <article
+              data-aos="flip-left"
+              className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-purple-100 hover:-translate-y-2 h-full flex flex-col"
+              >
                 {/* Blog Image */}
                 <div className="relative h-52 overflow-hidden bg-gray-100">
                   <Image
