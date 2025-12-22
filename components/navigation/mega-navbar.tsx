@@ -39,6 +39,9 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
   useEffect(() => {
     const fetchNavbar = async () => {
       try {
+        // Only fetch on client-side, not during SSR
+        if (typeof window === "undefined") return;
+
         const response = await fetch(`/api/navbar?region=${region}`);
         const data = await response.json();
         if (data.items) {
