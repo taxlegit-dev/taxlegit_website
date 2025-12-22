@@ -346,9 +346,6 @@ export default function ServiceSection() {
 
         {/* Main Content Grid */}
         <div className="relative min-h-[500px]">
-          <div className="absolute -top-20 -left-20 w-64 h-64 bg-purple-100 rounded-full blur-3xl opacity-30"></div>
-          <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-purple-100 rounded-full blur-3xl opacity-30"></div>
-
           <div
             className={`grid grid-cols-1 lg:grid-cols-12 gap-8 h-full transition-all duration-1000 ${
               isVisible
@@ -361,12 +358,12 @@ export default function ServiceSection() {
               <div className="relative bg-white rounded-2xl shadow-xl border border-slate-200/80 overflow-hidden backdrop-blur-sm">
                 <div className="absolute inset-0 bg-gradient-to-br from-white via-purple-50/30 to-white"></div>
                 <div className="relative flex flex-col">
-                  <div className="bg-gradient-to-r from-purple-600 via-purple-800 to-purple-800 px-8 py-3">
+                  <div className="bg-[#E6D3E6] px-8 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-white/10 rounded-lg">
-                        <Scale className="w-6 h-6 text-white" />
+                      <div className="p-2 bg-purple-100 rounded-lg">
+                        <Scale className="w-6 h-6 text-purple-600" />
                       </div>
-                      <h3 className="text-xl font-bold text-white tracking-tight">
+                      <h3 className="text-xl font-bold text-purple-700 tracking-tight">
                         {tabs[activeTab]}
                       </h3>
                     </div>

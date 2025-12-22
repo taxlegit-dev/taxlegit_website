@@ -42,16 +42,14 @@ export default function OurProduct() {
     <section className="relative overflow-hidden py-8">
       {/* Background */}
       <div className="absolute inset-0">
-        <div className="h-72 bg-gradient-to-br from-purple-900 via-purple-800 to-purple-700 rounded-b-[56px]" />
-        <div className="absolute -top-24 -left-24 h-72 w-72 bg-purple-500/30 blur-3xl" />
-        <div className="absolute -bottom-24 -right-12 h-72 w-72 bg-purple-400/30 blur-3xl" />
+        <div className="h-72 bg-gradient-to-b from-[#F7F2F7] via-[#EFE4EF] to-white rounded-b-[56px]" />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-6">
         {/* Heading */}
-        <div className="text-center max-w-3xl mx-auto mb-24 text-white">
+        <div className="text-center max-w-3xl mx-auto mb-24 text-BLACK">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-            Our Core <span className="text-purple-200">Product</span>
+            Our Core <span className="text-purple-700">Product</span>
           </h2>
         </div>
 

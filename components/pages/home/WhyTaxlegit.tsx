@@ -27,13 +27,12 @@ export default function WhyChooseTaxlegit() {
   ];
 
   return (
-    <div className="relative w-full bg-slate-50 py-8 md:py-16 px-4 md:px-6 overflow-hidden">
+    <div className="relative w-full bg-white py-8 md:py-16 px-4 md:px-6 overflow-hidden">
       {/* CURVED DARK PANEL - Hidden on Mobile */}
       <div
         className="
         hidden md:block absolute right-0 top-0 h-full w-[55%]
-        bg-gradient-to-br from-purple-600 to-purple-700
-        shadow-2xl
+bg-gradient-to-b from-[#F7F2F7] via-[#EFE4EF] to-white        shadow-2xl
         "
         style={{
           clipPath: "path('M0,0 C50,250 220,450 0,700 L1000,700 L1000,1 Z')",
@@ -62,7 +61,7 @@ export default function WhyChooseTaxlegit() {
               key={i}
               className="
     flex items-start md:items-center gap-3 md:gap-4 p-1 md:p-2 rounded-xl
-    bg-purple-700/90 md:bg-white/10 md:backdrop-blur-xl
+    bg-purple-200 
     border border-white/20 shadow-xl
     text-white
   "
@@ -70,19 +69,18 @@ export default function WhyChooseTaxlegit() {
               <div
                 className="
       w-12 md:w-14 h-12 md:h-14 rounded-full flex items-center justify-center
-      bg-gradient-to-br from-purple-100 to-purple-500
-      shadow-xl flex-shrink-0
+      shadow-xl flex-shrink-0 bg-purple-500
     "
               >
                 {item.icon}
               </div>
 
               <div>
-                <h3 className="text-white text-base md:text-lg font-semibold">
+                <h3 className="text-purple-600 text-base md:text-lg font-semibold">
                   {item.title}
                 </h3>
 
-                <p className="text-slate-100 text-xs md:text-sm mt-1">
+                <p className="text-slate-600 text-xs md:text-sm mt-1">
                   {item.desc}
                 </p>
               </div>

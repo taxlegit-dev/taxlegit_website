@@ -44,7 +44,8 @@ function extractTextAlign(html?: string): React.CSSProperties {
   return {};
 }
 
-const WORD_LIMIT = 60;
+const WORD_LIMIT1 = 60;
+const WORD_LIMIT2 = 20;
 
 function stripHtml(html: string): string {
   return html
@@ -57,16 +58,18 @@ function ReadMoreHtml({
   html,
   className,
   style,
+  wordLimit = WORD_LIMIT1,
 }: {
   html: string;
   className?: string;
   style?: React.CSSProperties;
+  wordLimit?: number;
 }) {
   const [expanded, setExpanded] = useState(false);
   const text = stripHtml(html || "");
   const words = text.length > 0 ? text.split(" ") : [];
-  const isLong = words.length > WORD_LIMIT;
-  const preview = isLong ? `${words.slice(0, WORD_LIMIT).join(" ")}...` : text;
+  const isLong = words.length > wordLimit;
+  const preview = isLong ? `${words.slice(0, wordLimit).join(" ")}...` : text;
 
   return (
     <div className={className} style={style}>
@@ -92,15 +95,17 @@ function ReadMoreText({
   text,
   className,
   style,
+  wordLimit = WORD_LIMIT1,
 }: {
   text: string;
   className?: string;
   style?: React.CSSProperties;
+  wordLimit?: number;
 }) {
   const [expanded, setExpanded] = useState(false);
   const words = text ? text.split(/\s+/) : [];
-  const isLong = words.length > WORD_LIMIT;
-  const preview = isLong ? `${words.slice(0, WORD_LIMIT).join(" ")}...` : text;
+  const isLong = words.length > wordLimit;
+  const preview = isLong ? `${words.slice(0, wordLimit).join(" ")}...` : text;
 
   return (
     <div className={className} style={style}>
@@ -468,7 +473,7 @@ function renderBlock(
           )}
         </figure>
       );
-
+    /////
     case "column":
       const columnData = block.data as {
         imageUrl?: string;
@@ -486,7 +491,9 @@ function renderBlock(
           ? "md:flex-row-reverse"
           : "md:flex-row";
       const columnBgClass =
-        columnData.imagePosition === "left" ? "bg-purple-50" : "bg-white";
+        columnData.imagePosition === "left"
+          ? "bg-gradient-to-b from-[#F7F2F7] via-[#EFE4EF] to-white"
+          : "bg-white";
       const isLeftAligned = columnData.imagePosition === "left";
       const youtubeId = columnData.youtubeUrl
         ? extractVideoId(columnData.youtubeUrl)
@@ -536,6 +543,7 @@ function renderBlock(
               <ReadMoreText
                 text={columnData.description}
                 className={`mb-4 text-lg ${textColor}`}
+                wordLimit={WORD_LIMIT2}
               />
             )}
             {columnData.points && columnData.points.length > 0 && (
@@ -573,12 +581,12 @@ function renderBlock(
       return (
         <div
           key={block.id}
-          className="relative left-1/2 right-1/2 w-screen -ml-[50vw] -mr-[50vw] bg-purple-50"
+          className="relative left-1/2 right-1/2 w-screen -ml-[50vw] -mr-[50vw] bg-gradient-to-b from-[#F7F2F7] via-[#EFE4EF] to-white"
         >
           <div className="max-w-6xl mx-auto px-6">{columnContent}</div>
         </div>
       );
-
+    /////
     case "cta": {
       const {
         text,

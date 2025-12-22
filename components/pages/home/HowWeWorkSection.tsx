@@ -1,8 +1,38 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { CheckCircle, FileText, Users, FileCheck } from "lucide-react";
+
+const DESCRIPTION_WORD_LIMIT = 5;
+
+function ReadMoreText({
+  text,
+  wordLimit = DESCRIPTION_WORD_LIMIT,
+}: {
+  text: string;
+  wordLimit?: number;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const words = text ? text.split(/\s+/) : [];
+  const isLong = words.length > wordLimit;
+  const preview = isLong ? `${words.slice(0, wordLimit).join(" ")}...` : text;
+
+  return (
+    <p className="text-gray-600 leading-relaxed">
+      <span>{expanded || !isLong ? text : preview}</span>
+      {isLong && (
+        <button
+          type="button"
+          className="ml-2 text-sm text-purple-600 hover:text-purple-700"
+          onClick={() => setExpanded(!expanded)}
+        >
+          {expanded ? "Read less" : "Read more"}
+        </button>
+      )}
+    </p>
+  );
+}
 
 const HowWeWork: React.FC = () => {
   useEffect(() => {
@@ -16,9 +46,9 @@ const HowWeWork: React.FC = () => {
   const steps = [
     {
       number: "01",
-      title: "Fill the Form",
+      title: "Fill the Registration Form",
       description:
-        "Once you submit the form, you qualify for a FREE Expert Consultation. You will receive a call & instant quotation.",
+        "Once you submit the Registration form, you qualify for a FREE Expert Consultation. You will receive a call & instant quotation.",
       icon: <FileText className="w-8 h-8" />,
       aos: "fade-up",
     },
@@ -32,7 +62,7 @@ const HowWeWork: React.FC = () => {
     },
     {
       number: "03",
-      title: "Online Documentation",
+      title: "Online Documentation Registration",
       description:
         "Our experts collect the required documents online quickly and effortlessly.",
       icon: <FileCheck className="w-8 h-8" />,
@@ -49,7 +79,7 @@ const HowWeWork: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-16" data-aos="fade-down">
@@ -85,9 +115,7 @@ const HowWeWork: React.FC = () => {
                 <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
                   {step.title}
                 </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {step.description}
-                </p>
+                <ReadMoreText text={step.description} />
 
                 {/* Purple Accent Line */}
                 <div className="mt-6 pt-4 border-t border-gray-100">

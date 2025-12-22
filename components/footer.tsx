@@ -85,7 +85,7 @@ const Footer = () => {
             <div
               className="
         max-w-6xl mx-auto relative z-10 
-        bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl 
+        bg-[#E6D3E6] rounded-2xl 
         px-8 md:px-16 py-0
         flex flex-col md:flex-row items-center justify-between 
         shadow-2xl
@@ -108,7 +108,7 @@ const Footer = () => {
               </div>
 
               {/* CENTER TEXT */}
-              <div className="flex-1 text-center md:text-left text-white px-4 md:px-8">
+              <div className="flex-1 text-center md:text-left text-black px-4 md:px-8">
                 <h2 className="text-3xl md:text-4xl font-bold leading-tight mb-3">
                   Ready to Start Your Journey?
                 </h2>

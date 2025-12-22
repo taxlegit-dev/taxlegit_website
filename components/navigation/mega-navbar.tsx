@@ -65,7 +65,7 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white shadow-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full bg-[#E6D3E6] shadow-sm">
       <div className="mx-auto flex h-[72px] max-w-[1400px] items-center justify-between px-6">
         {/* Logo */}
         <Link
@@ -75,8 +75,8 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
           <Image
             src="/logo/taxlegitlogo.webp"
             alt="My Logo"
-            width={80}
-            height={80}
+            width={70}
+            height={70}
           />
         </Link>
 
@@ -91,7 +91,7 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
                   onMouseEnter={() => setHoveredItem(item.id)}
                   onMouseLeave={() => setHoveredItem(null)}
                 >
-                  <button className="flex items-center gap-x-1.5 text-[18px] font-medium tracking-normal text-[#333333] transition-colors hover:text-black py-6 cursor-pointer">
+                  <button className="flex items-center gap-x-1.5 text-[14px] font-medium tracking-normal text-[#333333] transition-colors hover:text-black py-6 cursor-pointer">
                     {item.label}
                     <svg
                       className={`h-3.5 w-3.5 transition-transform ${

@@ -1,36 +1,17 @@
 "use client";
 import AOS from "aos";
 import { useEffect } from "react";
+
 export default function RunningLogoCarousel() {
-  // Array of logo image paths - replace these with your actual image paths
   useEffect(() => {
     AOS.init({
-      duration: 800,
+      duration: 900,
       once: false,
       mirror: true,
     });
   }, []);
+
   const logos = [
-    "/brand/1.png",
-    "/brand/2.png",
-    "/brand/3.png",
-    "/brand/4.png",
-    "/brand/5.png",
-    "/brand/1.png",
-    "/brand/2.png",
-    "/brand/3.png",
-    "/brand/4.png",
-    "/brand/5.png",
-    "/brand/1.png",
-    "/brand/2.png",
-    "/brand/3.png",
-    "/brand/4.png",
-    "/brand/5.png",
-    "/brand/1.png",
-    "/brand/2.png",
-    "/brand/3.png",
-    "/brand/4.png",
-    "/brand/5.png",
     "/brand/1.png",
     "/brand/2.png",
     "/brand/3.png",
@@ -44,43 +25,40 @@ export default function RunningLogoCarousel() {
   ];
 
   return (
-    <div
-      className="w-full bg-gradient-to-r from-purple-600 to-purple-800 py-4 overflow-hidden mt-6 md:mt-0"
+    <section
+      className="relative w-full overflow-hidden py-14 mt-8"
       data-aos="fade-up"
     >
-      <div className="mx-auto max-w-6xl px-4 text-center text-white">
-        <div className="text-3xl md:text-4xl lg:text-5xl font-semibold py-3">
-          Trusted By
+      {/* Soft background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#F7F2F7] via-[#EFE4EF] to-white" />
+
+      <div className="relative mx-auto max-w-7xl px-6">
+        {/* Heading */}
+        <div className="text-center mb-10">
+          <p className="uppercase tracking-widest text-sm text-purple-600 font-medium">
+            Trusted by leading brands
+          </p>
+          <h2 className="text-3xl md:text-4xl font-semibold text-slate-800 mt-2">
+            Companies that rely on us
+          </h2>
         </div>
-      </div>
-      <div className="relative">
-        <div className="mt-3 flex items-center h-12 animate-scroll">
-          {/* First set of logos */}
-          {logos.map((logo, index) => (
-            <div
-              key={`logo-1-${index}`}
-              className="flex-shrink-0 mx-8 flex items-center justify-center"
-            >
-              <img
-                src={logo}
-                alt={`Brand ${index + 1}`}
-                className="h-12 w-auto object-contain"
-              />
-            </div>
-          ))}
-          {/* Duplicate set for seamless loop */}
-          {logos.map((logo, index) => (
-            <div
-              key={`logo-2-${index}`}
-              className="flex-shrink-0 mx-8 flex items-center justify-center"
-            >
-              <img
-                src={logo}
-                alt={`Brand ${index + 1}`}
-                className="h-12 w-auto object-contain"
-              />
-            </div>
-          ))}
+
+        {/* Carousel */}
+        <div className="relative overflow-hidden">
+          <div className="flex items-center gap-10 animate-scroll">
+            {[...logos, ...logos].map((logo, index) => (
+              <div
+                key={index}
+                className="flex-shrink-0 bg-white/70 backdrop-blur-md border border-purple-100 rounded-xl px-6 py-4 shadow-sm hover:shadow-md transition"
+              >
+                <img
+                  src={logo}
+                  alt="Brand logo"
+                  className="h-12 w-auto object-contain  transition"
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -95,13 +73,13 @@ export default function RunningLogoCarousel() {
         }
 
         .animate-scroll {
-          animation: scroll 20s linear infinite;
+          animation: scroll 35s linear infinite;
         }
 
         .animate-scroll:hover {
           animation-play-state: paused;
         }
       `}</style>
-    </div>
+    </section>
   );
 }
