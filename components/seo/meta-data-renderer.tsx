@@ -2,8 +2,9 @@ import { prisma } from "@/lib/prisma";
 import { MetaPageType } from "@prisma/client";
 
 type MetaDataRendererProps = {
-  pageType: "SERVICE" | "BLOG" | "GENERIC";
-  pageId: string;
+  pageType?: "SERVICE" | "BLOG" | "GENERIC";
+  pageId?: string;
+  metaBlock?: string | null;
 };
 
 // Helper to parse HTML string and extract meta tags (server-side safe)
@@ -48,29 +49,39 @@ function parseMetaTags(htmlString: string) {
 export async function MetaDataRenderer({
   pageType,
   pageId,
+  metaBlock,
 }: MetaDataRendererProps) {
+  let resolvedMetaBlock = metaBlock ?? null;
   let metaData = null;
 
-  try {
-    metaData = await prisma.metaData.findUnique({
-      where: {
-        pageType_pageId: {
-          pageType: pageType as MetaPageType,
-          pageId,
+  if (!resolvedMetaBlock) {
+    if (!pageType || !pageId) {
+      return null;
+    }
+
+    try {
+      metaData = await prisma.metaData.findUnique({
+        where: {
+          pageType_pageId: {
+            pageType: pageType as MetaPageType,
+            pageId,
+          },
         },
-      },
-    });
-  } catch (err) {
-    console.error("Error fetching meta data:", err);
-    return null;
+      });
+    } catch (err) {
+      console.error("Error fetching meta data:", err);
+      return null;
+    }
+
+    resolvedMetaBlock = metaData?.metaBlock ?? null;
   }
 
-  if (!metaData || !metaData.metaBlock) {
+  if (!resolvedMetaBlock) {
     return null;
   }
 
   // Parse the meta block to extract tags
-  const { metaTags, jsonLdScripts } = parseMetaTags(metaData.metaBlock);
+  const { metaTags, jsonLdScripts } = parseMetaTags(resolvedMetaBlock);
 
   return (
     <>

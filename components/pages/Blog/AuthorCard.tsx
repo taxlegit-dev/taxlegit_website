@@ -1,13 +1,15 @@
 import Link from "next/link";
 import Image from "next/image";
+import { prisma } from "@/lib/prisma";
+import { ContentStatus, Region } from "@prisma/client";
 import Newsletter from "@/components/pages/common/newsletter";
 import FollowUs from "@/components/pages/common/FollowUs";
 
 interface Blog {
   id: string;
   title: string;
-  image?: string;
-  createdAt: string;
+  image?: string | null;
+  createdAt: Date;
   blogGroup: {
     name: string;
   };
@@ -20,21 +22,29 @@ interface AuthorCardProps {
 export default async function AuthorCard({
   region = "INDIA",
 }: AuthorCardProps) {
-  // Fetch recent 3 blogs for the specified region
   let recentBlogs: Blog[] = [];
+  const regionEnum = region === "US" ? Region.US : Region.INDIA;
 
   try {
-    const res = await fetch(
-  `/api/blogs?region=${region}&limit=3`,
-  {
-    next: { revalidate: 3600 },
-  }
-);
-
-    if (res.ok) {
-      const data = await res.json();
-      recentBlogs = data.blogs?.slice(0, 3) || [];
-    }
+    recentBlogs = await prisma.blog.findMany({
+      where: {
+        region: regionEnum,
+        status: ContentStatus.PUBLISHED,
+      },
+      select: {
+        id: true,
+        title: true,
+        image: true,
+        createdAt: true,
+        blogGroup: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 3,
+    });
   } catch (error) {
     console.error("Error fetching recent blogs:", error);
     // Fallback to empty array if fetch fails

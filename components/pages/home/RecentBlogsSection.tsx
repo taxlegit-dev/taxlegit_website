@@ -29,22 +29,19 @@ export default function RecentBlogsSection() {
 
     // Fetch recent 4 blogs for India region
     const fetchBlogs = async () => {
-  const res = await fetch(
-    `/api/blogs?region=INDIA`,
-    {
-      cache: "no-store",
-    }
-  );
-  const data = await res.json();
-  setBlogs(data.blogs.slice(0, 4));
-};
+      const res = await fetch(`/api/blogs?region=INDIA`, {
+        cache: "no-store",
+      });
+      const data = await res.json();
+      setBlogs(data.blogs.slice(0, 4));
+    };
 
     fetchBlogs();
   }, []);
 
   return (
     <section className="w-full bg-white py-8 md:py-16 lg:py-20">
-      <div className="max-w-7xl mx-auto ">
+      <div className="max-w-6xl mx-auto lg:px-0 px-5">
         {/* Heading */}
         <div className="text-center mb-12 md:mb-16">
           <h2 className="font-[Gilroy] text-3xl md:text-4xl lg:text-5xl font-bold text-slate-700 mb-4">
@@ -65,8 +62,8 @@ export default function RecentBlogsSection() {
               className="group block h-full"
             >
               <article
-              data-aos="flip-left"
-              className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-purple-100 hover:-translate-y-2 h-full flex flex-col"
+                data-aos="flip-left"
+                className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-purple-100 hover:-translate-y-2 h-full flex flex-col"
               >
                 {/* Blog Image */}
                 <div className="relative h-52 overflow-hidden bg-gray-100">

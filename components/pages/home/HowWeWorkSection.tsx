@@ -79,8 +79,8 @@ const HowWeWork: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-white py-16 ">
+      <div className="max-w-6xl mx-auto lg:px-0 px-5">
         {/* Header Section */}
         <div className="text-center mb-16" data-aos="fade-down">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">

@@ -6,7 +6,72 @@ interface FeaturedBlogProps {
   blog: BlogWithGroup;
 }
 
+function stripHtml(html: string): string {
+  return html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function extractTextFromEditorData(content: string): string {
+  try {
+    const parsed = JSON.parse(content);
+    if (
+      !parsed ||
+      typeof parsed !== "object" ||
+      !Array.isArray(parsed.blocks)
+    ) {
+      return stripHtml(content);
+    }
+
+    const chunks: string[] = [];
+    for (const block of parsed.blocks) {
+      const data = block?.data;
+      if (!data) continue;
+
+      if (typeof data.text === "string") {
+        chunks.push(data.text);
+      }
+      if (typeof data.heading === "string") {
+        chunks.push(data.heading);
+      }
+      if (typeof data.description === "string") {
+        chunks.push(data.description);
+      }
+      if (typeof data.caption === "string") {
+        chunks.push(data.caption);
+      }
+      if (Array.isArray(data.items)) {
+        chunks.push(data.items.join(" "));
+      }
+      if (Array.isArray(data.points)) {
+        chunks.push(data.points.join(" "));
+      }
+      if (Array.isArray(data.content)) {
+        const tableText = data.content
+          .map((row: string[]) => row.join(" "))
+          .join(" ");
+        chunks.push(tableText);
+      }
+    }
+
+    return stripHtml(chunks.join(" "));
+  } catch {
+    return stripHtml(content);
+  }
+}
+
+function getExcerpt(content: string, limit = 30): string {
+  const text = extractTextFromEditorData(content);
+  const words = text.split(/\s+/).filter(Boolean);
+  if (words.length <= limit) {
+    return words.join(" ");
+  }
+  return `${words.slice(0, limit).join(" ")}...`;
+}
+
 export default function FeaturedBlog({ blog }: FeaturedBlogProps) {
+  const excerpt = getExcerpt(blog.content, 30);
   return (
     <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 md:px-8 md:py-12 lg:px-10">
       <div className="grid gap-6 md:gap-8 lg:gap-10 rounded-3xl lg:grid-cols-2 ">
@@ -25,7 +90,7 @@ export default function FeaturedBlog({ blog }: FeaturedBlogProps) {
         )}
 
         {/* RIGHT : CONTENT */}
-        <div className="space-y-3 sm:space-y-4 md:space-y-5 order-2 lg:order-2">
+        <div className="space-y-2 sm:space-y-3 md:space-y-4 order-2 lg:order-2">
           {/* META */}
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-slate-500">
             <span>
@@ -45,6 +110,11 @@ export default function FeaturedBlog({ blog }: FeaturedBlogProps) {
           <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-tight sm:leading-snug text-slate-900">
             {blog.title}
           </h2>
+
+          {/* DESCRIPTION */}
+          <p className="text-sm sm:text-base text-slate-600 leading-relaxed line-clamp-2">
+            {excerpt || "Fresh insights and practical takeaways from our team."}
+          </p>
 
           {/* AUTHOR */}
           {blog.author && (
@@ -74,7 +144,7 @@ export default function FeaturedBlog({ blog }: FeaturedBlogProps) {
           {/* CTA */}
           <Link
             href={`/blog/${blog.id}`}
-            className="inline-block pt-2 sm:pt-3 md:pt-4 text-sm sm:text-base font-semibold text-indigo-600 hover:text-indigo-500 transition-colors"
+            className="inline-block  text-sm sm:text-base font-semibold text-indigo-600 hover:text-indigo-500 transition-colors"
           >
             Read Article →
           </Link>

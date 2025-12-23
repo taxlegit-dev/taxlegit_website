@@ -184,11 +184,13 @@ function getBlockAlignment(
 interface EditorJsRendererProps {
   data: OutputData;
   theme?: "light" | "dark";
+  fullBleedColumns?: boolean;
 }
 
 export function EditorJsRenderer({
   data,
   theme = "light",
+  fullBleedColumns = true,
 }: EditorJsRendererProps) {
   if (!data?.blocks || data.blocks.length === 0) {
     return null;
@@ -209,7 +211,7 @@ export function EditorJsRenderer({
           <article className={contentClass}>
             {data.blocks.map((block, index) => (
               <React.Fragment key={block.id || index}>
-                {renderBlock(block, theme)}
+                {renderBlock(block, theme, fullBleedColumns)}
               </React.Fragment>
             ))}
           </article>
@@ -252,7 +254,8 @@ export function EditorJsRenderer({
 
 function renderBlock(
   block: OutputData["blocks"][0],
-  theme: "light" | "dark"
+  theme: "light" | "dark",
+  fullBleedColumns: boolean
 ): React.ReactNode {
   const textColor = theme === "dark" ? "text-slate-300" : "text-slate-700";
   const headingColor = theme === "dark" ? "text-slate-50" : "text-slate-900";
@@ -621,6 +624,14 @@ function renderBlock(
       );
 
       if (!isLeftAligned) {
+        return (
+          <div key={block.id} className={`mb-8 ${columnBgClass} rounded-lg`}>
+            {columnContent}
+          </div>
+        );
+      }
+
+      if (!fullBleedColumns) {
         return (
           <div key={block.id} className={`mb-8 ${columnBgClass} rounded-lg`}>
             {columnContent}

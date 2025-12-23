@@ -8,7 +8,72 @@ interface BlogCardProps {
   showCategory?: boolean;
 }
 
+function stripHtml(html: string): string {
+  return html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function extractTextFromEditorData(content: string): string {
+  try {
+    const parsed = JSON.parse(content);
+    if (
+      !parsed ||
+      typeof parsed !== "object" ||
+      !Array.isArray(parsed.blocks)
+    ) {
+      return stripHtml(content);
+    }
+
+    const chunks: string[] = [];
+    for (const block of parsed.blocks) {
+      const data = block?.data;
+      if (!data) continue;
+
+      if (typeof data.text === "string") {
+        chunks.push(data.text);
+      }
+      if (typeof data.heading === "string") {
+        chunks.push(data.heading);
+      }
+      if (typeof data.description === "string") {
+        chunks.push(data.description);
+      }
+      if (typeof data.caption === "string") {
+        chunks.push(data.caption);
+      }
+      if (Array.isArray(data.items)) {
+        chunks.push(data.items.join(" "));
+      }
+      if (Array.isArray(data.points)) {
+        chunks.push(data.points.join(" "));
+      }
+      if (Array.isArray(data.content)) {
+        const tableText = data.content
+          .map((row: string[]) => row.join(" "))
+          .join(" ");
+        chunks.push(tableText);
+      }
+    }
+
+    return stripHtml(chunks.join(" "));
+  } catch {
+    return stripHtml(content);
+  }
+}
+
+function getExcerpt(content: string, limit = 12): string {
+  const text = extractTextFromEditorData(content);
+  const words = text.split(/\s+/).filter(Boolean);
+  if (words.length <= limit) {
+    return words.join(" ");
+  }
+  return `${words.slice(0, limit).join(" ")}...`;
+}
+
 export default function BlogCard({ blog, showCategory = true }: BlogCardProps) {
+  const excerpt = getExcerpt(blog.content, 12);
   return (
     <Link
       href={`/blog/${blog.id}`}
@@ -44,9 +109,9 @@ export default function BlogCard({ blog, showCategory = true }: BlogCardProps) {
           {blog.title}
         </h4>
         <p className="text-xs sm:text-sm text-slate-600 line-clamp-2">
-          Fresh insights and practical takeaways from our team.
+          {excerpt || "Fresh insights and practical takeaways from our team."}
         </p>
-        <span className="mt-auto pt-2 sm:pt-3 text-xs sm:text-sm font-medium text-indigo-600 transition-colors group-hover:text-indigo-500">
+        <span className="mt-auto  text-xs sm:text-sm font-medium text-indigo-600 transition-colors group-hover:text-indigo-500">
           Continue reading →
         </span>
       </div>

@@ -27,7 +27,7 @@ export default function WhyChooseTaxlegit() {
   ];
 
   return (
-    <div className="relative w-full bg-white py-8 md:py-16 px-4 md:px-6 overflow-hidden">
+    <div className="relative w-full bg-white py-8  overflow-hidden">
       {/* CURVED DARK PANEL - Hidden on Mobile */}
       <div
         className="
@@ -39,7 +39,7 @@ bg-gradient-to-b from-[#F7F2F7] via-[#EFE4EF] to-white        shadow-2xl
         }}
       ></div>
 
-      <div className="relative max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20 items-center">
+      <div className="relative max-w-6xl mx-auto lg:px-0 px-5 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20 items-center">
         {/* LEFT SIDE TEXT */}
         <div className="">
           <span className="text-xs md:text-sm font-medium px-3 py-1 rounded-full inline-block bg-purple-200 text-indigo-700">

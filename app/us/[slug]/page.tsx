@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { unstable_cache } from "next/cache";
 import { Region } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { NavbarServer } from "@/components/navigation/navbar-server";
@@ -15,19 +16,101 @@ type DynamicPageProps = {
   params: Promise<{ slug: string }>;
 };
 
+const getNavbarItemBySlug = unstable_cache(
+  async (slug: string, region: Region) =>
+    prisma.navbarItem.findFirst({
+      where: {
+        region,
+        href: `/${slug}`,
+        isActive: true,
+      },
+    }),
+  ["navbar-item-by-slug"],
+  { revalidate: 300 }
+);
+
+const getHeroByNavbarItemId = unstable_cache(
+  async (navbarItemId: string) =>
+    prisma.pageHero.findUnique({
+      where: { navbarItemId },
+    }),
+  ["page-hero-by-navbar-item"],
+  { revalidate: 300 }
+);
+
+const getServicePageByNavbarItemId = unstable_cache(
+  async (navbarItemId: string) =>
+    prisma.servicePage.findUnique({
+      where: { navbarItemId },
+      include: {
+        sections: {
+          orderBy: { order: "asc" },
+        },
+      },
+    }),
+  ["service-page-by-navbar-item"],
+  { revalidate: 300 }
+);
+
+const getServicePageMetaByNavbarItemId = unstable_cache(
+  async (navbarItemId: string) =>
+    prisma.servicePage.findUnique({
+      where: { navbarItemId },
+      select: { id: true },
+    }),
+  ["service-page-meta-by-navbar-item"],
+  { revalidate: 300 }
+);
+
+const getGenericPageBySlug = unstable_cache(
+  async (slug: string, region: Region) =>
+    prisma.genericPage.findUnique({
+      where: {
+        slug_region: {
+          slug,
+          region,
+        },
+      },
+    }),
+  ["generic-page-by-slug"],
+  { revalidate: 300 }
+);
+
+const getFaqByNavbarItemId = unstable_cache(
+  async (navbarItemId: string) =>
+    prisma.servicePageFAQ.findUnique({
+      where: { navbarItemId },
+      include: {
+        questions: {
+          orderBy: { order: "asc" },
+        },
+      },
+    }),
+  ["service-page-faq-by-navbar-item"],
+  { revalidate: 300 }
+);
+
+const getMetaDataByPage = unstable_cache(
+  async (pageType: "SERVICE" | "BLOG" | "GENERIC", pageId: string) =>
+    prisma.metaData.findUnique({
+      where: {
+        pageType_pageId: {
+          pageType,
+          pageId,
+        },
+      },
+    }),
+  ["meta-data-by-page"],
+  { revalidate: 300 }
+);
+
 export async function generateMetadata({
   params,
 }: DynamicPageProps): Promise<Metadata> {
   const { slug } = await params;
   const region = Region.US;
 
-  const navbarItem = await prisma.navbarItem.findFirst({
-    where: {
-      region,
-      href: `/${slug}`,
-      isActive: true,
-    },
-  });
+  const navbarItem = await getNavbarItemBySlug(slug, region);
 
   if (!navbarItem) {
     return {
@@ -35,41 +118,19 @@ export async function generateMetadata({
     };
   }
 
-  const servicePage = await prisma.servicePage.findUnique({
-    where: { navbarItemId: navbarItem.id },
-  });
-
-  const genericPage = await prisma.genericPage.findUnique({
-    where: {
-      slug_region: {
-        slug,
-        region,
-      },
-    },
-  });
+  const [servicePage, genericPage] = await Promise.all([
+    getServicePageMetaByNavbarItemId(navbarItem.id),
+    getGenericPageBySlug(slug, region),
+  ]);
 
   // Try to fetch meta data for hero or service page
   // Try to fetch meta data ONLY for service page
   let metaData = null;
 
   if (servicePage) {
-    metaData = await prisma.metaData.findUnique({
-      where: {
-        pageType_pageId: {
-          pageType: "SERVICE",
-          pageId: servicePage.id,
-        },
-      },
-    });
+    metaData = await getMetaDataByPage("SERVICE", servicePage.id);
   } else if (genericPage) {
-    metaData = await prisma.metaData.findUnique({
-      where: {
-        pageType_pageId: {
-          pageType: "GENERIC",
-          pageId: genericPage.id,
-        },
-      },
-    });
+    metaData = await getMetaDataByPage("GENERIC", genericPage.id);
   }
 
   // Build base URL
@@ -135,13 +196,7 @@ export default async function UsDynamicPage({ params }: DynamicPageProps) {
   const region = Region.US;
 
   // Find navbar item by href (slug should match href without leading slash and /us prefix)
-  const navbarItem = await prisma.navbarItem.findFirst({
-    where: {
-      region,
-      href: `/${slug}`,
-      isActive: true,
-    },
-  });
+  const navbarItem = await getNavbarItemBySlug(slug, region);
 
   // If navbar item doesn't exist, return 404
   if (!navbarItem) {
@@ -149,39 +204,12 @@ export default async function UsDynamicPage({ params }: DynamicPageProps) {
   }
 
   // Fetch hero content if exists
-  const hero = await prisma.pageHero.findUnique({
-    where: { navbarItemId: navbarItem.id },
-  });
-
-  // Fetch service page if exists
-  const servicePage = await prisma.servicePage.findUnique({
-    where: { navbarItemId: navbarItem.id },
-    include: {
-      sections: {
-        orderBy: { order: "asc" },
-      },
-    },
-  });
-
-  // Fetch generic page if exists
-  const genericPage = await prisma.genericPage.findUnique({
-    where: {
-      slug_region: {
-        slug,
-        region,
-      },
-    },
-  });
-
-  // Fetch FAQ if exists
-  const faq = await prisma.servicePageFAQ.findUnique({
-    where: { navbarItemId: navbarItem.id },
-    include: {
-      questions: {
-        orderBy: { order: "asc" },
-      },
-    },
-  });
+  const [hero, servicePage, genericPage, faq] = await Promise.all([
+    getHeroByNavbarItemId(navbarItem.id),
+    getServicePageByNavbarItemId(navbarItem.id),
+    getGenericPageBySlug(slug, region),
+    getFaqByNavbarItemId(navbarItem.id),
+  ]);
 
   // Determine which meta data to render
   let metaPageType: "SERVICE" | "GENERIC" | null = null;
@@ -195,11 +223,20 @@ export default async function UsDynamicPage({ params }: DynamicPageProps) {
     metaPageId = genericPage.id;
   }
 
+  const metaData =
+    metaPageType && metaPageId
+      ? await getMetaDataByPage(metaPageType, metaPageId)
+      : null;
+
   return (
     <>
       {/* Render meta tags server-side */}
       {metaPageType && metaPageId && (
-        <MetaDataRenderer pageType={metaPageType} pageId={metaPageId} />
+        <MetaDataRenderer
+          pageType={metaPageType}
+          pageId={metaPageId}
+          metaBlock={metaData?.metaBlock}
+        />
       )}
       <div className="min-h-screen bg-slate-950 text-white">
         <NavbarServer region={region} />
