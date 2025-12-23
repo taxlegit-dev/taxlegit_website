@@ -14,12 +14,145 @@ import Paragraph from "@editorjs/paragraph";
 import YouTubeVideoBlock from "./editorjs-blocks/youtube-video-block";
 import ColumnBlock from "./editorjs-blocks/column-block";
 import ImageLinkTune from "./editorjs-blocks/image-link-tune";
+import ContentCardsBlock from "./editorjs-blocks/card-block";
 
 // Custom inline tools
 import FontSizeInlineTool from "./editorjs-blocks/font-size-inline-tool";
 import TextColorInlineTool from "./editorjs-blocks/text-color-inline-tool";
 import TextAlignTune from "./editorjs-blocks/text-align-tune";
 import CTAButtonBlock from "./editorjs-blocks/cta-button-block";
+
+const sanitizeHtml = (html: string) => {
+  if (!html) {
+    return html;
+  }
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, "text/html");
+  const { body } = doc;
+
+  body.querySelectorAll("*").forEach((element) => {
+    if (!element.hasAttribute("style")) {
+      return;
+    }
+
+    const style = element.style;
+    if (style.fontFamily) {
+      style.removeProperty("font-family");
+    }
+    if (style.backgroundColor) {
+      style.removeProperty("background-color");
+    }
+    const fontSize = style.getPropertyValue("font-size");
+    if (fontSize && fontSize.toLowerCase().includes("pt")) {
+      style.removeProperty("font-size");
+    }
+
+    if (style.length === 0) {
+      element.removeAttribute("style");
+    }
+  });
+
+  const mergeConsecutiveSpans = (container: ParentNode) => {
+    const signature = (span: HTMLSpanElement) => {
+      if (span.attributes.length === 0) {
+        return "";
+      }
+      return Array.from(span.attributes)
+        .map((attr) => `${attr.name}=${attr.value}`)
+        .sort()
+        .join(";");
+    };
+
+    const children = Array.from(container.childNodes);
+    for (let i = 0; i < children.length - 1; i += 1) {
+      const current = children[i];
+      const next = children[i + 1];
+      if (
+        current.nodeType === Node.ELEMENT_NODE &&
+        next.nodeType === Node.ELEMENT_NODE &&
+        (current as Element).tagName === "SPAN" &&
+        (next as Element).tagName === "SPAN"
+      ) {
+        const currentSpan = current as HTMLSpanElement;
+        const nextSpan = next as HTMLSpanElement;
+        if (signature(currentSpan) === signature(nextSpan)) {
+          while (nextSpan.firstChild) {
+            currentSpan.appendChild(nextSpan.firstChild);
+          }
+          nextSpan.remove();
+          children.splice(i + 1, 1);
+          i -= 1;
+        }
+      }
+    }
+  };
+
+  const unwrapSpan = (span: HTMLSpanElement) => {
+    const parent = span.parentNode;
+    if (!parent) {
+      return;
+    }
+    while (span.firstChild) {
+      parent.insertBefore(span.firstChild, span);
+    }
+    parent.removeChild(span);
+  };
+
+  const normalizeSpans = () => {
+    let didWork = false;
+
+    body.querySelectorAll("span").forEach((span) => {
+      const hasAttributes = span.attributes.length > 0;
+      const isEmpty =
+        span.textContent?.trim() === "" && span.children.length === 0;
+
+      if (!hasAttributes && isEmpty) {
+        span.remove();
+        didWork = true;
+        return;
+      }
+
+      if (!hasAttributes && span.parentElement?.tagName === "SPAN") {
+        unwrapSpan(span);
+        didWork = true;
+      }
+    });
+
+    body.querySelectorAll("*").forEach((element) => {
+      mergeConsecutiveSpans(element);
+    });
+
+    return didWork;
+  };
+
+  while (normalizeSpans()) {
+    // Keep normalizing until no changes are required.
+  }
+
+  return body.innerHTML;
+};
+
+const sanitizeBlockData = (block: OutputData["blocks"][number]) => {
+  if (!block?.data) {
+    return block;
+  }
+
+  if (block.type === "paragraph" || block.type === "header") {
+    return {
+      ...block,
+      data: {
+        ...block.data,
+        text:
+          typeof block.data.text === "string"
+            ? sanitizeHtml(block.data.text)
+            : block.data.text,
+      },
+    };
+  }
+
+  return block;
+};
 
 type EditorJsEditorProps = {
   value?: OutputData | null;
@@ -174,6 +307,19 @@ export function EditorJsEditor({
               }
             : undefined,
         },
+        contentCards: {
+          class: ContentCardsBlock as unknown as never,
+          config: onImageUploadRef.current
+            ? {
+                imageUploadHandler: async (file: File) => {
+                  if (!onImageUploadRef.current) {
+                    throw new Error("Image upload handler not provided");
+                  }
+                  return onImageUploadRef.current(file);
+                },
+              }
+            : undefined,
+        },
         cta: {
           class: CTAButtonBlock as unknown as never,
         },
@@ -184,7 +330,11 @@ export function EditorJsEditor({
             await editor.isReady;
             const outputData = await editor.save();
             // Use ref to call latest onChange
-            onChangeRef.current(outputData);
+            const sanitizedOutputData = {
+              ...outputData,
+              blocks: outputData.blocks.map(sanitizeBlockData),
+            };
+            onChangeRef.current(sanitizedOutputData);
           } catch (error) {
             console.error("Error saving editor data:", error);
           }

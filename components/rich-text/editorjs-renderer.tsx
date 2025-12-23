@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useId } from "react";
 import type { OutputData } from "@editorjs/editorjs";
 import Image from "next/image";
 
@@ -12,13 +12,16 @@ function normalizeUrl(url?: string): string {
   if (url.startsWith("#")) {
     return url;
   }
+  if (url.startsWith("data:") || url.startsWith("blob:")) {
+    return url;
+  }
   if (url.startsWith("http://") || url.startsWith("https://")) {
     return url;
   }
   return `https://${url}`;
 }
 
-// ✅ Helper function to extract text-align from HTML
+// Helper function to extract text-align from HTML
 function extractVideoId(url: string): string | null {
   const patterns = [
     /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
@@ -46,6 +49,8 @@ function extractTextAlign(html?: string): React.CSSProperties {
 
 const WORD_LIMIT1 = 60;
 const WORD_LIMIT2 = 20;
+const DEFAULT_CLAMP_LINES = 4;
+const SHORT_CLAMP_LINES = 2;
 
 function stripHtml(html: string): string {
   return html
@@ -59,33 +64,50 @@ function ReadMoreHtml({
   className,
   style,
   wordLimit = WORD_LIMIT1,
+  clampLines,
 }: {
   html: string;
   className?: string;
   style?: React.CSSProperties;
   wordLimit?: number;
+  clampLines?: number;
 }) {
-  const [expanded, setExpanded] = useState(false);
+  const contentId = useId();
+  const contentSpanId = `${contentId}-content`;
   const text = stripHtml(html || "");
   const words = text.length > 0 ? text.split(" ") : [];
   const isLong = words.length > wordLimit;
-  const preview = isLong ? `${words.slice(0, wordLimit).join(" ")}...` : text;
+  const resolvedClampLines =
+    clampLines ??
+    (wordLimit <= WORD_LIMIT2 ? SHORT_CLAMP_LINES : DEFAULT_CLAMP_LINES);
+  const wrapperStyle = {
+    ...style,
+    ["--clamp-lines" as any]: resolvedClampLines,
+  };
 
   return (
-    <div className={className} style={style}>
-      {expanded || !isLong ? (
-        <span dangerouslySetInnerHTML={{ __html: html || "" }} />
-      ) : (
-        <span>{preview}</span>
-      )}
+    <div className={className} style={wrapperStyle}>
       {isLong && (
-        <button
-          type="button"
-          className="ml-2 text-sm text-purple-600 hover:text-purple-700"
-          onClick={() => setExpanded(!expanded)}
+        <input
+          id={contentId}
+          type="checkbox"
+          className="read-more-toggle sr-only"
+          aria-controls={contentSpanId}
+        />
+      )}
+      <span
+        id={contentSpanId}
+        className={isLong ? "read-more-content" : undefined}
+        dangerouslySetInnerHTML={{ __html: html || "" }}
+      />
+      {isLong && (
+        <label
+          htmlFor={contentId}
+          className="read-more-button ml-2 text-sm text-purple-600 hover:text-purple-700 cursor-pointer"
         >
-          {expanded ? "Read less" : "Read more"}
-        </button>
+          <span className="read-more-label-collapsed">Read more</span>
+          <span className="read-more-label-expanded">Read less</span>
+        </label>
       )}
     </div>
   );
@@ -96,28 +118,50 @@ function ReadMoreText({
   className,
   style,
   wordLimit = WORD_LIMIT1,
+  clampLines,
 }: {
   text: string;
   className?: string;
   style?: React.CSSProperties;
   wordLimit?: number;
+  clampLines?: number;
 }) {
-  const [expanded, setExpanded] = useState(false);
+  const contentId = useId();
+  const contentSpanId = `${contentId}-content`;
   const words = text ? text.split(/\s+/) : [];
   const isLong = words.length > wordLimit;
-  const preview = isLong ? `${words.slice(0, wordLimit).join(" ")}...` : text;
+  const resolvedClampLines =
+    clampLines ??
+    (wordLimit <= WORD_LIMIT2 ? SHORT_CLAMP_LINES : DEFAULT_CLAMP_LINES);
+  const wrapperStyle = {
+    ...style,
+    ["--clamp-lines" as any]: resolvedClampLines,
+  };
 
   return (
-    <div className={className} style={style}>
-      <span>{expanded || !isLong ? text : preview}</span>
+    <div className={className} style={wrapperStyle}>
       {isLong && (
-        <button
-          type="button"
-          className="ml-2 text-sm text-purple-600 hover:text-purple-700"
-          onClick={() => setExpanded(!expanded)}
+        <input
+          id={contentId}
+          type="checkbox"
+          className="read-more-toggle sr-only"
+          aria-controls={contentSpanId}
+        />
+      )}
+      <span
+        id={contentSpanId}
+        className={isLong ? "read-more-content" : undefined}
+      >
+        {text}
+      </span>
+      {isLong && (
+        <label
+          htmlFor={contentId}
+          className="read-more-button ml-2 text-sm text-purple-600 hover:text-purple-700 cursor-pointer"
         >
-          {expanded ? "Read less" : "Read more"}
-        </button>
+          <span className="read-more-label-collapsed">Read more</span>
+          <span className="read-more-label-expanded">Read less</span>
+        </label>
       )}
     </div>
   );
@@ -159,17 +203,50 @@ export function EditorJsRenderer({
       : "prose prose-slate max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-purple-600 prose-a:no-underline hover:prose-a:text-purple-700 prose-a:transition-colors prose-strong:text-slate-900 prose-strong:font-semibold prose-code:text-purple-600 prose-code:bg-slate-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded";
 
   return (
-    <div className={containerClass}>
-      <div className="max-w-6xl mx-auto p-4">
-        <article className={contentClass}>
-          {data.blocks.map((block, index) => (
-            <React.Fragment key={block.id || index}>
-              {renderBlock(block, theme)}
-            </React.Fragment>
-          ))}
-        </article>
+    <>
+      <div className={containerClass}>
+        <div className="max-w-6xl mx-auto p-4">
+          <article className={contentClass}>
+            {data.blocks.map((block, index) => (
+              <React.Fragment key={block.id || index}>
+                {renderBlock(block, theme)}
+              </React.Fragment>
+            ))}
+          </article>
+        </div>
       </div>
-    </div>
+      <style jsx global>{`
+        .read-more-content {
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: var(--clamp-lines, 4);
+          overflow: hidden;
+        }
+        .read-more-toggle:checked ~ .read-more-content {
+          display: block;
+          -webkit-line-clamp: unset;
+          overflow: visible;
+        }
+        .read-more-label-expanded {
+          display: none;
+        }
+        .read-more-toggle:focus-visible ~ .read-more-button {
+          outline: 2px solid #a855f7;
+          outline-offset: 2px;
+          border-radius: 0.375rem;
+        }
+        .read-more-toggle:checked
+          ~ .read-more-button
+          .read-more-label-collapsed {
+          display: none;
+        }
+        .read-more-toggle:checked
+          ~ .read-more-button
+          .read-more-label-expanded {
+          display: inline;
+        }
+      `}</style>
+    </>
   );
 }
 
@@ -191,7 +268,7 @@ function renderBlock(
         <ReadMoreHtml
           key={block.id}
           className={`mb-5 text-base leading-relaxed ${textColor}`}
-          style={paragraphAlign} // ✅ Apply alignment
+          style={paragraphAlign} // Apply alignment
           html={block.data.text || ""}
         />
       );
@@ -213,7 +290,7 @@ function renderBlock(
         className: `font-semibold ${headingColor} ${
           headerSizes[level as keyof typeof headerSizes] || headerSizes[2]
         } tracking-tight`,
-        style: headerAlign, // ✅ Apply alignment
+        style: headerAlign, // Apply alignment
         dangerouslySetInnerHTML: { __html: block.data.text || "" },
       };
 
@@ -239,7 +316,7 @@ function renderBlock(
       const listClass =
         block.data.style === "ordered" ? "list-decimal" : "list-disc";
 
-      // ✅ Extract alignment from tune or first list item (if any)
+      // Extract alignment from tune or first list item (if any)
       const firstItem = block.data.items?.[0] || "";
       const listAlign = getBlockAlignment(block, firstItem);
 
@@ -247,7 +324,7 @@ function renderBlock(
         <ListTag
           key={block.id}
           className={`mb-5 pl-6 space-y-2 ${listClass} ${textColor} text-base marker:text-slate-400`}
-          style={listAlign} // ✅ Apply alignment
+          style={listAlign} // Apply alignment
         >
           {block.data.items?.map((item: string, idx: number) => (
             <li
@@ -294,7 +371,7 @@ function renderBlock(
                     }`}
                   >
                     {row.map((cell: string, cellIdx: number) => {
-                      // ✅ Extract alignment for each cell
+                      // Extract alignment for each cell
                       const cellAlign = extractTextAlign(cell);
 
                       return (
@@ -303,7 +380,7 @@ function renderBlock(
                           className={`px-4 py-3 text-sm ${
                             rowIdx === 0 ? "font-medium" : ""
                           } ${textColor}`}
-                          style={cellAlign} // ✅ Apply alignment
+                          style={cellAlign} // Apply alignment
                           dangerouslySetInnerHTML={{ __html: cell }}
                         />
                       );
@@ -406,35 +483,6 @@ function renderBlock(
         </figure>
       );
 
-      const columnsData = block.data as {
-        leftContent?: string;
-        rightContent?: string;
-        layout?: "50-50" | "33-67" | "67-33";
-      };
-
-      const gridCols =
-        columnsData.layout === "33-67"
-          ? "grid-cols-1 md:grid-cols-[1fr_2fr]"
-          : columnsData.layout === "67-33"
-          ? "grid-cols-1 md:grid-cols-[2fr_1fr]"
-          : "grid-cols-1 md:grid-cols-2";
-
-      return (
-        <div
-          key={block.id}
-          className={`mb-8 grid ${gridCols} gap-6 rounded-lg ${cardBg} border ${borderColor} p-6`}
-        >
-          <div
-            className={`${textColor} text-2xl leading-relaxed`}
-            dangerouslySetInnerHTML={{ __html: columnsData.leftContent || "" }}
-          />
-          <div
-            className={`${textColor} text-base leading-relaxed`}
-            dangerouslySetInnerHTML={{ __html: columnsData.rightContent || "" }}
-          />
-        </div>
-      );
-
     case "youtube":
       const youtubeData = block.data as {
         url?: string;
@@ -473,6 +521,7 @@ function renderBlock(
           )}
         </figure>
       );
+
     /////
     case "column":
       const columnData = block.data as {
@@ -490,18 +539,15 @@ function renderBlock(
         columnData.imagePosition === "right"
           ? "md:flex-row-reverse"
           : "md:flex-row";
-      const columnBgClass =
-        columnData.imagePosition === "left"
-          ? "bg-gradient-to-b from-[#F7F2F7] via-[#EFE4EF] to-white"
-          : "bg-white";
       const isLeftAligned = columnData.imagePosition === "left";
+      const columnBgClass = isLeftAligned ? "" : "bg-white";
       const youtubeId = columnData.youtubeUrl
         ? extractVideoId(columnData.youtubeUrl)
         : null;
 
       const columnContent = (
         <div
-          className={`mb-8 flex flex-col ${flexDirection} gap-8 items-center ${columnBgClass} rounded-lg py-8`}
+          className={`flex flex-col ${flexDirection} gap-8 items-center rounded-lg py-8`}
         >
           <div className="flex-1 min-w-0">
             {columnData.imageUrl && (
@@ -575,7 +621,11 @@ function renderBlock(
       );
 
       if (!isLeftAligned) {
-        return <div key={block.id}>{columnContent}</div>;
+        return (
+          <div key={block.id} className={`mb-8 ${columnBgClass} rounded-lg`}>
+            {columnContent}
+          </div>
+        );
       }
 
       return (
@@ -583,10 +633,13 @@ function renderBlock(
           key={block.id}
           className="relative left-1/2 right-1/2 w-screen -ml-[50vw] -mr-[50vw] bg-gradient-to-b from-[#F7F2F7] via-[#EFE4EF] to-white"
         >
-          <div className="max-w-6xl mx-auto px-6">{columnContent}</div>
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="mb-8">{columnContent}</div>
+          </div>
         </div>
       );
     /////
+
     case "cta": {
       const {
         text,
@@ -631,6 +684,74 @@ function renderBlock(
             {text}
           </a>
         </div>
+      );
+    }
+
+    case "contentCards": {
+      const cardsData = block.data as {
+        cards?: Array<{
+          icon?: string;
+          heading?: string;
+          description?: string;
+        }>;
+        cardsPerRow?: number;
+      };
+
+      const cards = cardsData.cards ?? [];
+      if (cards.length === 0) return null;
+
+      const perRow = Math.min(Math.max(cardsData.cardsPerRow ?? 3, 2), 5);
+      const gridColsClass =
+        perRow === 2
+          ? "grid-cols-1 sm:grid-cols-2"
+          : perRow === 3
+          ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+          : perRow === 4
+          ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+          : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5";
+
+      return (
+        <section key={block.id} className="py-5">
+          <div className={`grid grid-cols-1 ${gridColsClass} gap-6`}>
+            {cards.map((card, idx) => (
+              <div
+                key={idx}
+                className={`rounded-xl border ${borderColor} ${cardBg} p-5 shadow-sm`}
+                role="button"
+                tabIndex={0}
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }
+                }}
+              >
+                {card.icon && (
+                  <div className="mb-4 flex justify-center">
+                    <img
+                      src={normalizeUrl(card.icon)}
+                      alt={card.heading || "Card icon"}
+                      className="h-16 w-16 object-contain"
+                    />
+                  </div>
+                )}
+                {card.heading && (
+                  <h3
+                    className={`text-lg font-semibold text-center ${headingColor}`}
+                  >
+                    {card.heading}
+                  </h3>
+                )}
+                {card.description && (
+                  <p className={`mt-2 text-sm leading-relaxed  ${textColor}`}>
+                    {card.description}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
       );
     }
 
