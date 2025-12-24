@@ -32,6 +32,9 @@ const sanitizeHtml = (html: string) => {
   const { body } = doc;
 
   body.querySelectorAll("*").forEach((element) => {
+    if (!(element instanceof HTMLElement)) {
+      return;
+    }
     if (!element.hasAttribute("style")) {
       return;
     }
