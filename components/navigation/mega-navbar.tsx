@@ -114,9 +114,8 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
                   {hoveredItem === item.id && (
                     <div
                       className="
-      absolute left-1/2 top-full w-[650px]
+      absolute left-4 right-4 top-full w-auto max-w-[800px]
       z-[100]
-      -translate-x-1/2 
       rounded-xl 
       border border-zinc-100
       bg-white/95 
@@ -125,11 +124,12 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
       p-8 
       animate-fadeIn
       transition-all
+      lg:left-1/2 lg:right-auto lg:w-[900px] lg:-translate-x-1/2
     "
                     >
-                      <div className="grid grid-cols-2 gap-10">
+                      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                         {item.groups.map((group, groupIndex) => (
-                          <div key={groupIndex} className="space-y-4">
+                          <div key={groupIndex} className="space-y-2">
                             {/* Group Label */}
                             {group.label && (
                               <h3 className="border-b border-zinc-100 pb-2 text-[13px] font-semibold uppercase tracking-wider text-zinc-500">
@@ -137,7 +137,7 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
                               </h3>
                             )}
 
-                            <ul className="space-y-1.5">
+                            <ul className="">
                               {group.items.map((subItem) => (
                                 <li key={subItem.id}>
                                   <Link
@@ -149,8 +149,8 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
                                     className="
                     group 
                     block rounded-lg px-3 py-1
-                    text-[14px] font-medium text-zinc-700
-                    hover:bg-zinc-100 
+                    text-[12px] font-medium text-zinc-700
+                    hover:bg-[#E6D3E6]
                     hover:text-black
                     transition-all duration-150
                     flex items-center justify-between
@@ -159,11 +159,6 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
                                     {/* Left: Name */}
                                     <span className="group-hover:translate-x-1 transition-transform">
                                       {subItem.label}
-                                    </span>
-
-                                    {/* Right: Chevron Indicator */}
-                                    <span className="opacity-0 group-hover:opacity-100 transition-opacity text-zinc-400 group-hover:text-zinc-600 text-xl">
-                                      →
                                     </span>
                                   </Link>
                                 </li>

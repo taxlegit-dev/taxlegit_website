@@ -14,6 +14,19 @@ import AuthorCard from "@/components/pages/Blog/AuthorCard";
 import RecentBlogsSection from "@/components/pages/home/RecentBlogsSection";
 import { BlogViewCounter } from "@/components/pages/Blog/BlogViewCounter";
 
+const FALLBACK_BLOG_IMAGE_SRC = "/hero1.jpg";
+
+const isValidImageSrc = (src?: string) => {
+  if (!src) return false;
+  if (src.startsWith("/")) return true;
+  try {
+    new URL(src);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 type BlogDetailPageProps = {
   params: Promise<{ id: string }>;
 };
@@ -96,6 +109,15 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
     // fallback to HTML
   }
 
+  const blogImageSrc = isValidImageSrc(blog.image)
+    ? blog.image
+    : FALLBACK_BLOG_IMAGE_SRC;
+  const authorImageSrc = blog.author
+    ? isValidImageSrc(blog.author.image)
+      ? blog.author.image
+      : null
+    : null;
+
   return (
     <>
       <MetaDataRenderer pageType="BLOG" pageId={blog.id} />
@@ -159,18 +181,16 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
               </div>
 
               {/* Featured Image */}
-              {blog.image && (
-                <div className="relative mb-8 h-64 w-full overflow-hidden rounded-xl md:h-80 lg:h-96">
-                  <Image
-                    src={blog.image}
-                    alt={blog.title}
-                    fill
-                    priority
-                    className="object-cover"
-                    sizes="(min-width: 1024px) 75vw, 100vw"
-                  />
-                </div>
-              )}
+              <div className="relative mb-8 h-64 w-full overflow-hidden rounded-xl md:h-80 lg:h-96">
+                <Image
+                  src={blogImageSrc}
+                  alt={blog.title}
+                  fill
+                  priority
+                  className="object-cover"
+                  sizes="(min-width: 1024px) 75vw, 100vw"
+                />
+              </div>
 
               {/* Content */}
               <div className="prose prose-lg max-w-none prose-slate prose-headings:text-slate-900 prose-p:text-slate-700">
@@ -198,10 +218,10 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
                     <h3 className="mb-4 font-semibold text-slate-900">
                       About the Author
                     </h3>
-                    {blog.author.image && (
+                    {authorImageSrc && (
                       <div className="mb-4">
                         <Image
-                          src={blog.author.image}
+                          src={authorImageSrc}
                           alt={blog.author.name}
                           width={100}
                           height={100}

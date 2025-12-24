@@ -17,6 +17,19 @@ interface Blog {
   };
 }
 
+const FALLBACK_IMAGE_SRC = "/hero1.jpg";
+
+const isValidImageSrc = (src?: string) => {
+  if (!src) return false;
+  if (src.startsWith("/")) return true;
+  try {
+    new URL(src);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export default function RecentBlogsSection() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
 
@@ -67,12 +80,20 @@ export default function RecentBlogsSection() {
               >
                 {/* Blog Image */}
                 <div className="relative h-52 overflow-hidden bg-gray-100">
+                  {(() => {
+                    const imageSrc = isValidImageSrc(blog.image)
+                      ? blog.image
+                      : FALLBACK_IMAGE_SRC;
+
+                    return (
                   <Image
-                    src={blog.image || "/hero1.jpg"}
+                    src={imageSrc}
                     alt={blog.title}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-110"
                   />
+                    );
+                  })()}
                   {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>

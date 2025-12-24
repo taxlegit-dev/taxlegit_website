@@ -36,6 +36,7 @@
     "dotenv": "^17.2.3",
     "framer-motion": "^12.23.25",
     "lucide-react": "^0.462.0",
+    "mysql2": "^3.16.0",
     "next": "16.0.10",
     "next-auth": "5.0.0-beta.30",
     "openai": "^6.14.0",
