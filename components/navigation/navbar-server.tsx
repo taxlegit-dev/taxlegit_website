@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { unstable_cache } from "next/cache";
 import { MegaNavbar } from "@/components/navigation/mega-navbar";
 import { Region } from "@prisma/client";
 
@@ -6,24 +7,31 @@ type NavbarServerProps = {
   region: Region;
 };
 
-export async function NavbarServer({ region }: NavbarServerProps) {
-  const items = await prisma.navbarItem.findMany({
-    where: {
-      region,
-      pageType: "SERVICE",
-      isActive: true,
-    },
-    include: {
-      children: {
-        where: {
-          isActive: true,
-          pageType: "SERVICE",
-        },
-        orderBy: { order: "asc" },
+const getNavbarItems = unstable_cache(
+  async (region: Region) =>
+    prisma.navbarItem.findMany({
+      where: {
+        region,
+        pageType: "SERVICE",
+        isActive: true,
       },
-    },
-    orderBy: { order: "asc" },
-  });
+      include: {
+        children: {
+          where: {
+            isActive: true,
+            pageType: "SERVICE",
+          },
+          orderBy: { order: "asc" },
+        },
+      },
+      orderBy: { order: "asc" },
+    }),
+  ["navbar-items-by-region"],
+  { revalidate: 300 }
+);
+
+export async function NavbarServer({ region }: NavbarServerProps) {
+  const items = await getNavbarItems(region);
 
   // Separate top-level items and their children
   const topLevelItems = items.filter((item) => !item.parentId);

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { unstable_cache } from "next/cache";
 import { Region } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { NavbarServer } from "@/components/navigation/navbar-server";
@@ -14,6 +15,76 @@ type DynamicPageProps = {
   params: Promise<{ slug: string }>;
 };
 
+const getNavbarItemBySlug = unstable_cache(
+  async (slug: string, region: Region) =>
+    prisma.navbarItem.findFirst({
+      where: {
+        region,
+        href: `/${slug}`,
+        isActive: true,
+      },
+    }),
+  ["navbar-item-by-slug"],
+  { revalidate: 300 }
+);
+
+const getHeroByNavbarItemId = unstable_cache(
+  async (navbarItemId: string) =>
+    prisma.pageHero.findUnique({
+      where: { navbarItemId },
+    }),
+  ["page-hero-by-navbar-item"],
+  { revalidate: 300 }
+);
+
+const getServicePageByNavbarItemId = unstable_cache(
+  async (navbarItemId: string) =>
+    prisma.servicePage.findUnique({
+      where: { navbarItemId },
+      include: {
+        sections: { orderBy: { order: "asc" } },
+      },
+    }),
+  ["service-page-by-navbar-item"],
+  { revalidate: 300 }
+);
+
+const getServicePageMetaByNavbarItemId = unstable_cache(
+  async (navbarItemId: string) =>
+    prisma.servicePage.findUnique({
+      where: { navbarItemId },
+      select: { id: true },
+    }),
+  ["service-page-meta-by-navbar-item"],
+  { revalidate: 300 }
+);
+
+const getFaqByNavbarItemId = unstable_cache(
+  async (navbarItemId: string) =>
+    prisma.servicePageFAQ.findUnique({
+      where: { navbarItemId },
+      include: {
+        questions: { orderBy: { order: "asc" } },
+      },
+    }),
+  ["service-page-faq-by-navbar-item"],
+  { revalidate: 300 }
+);
+
+const getMetaDataByPage = unstable_cache(
+  async (pageType: "SERVICE" | "BLOG" | "GENERIC", pageId: string) =>
+    prisma.metaData.findUnique({
+      where: {
+        pageType_pageId: {
+          pageType,
+          pageId,
+        },
+      },
+    }),
+  ["meta-data-by-page"],
+  { revalidate: 300 }
+);
+
 /* =========================
    SEO METADATA (SERVICE ONLY)
 ========================= */
@@ -24,34 +95,19 @@ export async function generateMetadata({
   const region = Region.INDIA;
   console.log(slug, region);
 
-  const navbarItem = await prisma.navbarItem.findFirst({
-    where: {
-      region,
-      href: `/${slug}`,
-      isActive: true,
-    },
-  });
+  const navbarItem = await getNavbarItemBySlug(slug, region);
   console.log(navbarItem);
 
   if (!navbarItem) {
     return { title: "Page Not Found" };
   }
 
-  const servicePage = await prisma.servicePage.findUnique({
-    where: { navbarItemId: navbarItem.id },
-  });
+  const servicePage = await getServicePageMetaByNavbarItemId(navbarItem.id);
 
   let metaData = null;
 
   if (servicePage) {
-    metaData = await prisma.metaData.findUnique({
-      where: {
-        pageType_pageId: {
-          pageType: "SERVICE",
-          pageId: servicePage.id,
-        },
-      },
-    });
+    metaData = await getMetaDataByPage("SERVICE", servicePage.id);
   }
 
   const baseUrl = "https://taxlegit.com";
@@ -113,35 +169,17 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
   const { slug } = await params;
   const region = Region.INDIA;
 
-  const navbarItem = await prisma.navbarItem.findFirst({
-    where: {
-      region,
-      href: `/${slug}`,
-      isActive: true,
-    },
-  });
+  const navbarItem = await getNavbarItemBySlug(slug, region);
 
   if (!navbarItem) {
     notFound();
   }
 
-  const hero = await prisma.pageHero.findUnique({
-    where: { navbarItemId: navbarItem.id },
-  });
-
-  const servicePage = await prisma.servicePage.findUnique({
-    where: { navbarItemId: navbarItem.id },
-    include: {
-      sections: { orderBy: { order: "asc" } },
-    },
-  });
-
-  const faq = await prisma.servicePageFAQ.findUnique({
-    where: { navbarItemId: navbarItem.id },
-    include: {
-      questions: { orderBy: { order: "asc" } },
-    },
-  });
+  const [hero, servicePage, faq] = await Promise.all([
+    getHeroByNavbarItemId(navbarItem.id),
+    getServicePageByNavbarItemId(navbarItem.id),
+    getFaqByNavbarItemId(navbarItem.id),
+  ]);
 
   // ✅ SERVICE SEO ONLY
   let metaPageType: "SERVICE" | null = null;
@@ -152,10 +190,19 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
     metaPageId = servicePage.id;
   }
 
+  const metaData =
+    metaPageType && metaPageId
+      ? await getMetaDataByPage(metaPageType, metaPageId)
+      : null;
+
   return (
     <>
       {metaPageType && metaPageId && (
-        <MetaDataRenderer pageType={metaPageType} pageId={metaPageId} />
+        <MetaDataRenderer
+          pageType={metaPageType}
+          pageId={metaPageId}
+          metaBlock={metaData?.metaBlock}
+        />
       )}
 
       <div className="min-h-screen bg-white text-black">

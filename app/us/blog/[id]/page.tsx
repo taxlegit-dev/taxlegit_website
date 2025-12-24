@@ -206,7 +206,11 @@ export default async function UsBlogDetailPage({
 
           <div className="prose prose-lg max-w-none prose-invert prose-slate prose-headings:text-white prose-p:text-slate-300">
             {editorData ? (
-              <EditorJsRenderer data={editorData} theme="dark" />
+              <EditorJsRenderer
+                data={editorData}
+                theme="dark"
+                fullBleedColumns={false}
+              />
             ) : (
               <div
                 dangerouslySetInnerHTML={{ __html: blog.content }}

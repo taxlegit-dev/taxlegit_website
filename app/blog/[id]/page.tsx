@@ -175,7 +175,11 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
               {/* Content */}
               <div className="prose prose-lg max-w-none prose-slate prose-headings:text-slate-900 prose-p:text-slate-700">
                 {editorData ? (
-                  <EditorJsRenderer data={editorData} theme="light" />
+                  <EditorJsRenderer
+                    data={editorData}
+                    theme="light"
+                    fullBleedColumns={false}
+                  />
                 ) : (
                   <div
                     dangerouslySetInnerHTML={{ __html: blog.content }}

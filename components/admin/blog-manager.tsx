@@ -75,6 +75,20 @@ function tryParseEditorJson(content: string): OutputData | null {
   }
 }
 
+function isSafeImageSrc(src?: string | null): src is string {
+  if (!src) return false;
+  const trimmed = src.trim();
+  if (!trimmed) return false;
+  if (trimmed.startsWith("/") || trimmed.startsWith("data:")) return true;
+  if (trimmed.startsWith("blob:")) return true;
+  try {
+    const url = new URL(trimmed);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 type BlogWithGroup = Blog & {
   blogGroup: BlogGroup;
   author?: BlogAuthor | null;
@@ -635,7 +649,7 @@ export function BlogManager({
             </div>
           </div>
 
-          {selectedBlog.image && (
+          {isSafeImageSrc(selectedBlog.image) && (
             <div className="mb-6">
               <Image
                 src={selectedBlog.image}
@@ -976,7 +990,7 @@ export function BlogManager({
                 onChange={handleAuthorImageChange}
                 className="w-full rounded-lg border border-slate-200 px-4 py-2"
               />
-              {authorImagePreview && (
+              {isSafeImageSrc(authorImagePreview) && (
                 <div className="mt-3">
                   <Image
                     src={authorImagePreview}
@@ -987,7 +1001,7 @@ export function BlogManager({
                   />
                 </div>
               )}
-              {editingAuthor?.image && !authorImagePreview && (
+              {isSafeImageSrc(editingAuthor?.image) && !authorImagePreview && (
                 <div className="mt-3">
                   <p className="text-xs text-slate-500 mb-2">Current image:</p>
                   <Image
@@ -1104,7 +1118,7 @@ export function BlogManager({
                 key={author.id}
                 className="rounded-lg border border-slate-200 p-4"
               >
-                {author.image && (
+                {isSafeImageSrc(author.image) && (
                   <div className="w-full h-32 overflow-hidden mb-3 rounded-lg">
                     <Image
                       src={author.image}
@@ -1203,7 +1217,7 @@ export function BlogManager({
                       }}
                       className="rounded-lg border border-slate-200 p-4 hover:shadow-md transition cursor-pointer"
                     >
-                      {blog.image && (
+                      {isSafeImageSrc(blog.image) && (
                         <div className="w-full h-48 overflow-hidden">
                           <Image
                             src={blog.image}

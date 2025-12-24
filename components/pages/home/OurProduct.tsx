@@ -45,7 +45,7 @@ export default function OurProduct() {
         <div className="h-72 bg-gradient-to-b from-[#F7F2F7] via-[#EFE4EF] to-white rounded-b-[56px]" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-6">
+      <div className="relative max-w-6xl mx-auto lg:px-0 px-5 ">
         {/* Heading */}
         <div className="text-center max-w-3xl mx-auto mb-24 text-BLACK">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">

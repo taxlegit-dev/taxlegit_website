@@ -290,7 +290,7 @@ export default function ServiceSection() {
       ref={sectionRef}
       className="w-full bg-gradient-to-b from-slate-50 to-white overflow-hidden "
     >
-      <div className="max-w-7xl mx-auto px-4 pt-8 md:pt-16 md:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto pt-8 md:pt-16 lg:px-0 px-5">
         {/* Header Section */}
         <div className="text-center mb-2 md:mb-4">
           <div className="overflow-hidden">
@@ -461,10 +461,10 @@ export default function ServiceSection() {
                           <div className="animate-fade-in-delayed-2 mt-auto pt-0">
                             <a
                               href={selectedService.href}
-                              className="group relative inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-purple-600 via-purple-800 to-purple-800 text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 overflow-hidden"
+                              className="group relative inline-flex items-center gap-3 px-5 lg:px-10 lg:py-4 py-2 bg-gradient-to-r from-purple-600 via-purple-800 to-purple-800 text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 overflow-hidden"
                             >
                               <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                              <span className="relative z-10 tracking-wide">
+                              <span className="relative z-10 tracking-wide lg:text-md text-sm">
                                 Explore Detailed
                               </span>
                               <ArrowRight className="w-5 h-5 relative z-10 transition-transform duration-300 group-hover:translate-x-2" />
