@@ -1,6 +1,5 @@
 import { Region, ContentStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { NavbarServer } from "@/components/navigation/navbar-server";
 import Footer from "@/components/footer";
 import BlogHero from "@/components/pages/Blog/BlogHero";
 import FeaturedBlog from "@/components/pages/Blog/FeaturedBlog";
@@ -25,7 +24,6 @@ export default async function BlogListingPage() {
 
   return (
     <div className="min-h-screen bg-white text-black">
-      <NavbarServer region={region} />
       <main className="mx-auto w-full pt-[72px]">
         <BlogHero />
         {!featuredBlog ? (

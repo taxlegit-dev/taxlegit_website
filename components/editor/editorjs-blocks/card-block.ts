@@ -125,7 +125,6 @@ export default class ContentCardsBlock implements BlockTool {
       if (this.cardsPerRowInput) {
         this.cardsPerRowInput.value = value.toString();
       }
-      this.notifyChange();
     });
 
     const hint = document.createElement("span");
@@ -207,7 +206,6 @@ export default class ContentCardsBlock implements BlockTool {
       "width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;";
     headingInput.addEventListener("input", () => {
       this.data.cards[index].heading = headingInput.value;
-      this.notifyChange();
     });
 
     // Description textarea
@@ -224,7 +222,6 @@ export default class ContentCardsBlock implements BlockTool {
       "width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; resize: vertical; font-family: inherit;";
     descriptionTextarea.addEventListener("input", () => {
       this.data.cards[index].description = descriptionTextarea.value;
-      this.notifyChange();
     });
 
     cardWrapper.appendChild(cardHeader);
@@ -259,7 +256,6 @@ export default class ContentCardsBlock implements BlockTool {
     iconUrlInput.addEventListener("input", () => {
       this.data.cards[index].icon = iconUrlInput.value;
       this.updateIconPreview(iconPreview, card.icon);
-      this.notifyChange();
     });
 
     // File upload input
@@ -276,7 +272,6 @@ export default class ContentCardsBlock implements BlockTool {
           this.data.cards[index].icon = url;
           iconUrlInput.value = url;
           this.updateIconPreview(iconPreview, url);
-          this.notifyChange();
         } catch (error) {
           console.error("Icon upload failed:", error);
           alert("Icon upload failed. Please try again or use a URL.");
@@ -286,7 +281,6 @@ export default class ContentCardsBlock implements BlockTool {
         this.data.cards[index].icon = url;
         iconUrlInput.value = url;
         this.updateIconPreview(iconPreview, url);
-        this.notifyChange();
       }
     });
 

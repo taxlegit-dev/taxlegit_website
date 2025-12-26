@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Region } from "@prisma/client";
 import { RegionSwitcher } from "@/components/navigation/region-switcher";
 import { toSupportedRegion } from "@/lib/regions";
@@ -35,6 +36,13 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openMobileItem, setOpenMobileItem] = useState<string | null>(null);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setOpenMobileItem(null);
+    setHoveredItem(null);
+  }, [pathname]);
 
   useEffect(() => {
     const fetchNavbar = async () => {
@@ -188,7 +196,7 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
         {/* Right Section - Country Selector & Phone */}
         <div className="flex items-center gap-3">
           <div className="hidden lg:block">
-            <RegionSwitcher currentRegion={mappedRegion} />
+            {/* <RegionSwitcher currentRegion={mappedRegion} /> */}
           </div>
 
           <Link

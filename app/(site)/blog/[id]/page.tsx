@@ -1,6 +1,5 @@
 import { Region, ContentStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { NavbarServer } from "@/components/navigation/navbar-server";
 import Footer from "@/components/footer";
 import { EditorJsRenderer } from "@/components/rich-text/editorjs-renderer";
 import type { OutputData } from "@editorjs/editorjs";
@@ -123,8 +122,6 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
       <MetaDataRenderer pageType="BLOG" pageId={blog.id} />
 
       <div className="min-h-screen bg-white text-black">
-        <NavbarServer region={region} />
-
         <main className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           {/* Back */}
           <Link

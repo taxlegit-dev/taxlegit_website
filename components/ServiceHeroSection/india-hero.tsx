@@ -9,6 +9,8 @@ import ContactForm from "@/components/pages/common/contactForm";
 import RunningLogoCarousel from "../pages/common/RunningLogoCarousel";
 type IndiaHeroProps = {
   hero: PageHero;
+  breadcrumbParent?: string | null;
+  breadcrumbCurrent?: string | null;
 };
 
 interface HeroContent {
@@ -37,13 +39,20 @@ const stats = [
   },
 ];
 
-export function IndiaHero({ hero }: IndiaHeroProps) {
+export function IndiaHero({
+  hero,
+  breadcrumbParent,
+  breadcrumbCurrent,
+}: IndiaHeroProps) {
   const content = hero.content as HeroContent;
   const benefits = content?.benefits || [];
   const partnerLogos = content?.partnerLogos || [];
   const [counts, setCounts] = useState(stats.map(() => 0));
   const statsRef = useRef<HTMLDivElement>(null);
   const hasAnimatedRef = useRef(false);
+  const trimmedParent = breadcrumbParent?.trim();
+  const trimmedCurrent = breadcrumbCurrent?.trim();
+  const showBreadcrumb = trimmedParent && trimmedCurrent;
 
   useEffect(() => {
     if (!statsRef.current || hasAnimatedRef.current) return;
@@ -109,6 +118,20 @@ export function IndiaHero({ hero }: IndiaHeroProps) {
           {/* Left Content */}
           <div className="space-y-8 lg:col-span-3">
             <div>
+              {showBreadcrumb && (
+                <nav
+                  aria-label="Breadcrumb"
+                  className="mb-3 text-sm text-slate-500"
+                >
+                  <Link href="/" className="text-slate-700 underline">
+                    Home
+                  </Link>
+                  <span className="mx-2">{">"}</span>
+                  <span className="text-slate-700">{trimmedParent}</span>
+                  <span className="mx-2">{">"}</span>
+                  <span className=" text-slate-700">{trimmedCurrent}</span>
+                </nav>
+              )}
               <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
                 {hero.title}
               </h1>
@@ -154,7 +177,7 @@ export function IndiaHero({ hero }: IndiaHeroProps) {
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm">
               <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
               <span className="text-sm font-semibold text-gray-700">
-                Rated at 4.5/5, 5000+ Happy Reviews on
+                Rated at 4.7/5, 1500+ Happy Reviews on
               </span>
               <FcGoogle className="w-5 h-5 " />
             </div>

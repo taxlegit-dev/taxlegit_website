@@ -10,7 +10,6 @@ import { FAQSection } from "@/components/faq/faq-section";
 // import AboutUs from "@/components/pages/about/AboutTaxlegit";
 import AnimatedFlowDiagram from "@/components/pages/home/AnimatedFlowDiagram";
 import RunningLogoCarousel from "@/components/pages/common/RunningLogoCarousel";
-import { NavbarServer } from "@/components/navigation/navbar-server";
 import Footer from "@/components/footer";
 import OurProduct from "@/components/pages/home/OurProduct";
 export default async function IndiaHomePage() {
@@ -32,7 +31,6 @@ export default async function IndiaHomePage() {
 
   return (
     <div className="min-h-screen bg-white text-black">
-      <NavbarServer region={region} />
       <div className="mt-18">
         <TaxLegitHero />
         <AnimatedFlowDiagram />

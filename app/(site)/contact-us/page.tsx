@@ -1,18 +1,12 @@
 import Image from "next/image";
-import { Region } from "@prisma/client";
 import Link from "next/link";
 import ContactForm from "@/components/pages/common/contactForm";
 import { Phone, MapPin, Mail } from "lucide-react";
-import { NavbarServer } from "@/components/navigation/navbar-server";
 import Footer from "@/components/footer";
 
 export default function AboutCompanyHero() {
-  const region = Region.INDIA;
-
   return (
     <>
-      <NavbarServer region={region} />
-
       <section className="relative h-[400px] w-full overflow-hidden mt-[72px]">
         {/* Background Image */}
         <Image

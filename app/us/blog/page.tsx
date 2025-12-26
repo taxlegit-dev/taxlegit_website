@@ -1,6 +1,5 @@
 import { Region, ContentStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { NavbarServer } from "@/components/navigation/navbar-server";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -32,7 +31,6 @@ export default async function UsBlogListingPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      <NavbarServer region={region} />
       <main className="mx-auto w-full max-w-6xl px-6 pt-[72px] pb-12">
         <div className="mb-12">
           <h1 className="text-4xl font-semibold mb-4">Blog</h1>

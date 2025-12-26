@@ -1,5 +1,4 @@
 import { Region, PageKey } from "@prisma/client";
-import { NavbarServer } from "@/components/navigation/navbar-server";
 import { getStaticPage } from "@/lib/queries";
 import { RichContent } from "@/components/rich-text/rich-content";
 import type { RichTextDocument } from "@/types/rich-text";
@@ -10,7 +9,6 @@ export default async function UsAboutPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      <NavbarServer region={Region.US} />
       <main className="mx-auto w-full max-w-3xl px-6 pt-[72px] pb-12 space-y-6">
         <p className="text-xs font-semibold uppercase tracking-[0.35em] text-emerald-300">About</p>
         <h1 className="text-4xl font-semibold">{page?.title ?? "About Taxlegit US"}</h1>

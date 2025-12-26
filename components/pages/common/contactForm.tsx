@@ -31,7 +31,9 @@ export default function ContactForm() {
   const scriptURL =
     "https://script.google.com/macros/s/AKfycbwM1c1uA_14bmQjKoHFS6u0Fr7qnnEiJlX9o_hf4kNjFzX47wEnSD5fkGKowKc9-ELM3Q/exec"; // 👈 IMPORTANT
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setStatus("");
   };
@@ -71,7 +73,7 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-zinc-200 p-8 shadow-lg text-black">
+    <div className="bg-white rounded-2xl  p-8 shadow-lg text-black">
       <h2 className="text-2xl font-bold text-slate-800 mb-4 text-center">
         Start Your Business with Free Consultation
       </h2>
@@ -84,7 +86,6 @@ export default function ContactForm() {
           placeholder="Name"
           className="w-full rounded-lg border px-4 py-2"
         />
-
         <input
           name="phone"
           value={form.phone}
@@ -92,7 +93,6 @@ export default function ContactForm() {
           placeholder="Phone"
           className="w-full rounded-lg border px-4 py-2"
         />
-
         <input
           name="email"
           value={form.email}
@@ -100,7 +100,6 @@ export default function ContactForm() {
           placeholder="Email"
           className="w-full rounded-lg border px-4 py-2"
         />
-
         <select
           name="service"
           value={form.service}
