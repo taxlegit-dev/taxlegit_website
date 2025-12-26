@@ -3,6 +3,122 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+// ✅ HTML को Editor.js format में convert करो
+function convertHtmlToEditorJs(html: string) {
+  if (!html || html.trim() === "") {
+    return {
+      time: Date.now(),
+      blocks: [
+        {
+          id: generateId(),
+          type: "paragraph",
+          data: { text: "" },
+        },
+      ],
+    };
+  }
+
+  const blocks: any[] = [];
+
+  // Clean HTML
+  const cleanText = html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "");
+
+  // Extract headers and content
+  const elements: Array<{ type: string; content: string; level?: number }> = [];
+
+  // Find all headers
+  const headerRegex = /<h([1-6])[^>]*>(.*?)<\/h\1>/gi;
+  let match;
+  let lastIndex = 0;
+
+  while ((match = headerRegex.exec(cleanText)) !== null) {
+    const [fullMatch, level, content] = match;
+    const index = match.index;
+
+    // Add previous content as paragraph
+    if (index > lastIndex) {
+      const prevContent = cleanText.substring(lastIndex, index);
+      const cleaned = cleanAndSplitParagraphs(prevContent);
+      elements.push(...cleaned.map((c) => ({ type: "paragraph", content: c })));
+    }
+
+    // Add header
+    elements.push({
+      type: "header",
+      content: stripTags(content).trim(),
+      level: parseInt(level),
+    });
+
+    lastIndex = index + fullMatch.length;
+  }
+
+  // Add remaining content
+  if (lastIndex < cleanText.length) {
+    const remaining = cleanText.substring(lastIndex);
+    const cleaned = cleanAndSplitParagraphs(remaining);
+    elements.push(...cleaned.map((c) => ({ type: "paragraph", content: c })));
+  }
+
+  // If no structured content found, just split by paragraphs
+  if (elements.length === 0) {
+    const paragraphs = cleanAndSplitParagraphs(cleanText);
+    elements.push(
+      ...paragraphs.map((p) => ({ type: "paragraph", content: p }))
+    );
+  }
+
+  // Convert to Editor.js blocks
+  elements.forEach((el) => {
+    if (el.type === "header") {
+      blocks.push({
+        id: generateId(),
+        type: "header",
+        data: {
+          text: el.content,
+          level: el.level || 2,
+        },
+      });
+    } else if (el.content.trim()) {
+      blocks.push({
+        id: generateId(),
+        type: "paragraph",
+        data: {
+          text: el.content,
+        },
+      });
+    }
+  });
+
+  // Ensure at least one block
+  if (blocks.length === 0) {
+    blocks.push({
+      id: generateId(),
+      type: "paragraph",
+      data: { text: "" },
+    });
+  }
+
+  return {
+    time: Date.now(),
+    blocks,
+    version: "2.29.0",
+  };
+}
+
+// Helper: Clean and split into paragraphs
+function cleanAndSplitParagraphs(html: string): string[] {
+  return html
+    .split(/<\/p>|<br\s*\/?>|<\/div>/gi)
+    .map((p) => stripTags(p).trim())
+    .filter((p) => p.length > 0);
+}
+
+function generateId() {
+  return Math.random().toString(36).substring(2, 12);
+}
+
 async function main() {
   const maria = await mysql.createConnection({
     host: "localhost",
@@ -81,53 +197,57 @@ async function main() {
         where: { servicePageId: servicePage.id },
       });
 
-      // Create Sections with PROPERLY CLEANED HTML
+      // ✅ Create Sections with Editor.js format
       const sections = [
         {
           title: svc.overview_sidebar_name || "Overview",
-          content: cleanHTML(svc.overview) || "",
+          content: svc.overview || "",
           order: 1,
         },
         {
           title: svc.documents_sidebar_name || "Documents Required",
-          content: cleanHTML(svc.doc_required) || "",
+          content: svc.doc_required || "",
           order: 2,
         },
         {
           title: svc.process_sidebar_name || "Process",
-          content: cleanHTML(svc.process) || "",
+          content: svc.process || "",
           order: 3,
         },
         {
           title: svc.fees_sidebar_name || "Fees",
-          content: cleanHTML(svc.procedure) || "",
+          content: svc.procedure || "",
           order: 4,
         },
         {
           title: svc.benefit_sidebar_name || "Benefits",
-          content: cleanHTML(svc.Benefit) || "",
+          content: svc.Benefit || "",
           order: 5,
         },
         {
           title: svc.why_sidebar_name || "Why Choose Us",
-          content: cleanHTML(svc.why_us) || "",
+          content: svc.why_us || "",
           order: 6,
         },
       ].filter((s) => s.content && s.content.trim() !== "");
 
       for (const section of sections) {
         console.log(`  📝 Creating section: ${section.title}`);
+
+        // ✅ Convert HTML to Editor.js
+        const editorContent = convertHtmlToEditorJs(section.content);
+
         await prisma.servicePageSection.create({
           data: {
             servicePageId: servicePage.id,
             title: section.title,
-            content: section.content,
+            content: JSON.stringify(editorContent), // ✅ Store as JSON string
             order: section.order,
           },
         });
       }
 
-      // Create FAQ Section
+      // ✅ Create FAQ Section
       if (svc.faqs) {
         const faqData = parseFAQs(svc.faqs);
         if (faqData.length > 0) {
@@ -153,11 +273,14 @@ async function main() {
           });
 
           for (let i = 0; i < faqData.length; i++) {
+            // ✅ Convert FAQ answers to Editor.js
+            const answerContent = convertHtmlToEditorJs(faqData[i].answer);
+
             await prisma.servicePageFAQItem.create({
               data: {
                 faqId: faqSection.id,
                 question: faqData[i].question,
-                answer: cleanHTML(faqData[i].answer),
+                answer: JSON.stringify(answerContent), // ✅ Store as JSON
                 order: i,
               },
             });
@@ -165,6 +288,7 @@ async function main() {
         }
       }
 
+      // Meta tags
       if (svc.meta_tags) {
         await prisma.metaData.upsert({
           where: {
@@ -202,57 +326,6 @@ async function main() {
   console.log(`✨ Created NavbarItems: ${createdNavItems}`);
 }
 
-// IMPROVED: Clean HTML properly
-function cleanHTML(html: string | null): string {
-  if (!html) return "";
-
-  let cleaned = html;
-
-  // Step 1: Remove ALL attributes from ALL tags (except href and src)
-  cleaned = cleaned.replace(/<(\w+)([^>]*)>/g, (match, tagName, attributes) => {
-    // Keep only href for <a> tags and src for <img> tags
-    if (tagName.toLowerCase() === "a") {
-      const hrefMatch = attributes.match(/href="([^"]*)"/);
-      return hrefMatch ? `<${tagName} href="${hrefMatch[1]}">` : `<${tagName}>`;
-    }
-    if (tagName.toLowerCase() === "img") {
-      const srcMatch = attributes.match(/src="([^"]*)"/);
-      const altMatch = attributes.match(/alt="([^"]*)"/);
-      let result = `<${tagName}`;
-      if (srcMatch) result += ` src="${srcMatch[1]}"`;
-      if (altMatch) result += ` alt="${altMatch[1]}"`;
-      return result + ">";
-    }
-    // All other tags: remove all attributes
-    return `<${tagName}>`;
-  });
-
-  // Step 2: Remove unwanted tags completely (span, font, etc)
-  cleaned = cleaned.replace(/<\/?span[^>]*>/gi, "");
-  cleaned = cleaned.replace(/<\/?font[^>]*>/gi, "");
-
-  // Step 3: Normalize whitespace
-  cleaned = cleaned.replace(/\s+/g, " ");
-  cleaned = cleaned.replace(/>\s+</g, "><");
-
-  // Step 4: Remove empty tags
-  cleaned = cleaned.replace(/<(\w+)>\s*<\/\1>/gi, "");
-
-  // Step 5: Trim
-  cleaned = cleaned.trim();
-
-  return cleaned;
-}
-
-// Helper: Strip ALL HTML tags (for plain text)
-function stripHTML(html: string | null): string {
-  if (!html) return "";
-  return html
-    .replace(/<[^>]*>/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
 // Helper: Parse FAQ blob
 function parseFAQs(
   faqBlob: Buffer | string
@@ -269,7 +342,7 @@ function parseFAQs(
       const parsed = JSON.parse(faqText);
       if (Array.isArray(parsed)) {
         return parsed.map((item: any) => ({
-          question: stripHTML(item.question || item.q || ""),
+          question: stripTags(item.question || item.q || ""),
           answer: item.answer || item.a || "",
         }));
       }
@@ -283,7 +356,7 @@ function parseFAQs(
     for (let i = 0; i < lines.length; i += 2) {
       if (lines[i] && lines[i + 1]) {
         faqs.push({
-          question: stripHTML(lines[i]),
+          question: stripTags(lines[i]),
           answer: lines[i + 1].trim(),
         });
       }
@@ -294,6 +367,13 @@ function parseFAQs(
     console.warn("Failed to parse FAQs:", error);
     return [];
   }
+}
+
+function stripTags(html: string): string {
+  return html
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 main().catch(console.error);
