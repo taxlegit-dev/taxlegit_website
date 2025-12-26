@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { unstable_cache } from "next/cache";
 import { Region } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { NavbarServer } from "@/components/navigation/navbar-server";
 import { IndiaHero } from "@/components/ServiceHeroSection/india-hero";
 import { ServicePageView } from "@/components/service-page/service-page-view";
 import { FAQSection } from "@/components/faq/faq-section";
@@ -22,6 +21,9 @@ const getNavbarItemBySlug = unstable_cache(
         region,
         href: `/${slug}`,
         isActive: true,
+      },
+      include: {
+        parent: true,
       },
     }),
   ["navbar-item-by-slug"],
@@ -206,10 +208,16 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
       )}
 
       <div className="min-h-screen bg-white text-black">
-        <NavbarServer region={region} />
-
         <main className="pt-[72px]">
-          {hero && hero.status === "PUBLISHED" && <IndiaHero hero={hero} />}
+          {hero && hero.status === "PUBLISHED" && (
+            <IndiaHero
+              hero={hero}
+              breadcrumbParent={
+                navbarItem.parent?.label || navbarItem.groupLabel || "Services"
+              }
+              breadcrumbCurrent={navbarItem.label}
+            />
+          )}
 
           {servicePage &&
           servicePage.status === "PUBLISHED" &&
