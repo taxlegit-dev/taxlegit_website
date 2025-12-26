@@ -31,12 +31,12 @@ export default function ContactForm() {
   const scriptURL =
     "https://script.google.com/macros/s/AKfycbwM1c1uA_14bmQjKoHFS6u0Fr7qnnEiJlX9o_hf4kNjFzX47wEnSD5fkGKowKc9-ELM3Q/exec"; // 👈 IMPORTANT
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setStatus("");
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!form.name || !form.phone || !form.email || !form.service) {
