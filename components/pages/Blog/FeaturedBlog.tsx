@@ -6,6 +6,19 @@ interface FeaturedBlogProps {
   blog: BlogWithGroup;
 }
 
+const FALLBACK_IMAGE_SRC = "/hero1.jpg";
+
+const isValidImageSrc = (src?: string | null): src is string => {
+  if (!src) return false;
+  if (src.startsWith("/")) return true;
+  try {
+    new URL(src);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 function stripHtml(html: string): string {
   return html
     .replace(/<[^>]*>/g, " ")
@@ -72,22 +85,28 @@ function getExcerpt(content: string, limit = 30): string {
 
 export default function FeaturedBlog({ blog }: FeaturedBlogProps) {
   const excerpt = getExcerpt(blog.content, 30);
+  const imageSrc = isValidImageSrc(blog.image)
+    ? blog.image
+    : FALLBACK_IMAGE_SRC;
+  const authorImageSrc = blog.author
+    ? isValidImageSrc(blog.author.image)
+      ? blog.author.image
+      : null
+    : null;
   return (
     <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 md:px-8 md:py-12 lg:px-10">
       <div className="grid gap-6 md:gap-8 lg:gap-10 rounded-3xl lg:grid-cols-2 ">
         {/* LEFT : IMAGE */}
-        {blog.image && (
-          <div className="relative h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 w-full overflow-hidden rounded-2xl order-1 lg:order-1">
-            <Image
-              src={blog.image}
-              alt={blog.title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 45vw"
-              priority
-            />
-          </div>
-        )}
+        <div className="relative h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 w-full overflow-hidden rounded-2xl order-1 lg:order-1">
+          <Image
+            src={imageSrc}
+            alt={blog.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 45vw"
+            priority
+          />
+        </div>
 
         {/* RIGHT : CONTENT */}
         <div className="space-y-2 sm:space-y-3 md:space-y-4 order-2 lg:order-2">
@@ -119,9 +138,9 @@ export default function FeaturedBlog({ blog }: FeaturedBlogProps) {
           {/* AUTHOR */}
           {blog.author && (
             <div className="flex items-center gap-3 pt-1 sm:pt-2">
-              {blog.author.image ? (
+              {authorImageSrc ? (
                 <Image
-                  src={blog.author.image}
+                  src={authorImageSrc}
                   alt={blog.author.name}
                   width={36}
                   height={36}
