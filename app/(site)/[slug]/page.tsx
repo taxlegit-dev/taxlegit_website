@@ -22,6 +22,9 @@ const getNavbarItemBySlug = unstable_cache(
         href: `/${slug}`,
         isActive: true,
       },
+      include: {
+        parent: true,
+      },
     }),
   ["navbar-item-by-slug"],
   { revalidate: 300 }
@@ -206,7 +209,15 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
 
       <div className="min-h-screen bg-white text-black">
         <main className="pt-[72px]">
-          {hero && hero.status === "PUBLISHED" && <IndiaHero hero={hero} />}
+          {hero && hero.status === "PUBLISHED" && (
+            <IndiaHero
+              hero={hero}
+              breadcrumbParent={
+                navbarItem.parent?.label || navbarItem.groupLabel || "Services"
+              }
+              breadcrumbCurrent={navbarItem.label}
+            />
+          )}
 
           {servicePage &&
           servicePage.status === "PUBLISHED" &&

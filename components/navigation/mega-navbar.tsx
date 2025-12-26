@@ -196,7 +196,7 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
         {/* Right Section - Country Selector & Phone */}
         <div className="flex items-center gap-3">
           <div className="hidden lg:block">
-            <RegionSwitcher currentRegion={mappedRegion} />
+            {/* <RegionSwitcher currentRegion={mappedRegion} /> */}
           </div>
 
           <Link
