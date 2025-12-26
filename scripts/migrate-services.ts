@@ -156,24 +156,17 @@ async function main() {
           `⚠️  NavbarItem not found, creating new one for: ${svc.title}`
         );
 
-        const slug = svc.title
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/(^-|-$)/g, "");
-
         navbarItem = await prisma.navbarItem.create({
           data: {
             label: svc.title,
-            slug: slug,
             region: "INDIA",
             pageType: "SERVICE",
-            status: "PUBLISHED",
             order: svc.id || 0,
           },
         });
 
         createdNavItems++;
-        console.log(`✨ Created NavbarItem: ${svc.title} (slug: ${slug})`);
+        console.log(`✨ Created NavbarItem: ${svc.title}`);
       }
 
       const servicePage = await prisma.servicePage.upsert({

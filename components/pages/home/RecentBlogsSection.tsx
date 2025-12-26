@@ -19,7 +19,7 @@ interface Blog {
 
 const FALLBACK_IMAGE_SRC = "/hero1.jpg";
 
-const isValidImageSrc = (src?: string) => {
+const isValidImageSrc = (src?: string | null): src is string => {
   if (!src) return false;
   if (src.startsWith("/")) return true;
   try {
