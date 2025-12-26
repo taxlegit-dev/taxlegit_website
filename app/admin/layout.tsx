@@ -49,6 +49,12 @@ export default async function AdminLayout({
             <p>{session.user.email}</p>
             <p className="font-semibold text-slate-700">{session.user.role}</p>
           </div>
+          <Link
+            href="/admin/change-password"
+            className="inline-flex w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+          >
+            Change Password
+          </Link>
           <form
             action={async () => {
               "use server";

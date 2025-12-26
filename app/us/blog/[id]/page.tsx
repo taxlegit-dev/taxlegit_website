@@ -1,6 +1,5 @@
 import { Region, ContentStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { NavbarServer } from "@/components/navigation/navbar-server";
 import { EditorJsRenderer } from "@/components/rich-text/editorjs-renderer";
 import type { OutputData } from "@editorjs/editorjs";
 import Link from "next/link";
@@ -105,9 +104,8 @@ export default async function UsBlogDetailPage({
     <>
       {/* Render meta tags server-side */}
       <MetaDataRenderer pageType="BLOG" pageId={blog.id} />
-      <div className="min-h-screen bg-slate-950 text-white">
-        <NavbarServer region={region} />
-      <main className="mx-auto w-full max-w-4xl px-6 py-12">
+        <div className="min-h-screen bg-slate-950 text-white">
+        <main className="mx-auto w-full max-w-4xl px-6 py-12">
         <Link
           href="/us/blog"
           className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-slate-200 mb-8"

@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { unstable_cache } from "next/cache";
 import { Region } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { NavbarServer } from "@/components/navigation/navbar-server";
 import { UsHero } from "@/components/ServiceHeroSection/us-hero";
 import { ServicePageView } from "@/components/service-page/service-page-view";
 import { GenericPageView } from "@/components/generic-page/generic-page-view";
@@ -238,9 +237,8 @@ export default async function UsDynamicPage({ params }: DynamicPageProps) {
           metaBlock={metaData?.metaBlock}
         />
       )}
-      <div className="min-h-screen bg-slate-950 text-white">
-        <NavbarServer region={region} />
-        <main>
+        <div className="min-h-screen bg-slate-950 text-white">
+          <main>
           {hero && hero.status === "PUBLISHED" && <UsHero hero={hero} />}
           {servicePage &&
           servicePage.status === "PUBLISHED" &&
