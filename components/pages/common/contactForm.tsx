@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 
 const services = [
   "TDS Return Filing Online",
@@ -17,78 +18,119 @@ const services = [
 ];
 
 export default function ContactForm() {
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    service: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("");
+
+  const scriptURL =
+    "https://script.google.com/macros/s/AKfycbwM1c1uA_14bmQjKoHFS6u0Fr7qnnEiJlX9o_hf4kNjFzX47wEnSD5fkGKowKc9-ELM3Q/exec"; // 👈 IMPORTANT
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setStatus("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!form.name || !form.phone || !form.email || !form.service) {
+      setStatus("error");
+      return;
+    }
+
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("Name", form.name);
+    formData.append("Phone", form.phone);
+    formData.append("Email", form.email);
+    formData.append("Service", form.service);
+    formData.append("Source", "Free Consultation Form");
+
+    try {
+      const res = await fetch(scriptURL, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error();
+
+      setForm({ name: "", phone: "", email: "", service: "" });
+      setStatus("success");
+    } catch {
+      setStatus("error");
+    }
+
+    setLoading(false);
+  };
+
   return (
     <div className="bg-white rounded-2xl border border-zinc-200 p-8 shadow-lg text-black">
-      <h2 className="text-2xl font-bold text-slate-800 mb-2 relative pb-4 text-center inline-block w-full">
-        Start Your Business with free consultation
-        <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-purple-800 rounded-full"></span>
+      <h2 className="text-2xl font-bold text-slate-800 mb-4 text-center">
+        Start Your Business with Free Consultation
       </h2>
 
-      <form className="space-y-4 mt-4">
-        {/* Row 1 - Name + Phone */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">
-              Name
-            </label>
-            <input
-              type="text"
-              className="w-full rounded-lg border border-zinc-200 px-4 py-2
-              focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter your name"
-            />
-          </div>
+      <form className="space-y-4" onSubmit={handleSubmit}>
+        <input
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          placeholder="Name"
+          className="w-full rounded-lg border px-4 py-2"
+        />
 
-          <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">
-              Phone
-            </label>
-            <input
-              type="tel"
-              className="w-full rounded-lg border border-zinc-200 px-4 py-2
-              focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter your phone"
-            />
-          </div>
-        </div>
+        <input
+          name="phone"
+          value={form.phone}
+          onChange={handleChange}
+          placeholder="Phone"
+          className="w-full rounded-lg border px-4 py-2"
+        />
 
-        {/* Row 2 - Email */}
-        <div>
-          <label className="block text-sm font-medium text-zinc-700 mb-1">
-            Email
-          </label>
-          <input
-            type="email"
-            className="w-full rounded-lg border border-zinc-200 px-4 py-2
-            focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            placeholder="Enter your email"
-          />
-        </div>
+        <input
+          name="email"
+          value={form.email}
+          onChange={handleChange}
+          placeholder="Email"
+          className="w-full rounded-lg border px-4 py-2"
+        />
 
-        {/* Row 3 - Service */}
-        <div>
-          <label className="block text-sm font-medium text-zinc-700 mb-1">
-            Service
-          </label>
-          <select
-            className="w-full rounded-lg border border-zinc-200 px-4 py-2
-            focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          >
-            <option>---Select Service---</option>
-            {services.map((service, idx) => (
-              <option key={idx}>{service}</option>
-            ))}
-          </select>
-        </div>
+        <select
+          name="service"
+          value={form.service}
+          onChange={handleChange}
+          className="w-full rounded-lg border px-4 py-2"
+        >
+          <option value="">--- Select Service ---</option>
+          {services.map((s, i) => (
+            <option key={i}>{s}</option>
+          ))}
+        </select>
 
-        {/* Submit button */}
         <button
           type="submit"
-          className="w-full bg-slate-800 text-white rounded-lg px-4 py-3 font-semibold 
-          hover:bg-zinc-800 transition"
+          disabled={loading}
+          className="w-full bg-slate-800 text-white rounded-lg py-3"
         >
-          Book Free Consultation
+          {loading ? "Submitting..." : "Book Free Consultation"}
         </button>
+
+        {status === "success" && (
+          <p className="text-green-600 text-center">
+            ✅ Details submitted successfully
+          </p>
+        )}
+        {status === "error" && (
+          <p className="text-red-600 text-center">
+            ❌ Please fill all fields or try again
+          </p>
+        )}
       </form>
     </div>
   );
