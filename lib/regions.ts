@@ -17,12 +17,12 @@ export const supportedRegions: {
     localeLabel: "India 🇮🇳",
     flag: "🇮🇳",
   },
-  {
-    value: "US",
-    label: "United States",
-    localeLabel: "United States 🇺🇸",
-    flag: "🇺🇸",
-  },
+  // {
+  //   value: "US",
+  //   label: "United States",
+  //   localeLabel: "United States 🇺🇸",
+  //   flag: "🇺🇸",
+  // },
 ];
 
 export const regionPathMap: Record<SupportedRegion, string> = {

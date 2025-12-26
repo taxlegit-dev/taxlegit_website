@@ -19,6 +19,17 @@ interface AuthorCardProps {
   region?: string;
 }
 
+const isValidImageSrc = (src?: string | null): src is string => {
+  if (!src) return false;
+  if (src.startsWith("/")) return true;
+  try {
+    new URL(src);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export default async function AuthorCard({
   region = "INDIA",
 }: AuthorCardProps) {
@@ -68,7 +79,7 @@ export default async function AuthorCard({
               >
                 {/* Blog Image */}
                 <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-md bg-slate-100">
-                  {blog.image ? (
+                  {isValidImageSrc(blog.image) ? (
                     <Image
                       src={blog.image}
                       alt={blog.title}

@@ -8,6 +8,19 @@ interface BlogCardProps {
   showCategory?: boolean;
 }
 
+const FALLBACK_IMAGE_SRC = "/hero1.jpg";
+
+const isValidImageSrc = (src?: string | null): src is string => {
+  if (!src) return false;
+  if (src.startsWith("/")) return true;
+  try {
+    new URL(src);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 function stripHtml(html: string): string {
   return html
     .replace(/<[^>]*>/g, " ")
@@ -74,22 +87,23 @@ function getExcerpt(content: string, limit = 12): string {
 
 export default function BlogCard({ blog, showCategory = true }: BlogCardProps) {
   const excerpt = getExcerpt(blog.content, 12);
+  const imageSrc = isValidImageSrc(blog.image)
+    ? blog.image
+    : FALLBACK_IMAGE_SRC;
   return (
     <Link
       href={`/blog/${blog.id}`}
       className="group flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
     >
-      {blog.image && (
-        <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden">
-          <Image
-            src={blog.image}
-            alt={blog.title}
-            fill
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          />
-        </div>
-      )}
+      <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden">
+        <Image
+          src={imageSrc}
+          alt={blog.title}
+          fill
+          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+        />
+      </div>
       <div className="flex flex-1 flex-col gap-2 sm:gap-3 p-4 sm:p-5">
         {showCategory && (
           <div className="flex items-center justify-between text-xs uppercase tracking-wide text-slate-500">
