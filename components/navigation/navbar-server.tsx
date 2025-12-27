@@ -7,28 +7,29 @@ type NavbarServerProps = {
   region: Region;
 };
 
-const getNavbarItems = unstable_cache(
-  async (region: Region) =>
-    prisma.navbarItem.findMany({
-      where: {
-        region,
-        pageType: "SERVICE",
-        isActive: true,
-      },
-      include: {
-        children: {
-          where: {
-            isActive: true,
-            pageType: "SERVICE",
-          },
-          orderBy: { order: "asc" },
+const getNavbarItems = (region: Region) =>
+  unstable_cache(
+    async () =>
+      prisma.navbarItem.findMany({
+        where: {
+          region,
+          pageType: "SERVICE",
+          isActive: true,
         },
-      },
-      orderBy: { order: "asc" },
-    }),
-  ["navbar-items-by-region"],
-  { revalidate: 300 }
-);
+        include: {
+          children: {
+            where: {
+              isActive: true,
+              pageType: "SERVICE",
+            },
+            orderBy: { order: "asc" },
+          },
+        },
+        orderBy: { order: "asc" },
+      }),
+    ["navbar-items-by-region", region],
+    { revalidate: 300, tags: [`navbar-items-${region}`] }
+  )();
 
 export async function NavbarServer({ region }: NavbarServerProps) {
   const items = await getNavbarItems(region);

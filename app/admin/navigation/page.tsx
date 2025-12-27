@@ -34,6 +34,7 @@ export default async function AdminNavigationPage({ searchParams }: AdminNavigat
     href: string | null;
     order: number;
     type: string;
+    pageType: "SERVICE" | "GENERIC";
     isLoginLink: boolean;
     isActive: boolean;
     parentId: string | null;
@@ -53,6 +54,7 @@ export default async function AdminNavigationPage({ searchParams }: AdminNavigat
       href: item.href,
       order: item.order,
       type: item.type,
+      pageType: item.pageType,
       isLoginLink: item.isLoginLink,
       isActive: item.isActive,
       parentId: item.parentId,

@@ -13,6 +13,7 @@ type NavItem = {
   href: string | null;
   order: number;
   type: string;
+  pageType: "SERVICE" | "GENERIC";
   isLoginLink: boolean;
   isActive: boolean;
   parentId: string | null;
@@ -150,7 +151,7 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
       label: item.label,
       href: item.href || "",
       order: item.order,
-      pageType: "GENERIC", // Default, since we don't have it in NavItem type
+      pageType: item.pageType ?? "SERVICE",
       type: item.type as "LINK" | "DROPDOWN",
       isLoginLink: item.isLoginLink,
       region,
