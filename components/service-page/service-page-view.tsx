@@ -62,10 +62,10 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
       {/* Sticky TOC Bar - Below Fixed Navbar */}
       <div
         ref={tocRef}
-        className="sticky top-[88px] z-40 border bg-white border-slate-200 shadow-sm max-w-6xl mx-auto rounded-xl mt-4"
+        className="sticky top-[88px] z-40 mt-4 w-fit max-w-full mx-auto rounded-xl border border-slate-200 bg-white shadow-sm"
       >
-        <div className="mx-auto w-full max-w-6xl px-6">
-          <div className="flex lg:gap-8 gap-2 overflow-x-auto scrollbar-hide py-2">
+        <div className="max-w-full px-4">
+          <div className="flex w-fit max-w-full items-center gap-2 lg:gap-8 overflow-x-auto whitespace-nowrap scrollbar-hide py-2">
             {sortedSections.map((section, index) => (
               <button
                 key={section.id}
