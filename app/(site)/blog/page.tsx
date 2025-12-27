@@ -5,8 +5,17 @@ import BlogHero from "@/components/pages/Blog/BlogHero";
 import FeaturedBlog from "@/components/pages/Blog/FeaturedBlog";
 import BlogGroups from "@/components/pages/Blog/BlogGroups";
 
-export default async function BlogListingPage() {
+type BlogListingPageProps = {
+  searchParams?: {
+    q?: string;
+  };
+};
+
+export default async function BlogListingPage({
+  searchParams,
+}: BlogListingPageProps) {
   const region = Region.INDIA;
+  const query = (searchParams?.q ?? "").trim().toLowerCase();
 
   const blogs = await prisma.blog.findMany({
     where: {
@@ -20,7 +29,16 @@ export default async function BlogListingPage() {
     orderBy: { createdAt: "desc" },
   });
 
-  const [featuredBlog, ...otherBlogs] = blogs;
+  const filteredBlogs = query
+    ? blogs.filter((blog) => {
+        const target = `${blog.title ?? ""} ${blog.blogGroup?.name ?? ""} ${
+          blog.author?.name ?? ""
+        }`.toLowerCase();
+        return target.includes(query);
+      })
+    : blogs;
+
+  const [featuredBlog, ...otherBlogs] = filteredBlogs;
 
   return (
     <div className="min-h-screen bg-white text-black">
@@ -28,7 +46,9 @@ export default async function BlogListingPage() {
         <BlogHero />
         {!featuredBlog ? (
           <div className="py-12 text-center">
-            <p className="text-slate-500">No blogs available at the moment.</p>
+            <p className="text-slate-500">
+              {query ? "No blogs match your search." : "No blogs available at the moment."}
+            </p>
           </div>
         ) : (
           <>
