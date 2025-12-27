@@ -6,6 +6,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import type { NavbarItem, ServicePageFAQ, ServicePageFAQItem } from "@prisma/client";
+import { useAdminSearch } from "@/components/admin/admin-search-context";
 
 type FAQWithNavItem = ServicePageFAQ & {
   navbarItem: NavbarItem | null;
@@ -46,6 +47,14 @@ export function FAQManager({
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
   const selectedItemId = selectedNavbarItemId || "";
+  const { query } = useAdminSearch();
+  const normalizedQuery = query.trim().toLowerCase();
+  const filteredNavItems = normalizedQuery
+    ? navItems.filter((item) => {
+        const target = `${item.label ?? ""} ${item.href ?? ""}`.toLowerCase();
+        return target.includes(normalizedQuery);
+      })
+    : navItems;
 
   const form = useForm<FAQForm>({
     resolver: zodResolver(faqSchema),
@@ -180,7 +189,10 @@ export function FAQManager({
             Choose a navbar item to create or edit its FAQ section
           </p>
           <div className="space-y-2">
-            {navItems.map((item) => {
+            {filteredNavItems.length === 0 ? (
+              <p className="text-sm text-slate-500">No matches found.</p>
+            ) : (
+              filteredNavItems.map((item) => {
               const hasFAQ = allFAQs.some((f) => f.navbarItemId === item.id);
               return (
                 <button
@@ -205,7 +217,8 @@ export function FAQManager({
                   </div>
                 </button>
               );
-            })}
+              })
+            )}
           </div>
         </div>
       </div>

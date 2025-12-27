@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { signOut } from "@/lib/auth";
+import { AdminLayoutClient } from "@/components/admin/admin-layout-client";
 
 const navItems = [
   { label: "Navigation", href: "/admin/navigation" },
@@ -70,7 +71,9 @@ export default async function AdminLayout({
           </form>
         </div>
       </aside>
-      <main className="flex-1 px-4 py-8 md:px-10">{children}</main>
+      <main className="flex-1 px-4 py-8 md:px-10">
+        <AdminLayoutClient>{children}</AdminLayoutClient>
+      </main>
     </div>
   );
 }

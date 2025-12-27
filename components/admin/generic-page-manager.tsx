@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,6 +12,7 @@ import type {
 import dynamic from "next/dynamic";
 import type { OutputData } from "@editorjs/editorjs";
 import { SEOMetaEditor } from "@/components/admin/seo-meta-editor";
+import { useAdminSearch } from "@/components/admin/admin-search-context";
 
 const EditorJsEditor = dynamic(
   () =>
@@ -72,6 +73,24 @@ export function GenericPageManager({
   const [message, setMessage] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [editorData, setEditorData] = useState<OutputData | null>(null);
+  const { query } = useAdminSearch();
+  const normalizedQuery = query.trim().toLowerCase();
+  const pageBySlug = useMemo(
+    () =>
+      new Map(
+        allGenericPages.map((page) => [page.slug || "", page])
+      ),
+    [allGenericPages]
+  );
+  const filteredNavbarItems = normalizedQuery
+    ? genericNavbarItems.filter((item) => {
+        const matchingPage = pageBySlug.get(item.href || "");
+        const target = `${item.label ?? ""} ${item.href ?? ""} ${
+          matchingPage?.title ?? ""
+        }`.toLowerCase();
+        return target.includes(normalizedQuery);
+      })
+    : genericNavbarItems;
 
   const form = useForm<GenericPageForm>({
     resolver: zodResolver(genericPageFormSchema),
@@ -217,8 +236,11 @@ export function GenericPageManager({
             Choose a generic navbar link to edit its page content.
           </p>
           <div className="space-y-2">
-            {genericNavbarItems.map((item) => {
-              const correspondingPage = allGenericPages.find(page => page.slug === item.href);
+            {filteredNavbarItems.length === 0 ? (
+              <p className="text-sm text-slate-500">No matches found.</p>
+            ) : (
+              filteredNavbarItems.map((item) => {
+              const correspondingPage = pageBySlug.get(item.href || "");
               return (
                 <button
                   key={item.id}
@@ -257,7 +279,8 @@ export function GenericPageManager({
                   </div>
                 </button>
               );
-            })}
+              })
+            )}
           </div>
         </div>
       </div>

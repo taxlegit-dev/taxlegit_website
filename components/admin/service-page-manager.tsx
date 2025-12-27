@@ -13,6 +13,7 @@ import type {
 import dynamic from "next/dynamic";
 import type { OutputData } from "@editorjs/editorjs";
 import { SEOMetaEditor } from "@/components/admin/seo-meta-editor";
+import { useAdminSearch } from "@/components/admin/admin-search-context";
 
 const EditorJsEditor = dynamic(
   () =>
@@ -95,6 +96,14 @@ export function ServicePageManager({
   const [showSectionDeleteDialog, setShowSectionDeleteDialog] = useState(false);
   const [sectionToDelete, setSectionToDelete] = useState<number | null>(null);
   const [deletingSection, setDeletingSection] = useState(false);
+  const { query } = useAdminSearch();
+  const normalizedQuery = query.trim().toLowerCase();
+  const filteredNavItems = normalizedQuery
+    ? navItems.filter((item) => {
+        const target = `${item.label ?? ""} ${item.href ?? ""}`.toLowerCase();
+        return target.includes(normalizedQuery);
+      })
+    : navItems;
 
   const selectedItemId = selectedNavbarItemId || "";
   const pageLabel = pageType === "SERVICE" ? "Service Page" : "Generic Page";
@@ -404,7 +413,10 @@ export function ServicePageManager({
             sections
           </p>
           <div className="space-y-2">
-            {navItems.map((item) => {
+            {filteredNavItems.length === 0 ? (
+              <p className="text-sm text-slate-500">No matches found.</p>
+            ) : (
+              filteredNavItems.map((item) => {
               const hasServicePage = allServicePages.some(
                 (sp) => sp.navbarItemId === item.id
               );
@@ -431,7 +443,8 @@ export function ServicePageManager({
                   </div>
                 </button>
               );
-            })}
+              })
+            )}
           </div>
         </div>
       </div>
@@ -573,9 +586,16 @@ export function ServicePageManager({
               return (
                 <div key={field.id} className="rounded-lg">
                   {/* Section Header - Collapsible */}
-                  <button
-                    type="button"
+                  <div
+                    role="button"
+                    tabIndex={0}
                     onClick={() => toggleSection(index)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        toggleSection(index);
+                      }
+                    }}
                     className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition"
                   >
                     <div className="flex items-center gap-3">
@@ -643,7 +663,7 @@ export function ServicePageManager({
                         />
                       </svg>
                     </div>
-                  </button>
+                  </div>
 
                   {/* Section Content - Expandable */}
                   {isExpanded && (
