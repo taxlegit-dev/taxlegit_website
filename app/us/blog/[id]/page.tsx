@@ -19,10 +19,11 @@ export async function generateMetadata({
 }: UsBlogDetailPageProps): Promise<Metadata> {
   const { id } = await params;
   const region = Region.US;
+  const slugOrId = id;
 
   const blog = await prisma.blog.findFirst({
     where: {
-      id,
+      OR: [{ slug: slugOrId }, { id: slugOrId }],
       region,
       status: ContentStatus.PUBLISHED,
     },
@@ -71,11 +72,12 @@ export default async function UsBlogDetailPage({
 }: UsBlogDetailPageProps) {
   const { id } = await params;
   const region = Region.US;
+  const slugOrId = id;
 
   // Fetch the blog
   const blog = await prisma.blog.findFirst({
     where: {
-      id,
+      OR: [{ slug: slugOrId }, { id: slugOrId }],
       region,
       status: ContentStatus.PUBLISHED,
     },

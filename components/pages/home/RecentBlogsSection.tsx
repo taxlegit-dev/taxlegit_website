@@ -8,6 +8,7 @@ import "aos/dist/aos.css";
 
 interface Blog {
   id: string;
+  slug?: string | null;
   title: string;
   image?: string;
   content: string;
@@ -71,7 +72,7 @@ export default function RecentBlogsSection() {
           {blogs.map((blog) => (
             <Link
               key={blog.id}
-              href={`/blog/${blog.id}`}
+              href={`/blog/${blog.slug || blog.id}`}
               className="group block h-full"
             >
               <article

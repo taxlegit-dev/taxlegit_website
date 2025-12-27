@@ -12,6 +12,7 @@ import AnimatedFlowDiagram from "@/components/pages/home/AnimatedFlowDiagram";
 import RunningLogoCarousel from "@/components/pages/common/RunningLogoCarousel";
 import Footer from "@/components/footer";
 import OurProduct from "@/components/pages/home/OurProduct";
+import MediaMentions from "@/components/pages/home/MediaMentions";
 export default async function IndiaHomePage() {
   const region = Region.INDIA;
 
@@ -41,6 +42,7 @@ export default async function IndiaHomePage() {
         <OurProduct />
         <WhyChooseTaxLegitMinimal />
         <RecentBlogsSection />
+        <MediaMentions />
         <Testimonial />
 
         {faq && faq.questions.length > 0 && (

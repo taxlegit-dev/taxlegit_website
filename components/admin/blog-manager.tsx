@@ -115,6 +115,7 @@ const blogAuthorSchema = z.object({
 });
 
 const blogSchema = z.object({
+  slug: z.string().min(1, "Slug is required"),
   title: z.string().min(1, "Title is required"),
   image: z.string().optional(),
   content: z.string().min(1, "Content is required"),
@@ -206,6 +207,7 @@ export function BlogManager({
   const blogForm = useForm<BlogForm>({
     resolver: zodResolver(blogSchema),
     defaultValues: {
+      slug: "",
       title: "",
       image: "",
       content: "",
@@ -274,6 +276,7 @@ export function BlogManager({
 
       // Reset form with editing blog data
       blogForm.reset({
+        slug: (editingBlog as any).slug || "",
         title: editingBlog.title,
         image: (editingBlog.image as string | null) || "",
         content: editingBlog.content as string,
@@ -292,6 +295,7 @@ export function BlogManager({
 
       // Reset form for new blog
       blogForm.reset({
+        slug: "",
         title: "",
         image: "",
         content: "",
@@ -912,6 +916,22 @@ export function BlogManager({
               {blogForm.formState.errors.title && (
                 <p className="text-xs text-red-600 mt-1">
                   {blogForm.formState.errors.title.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-900 mb-2">
+                Slug <span className="text-red-500">*</span>
+              </label>
+              <input
+                {...blogForm.register("slug")}
+                className="w-full rounded-lg border border-slate-200 px-4 py-2"
+                placeholder="e.g., why-company-registration-matters"
+              />
+              {blogForm.formState.errors.slug && (
+                <p className="text-xs text-red-600 mt-1">
+                  {blogForm.formState.errors.slug.message}
                 </p>
               )}
             </div>
