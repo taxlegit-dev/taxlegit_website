@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -193,12 +193,7 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
 
   const allItemsFlat = getAllItems(items);
   const topLevelItems = allItemsFlat.filter((item) => !item.parentId);
-  const displayItems = useMemo(() => {
-    if (!normalizedQuery) {
-      return items;
-    }
-    return filterNavItems(items);
-  }, [items, normalizedQuery]);
+  const displayItems = normalizedQuery ? filterNavItems(items) : items;
   const displayTopLevelItems = getAllItems(displayItems).filter(
     (item) => !item.parentId
   );

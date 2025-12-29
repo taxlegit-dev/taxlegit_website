@@ -4,6 +4,8 @@ import React, { useId } from "react";
 import type { OutputData } from "@editorjs/editorjs";
 import Image from "next/image";
 
+type ClampStyle = React.CSSProperties & { ["--clamp-lines"]?: number };
+
 function normalizeUrl(url?: string): string {
   if (!url) return "";
   if (url.startsWith("/")) {
@@ -41,7 +43,9 @@ function extractTextAlign(html?: string): React.CSSProperties {
   if (styleMatch) {
     const textAlignMatch = styleMatch[1].match(/text-align:\s*([^;]+)/);
     if (textAlignMatch) {
-      return { textAlign: textAlignMatch[1].trim() as any };
+      return {
+        textAlign: textAlignMatch[1].trim() as React.CSSProperties["textAlign"],
+      };
     }
   }
   return {};
@@ -80,9 +84,9 @@ function ReadMoreHtml({
   const resolvedClampLines =
     clampLines ??
     (wordLimit <= WORD_LIMIT2 ? SHORT_CLAMP_LINES : DEFAULT_CLAMP_LINES);
-  const wrapperStyle = {
+  const wrapperStyle: ClampStyle = {
     ...style,
-    ["--clamp-lines" as any]: resolvedClampLines,
+    ["--clamp-lines"]: resolvedClampLines,
   };
 
   return (
@@ -133,9 +137,9 @@ function ReadMoreText({
   const resolvedClampLines =
     clampLines ??
     (wordLimit <= WORD_LIMIT2 ? SHORT_CLAMP_LINES : DEFAULT_CLAMP_LINES);
-  const wrapperStyle = {
+  const wrapperStyle: ClampStyle = {
     ...style,
-    ["--clamp-lines" as any]: resolvedClampLines,
+    ["--clamp-lines"]: resolvedClampLines,
   };
 
   return (
@@ -742,9 +746,12 @@ function renderBlock(
               >
                 {card.icon && (
                   <div className="mb-4 flex justify-center">
-                    <img
+                    <Image
                       src={normalizeUrl(card.icon)}
                       alt={card.heading || "Card icon"}
+                      width={64}
+                      height={64}
+                      unoptimized
                       className="h-16 w-16 object-contain"
                     />
                   </div>

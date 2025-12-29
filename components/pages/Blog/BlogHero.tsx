@@ -1,19 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function BlogHero() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [query, setQuery] = useState(searchParams?.get("q") ?? "");
-
-  useEffect(() => {
-    setQuery(searchParams?.get("q") ?? "");
-  }, [searchParams]);
+  const query = useMemo(() => searchParams?.get("q") ?? "", [searchParams]);
 
   const handleSearchChange = (value: string) => {
-    setQuery(value);
     const next = new URLSearchParams(searchParams?.toString() ?? "");
     if (value.trim()) {
       next.set("q", value);
