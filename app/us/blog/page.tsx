@@ -52,7 +52,7 @@ export default async function UsBlogListingPage() {
                   {groupBlogs.map((blog) => (
                     <Link
                       key={blog.id}
-                      href={`/us/blog/${blog.id}`}
+                      href={`/us/blog/${blog.slug || blog.id}`}
                       className="group rounded-lg border border-white/10 overflow-hidden hover:border-white/20 transition"
                     >
 {blog.image && (

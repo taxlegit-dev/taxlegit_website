@@ -234,7 +234,7 @@ export function EditorJsEditor({
           tunes: ["textAlignTune"],
           config: {
             placeholder: "Section title",
-            levels: [2, 3, 4],
+            levels: [1, 2, 3, 4, 5, 6],
             defaultLevel: 2,
           },
         },

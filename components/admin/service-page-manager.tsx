@@ -13,6 +13,7 @@ import type {
 import dynamic from "next/dynamic";
 import type { OutputData } from "@editorjs/editorjs";
 import { SEOMetaEditor } from "@/components/admin/seo-meta-editor";
+import { useAdminSearch } from "@/components/admin/admin-search-context";
 
 const EditorJsEditor = dynamic(
   () =>
@@ -92,6 +93,17 @@ export function ServicePageManager({
   const [savingSection, setSavingSection] = useState<number | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [showSectionDeleteDialog, setShowSectionDeleteDialog] = useState(false);
+  const [sectionToDelete, setSectionToDelete] = useState<number | null>(null);
+  const [deletingSection, setDeletingSection] = useState(false);
+  const { query } = useAdminSearch();
+  const normalizedQuery = query.trim().toLowerCase();
+  const filteredNavItems = normalizedQuery
+    ? navItems.filter((item) => {
+        const target = `${item.label ?? ""} ${item.href ?? ""}`.toLowerCase();
+        return target.includes(normalizedQuery);
+      })
+    : navItems;
 
   const selectedItemId = selectedNavbarItemId || "";
   const pageLabel = pageType === "SERVICE" ? "Service Page" : "Generic Page";
@@ -320,6 +332,75 @@ export function ServicePageManager({
     }
   };
 
+  const removeSectionAtIndex = (index: number) => {
+    remove(index);
+    setExpandedSections((prev) => {
+      const next = new Set<number>();
+      prev.forEach((value) => {
+        if (value === index) {
+          return;
+        }
+        next.add(value > index ? value - 1 : value);
+      });
+      return next;
+    });
+  };
+
+  const handleDeleteSection = async () => {
+    if (sectionToDelete === null) {
+      return;
+    }
+
+    const section = form.getValues(`sections.${sectionToDelete}`);
+    if (!section) {
+      setShowSectionDeleteDialog(false);
+      setSectionToDelete(null);
+      return;
+    }
+
+    setDeletingSection(true);
+    setMessage(null);
+
+    try {
+      if (!section.id) {
+        removeSectionAtIndex(sectionToDelete);
+        setMessage("Section removed successfully!");
+        return;
+      }
+
+      const response = await fetch(
+        `/api/admin/service-page-sections?id=${section.id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        const errorMsg =
+          result.error?.message ||
+          (typeof result.error === "string"
+            ? result.error
+            : JSON.stringify(result.error)) ||
+          "Failed to delete section";
+        setMessage(errorMsg);
+        return;
+      }
+
+      removeSectionAtIndex(sectionToDelete);
+      setMessage("Section removed successfully!");
+      router.refresh();
+    } catch (error) {
+      setMessage("Network error. Please try again.");
+      console.error("Error deleting section:", error);
+    } finally {
+      setDeletingSection(false);
+      setShowSectionDeleteDialog(false);
+      setSectionToDelete(null);
+    }
+  };
+
   if (!selectedItemId && !selectedNavbarItemId) {
     return (
       <div className="space-y-6">
@@ -332,7 +413,10 @@ export function ServicePageManager({
             sections
           </p>
           <div className="space-y-2">
-            {navItems.map((item) => {
+            {filteredNavItems.length === 0 ? (
+              <p className="text-sm text-slate-500">No matches found.</p>
+            ) : (
+              filteredNavItems.map((item) => {
               const hasServicePage = allServicePages.some(
                 (sp) => sp.navbarItemId === item.id
               );
@@ -359,7 +443,8 @@ export function ServicePageManager({
                   </div>
                 </button>
               );
-            })}
+              })
+            )}
           </div>
         </div>
       </div>
@@ -501,9 +586,16 @@ export function ServicePageManager({
               return (
                 <div key={field.id} className="rounded-lg">
                   {/* Section Header - Collapsible */}
-                  <button
-                    type="button"
+                  <div
+                    role="button"
+                    tabIndex={0}
                     onClick={() => toggleSection(index)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        toggleSection(index);
+                      }
+                    }}
                     className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition"
                   >
                     <div className="flex items-center gap-3">
@@ -546,12 +638,8 @@ export function ServicePageManager({
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
-                            remove(index);
-                            setExpandedSections((prev) => {
-                              const newSet = new Set(prev);
-                              newSet.delete(index);
-                              return newSet;
-                            });
+                            setSectionToDelete(index);
+                            setShowSectionDeleteDialog(true);
                           }}
                           className="px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition"
                         >
@@ -575,7 +663,7 @@ export function ServicePageManager({
                         />
                       </svg>
                     </div>
-                  </button>
+                  </div>
 
                   {/* Section Content - Expandable */}
                   {isExpanded && (
@@ -759,6 +847,67 @@ export function ServicePageManager({
                 className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition"
               >
                 {deleting ? "Deleting..." : "Delete Page"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSectionDeleteDialog && sectionToDelete !== null && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-red-100">
+                <svg
+                  className="w-5 h-5 text-red-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">
+                  Remove Section
+                </h3>
+                <p className="text-sm text-slate-600">
+                  This action cannot be undone.
+                </p>
+              </div>
+            </div>
+
+            <p className="text-sm text-slate-700 mb-6">
+              Are you sure you want to remove{" "}
+              <span className="font-semibold">
+                {form.getValues(`sections.${sectionToDelete}.title`) ||
+                  `Section ${sectionToDelete + 1}`}
+              </span>
+              ? This will permanently delete it from the database.
+            </p>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => {
+                  setShowSectionDeleteDialog(false);
+                  setSectionToDelete(null);
+                }}
+                className="flex-1 px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
+                disabled={deletingSection}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteSection}
+                disabled={deletingSection}
+                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition"
+              >
+                {deletingSection ? "Removing..." : "Remove Section"}
               </button>
             </div>
           </div>

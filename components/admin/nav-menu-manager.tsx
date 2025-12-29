@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createNavItemSchema, updateNavItemSchema } from "@/lib/validators";
+import { useAdminSearch } from "@/components/admin/admin-search-context";
 
 type NavItem = {
   id: string;
@@ -45,6 +46,8 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
   const [editingItem, setEditingItem] = useState<NavItem | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const { query } = useAdminSearch();
+  const normalizedQuery = query.trim().toLowerCase();
 
   const {
     register: registerCreate,
@@ -161,6 +164,21 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
     });
   };
 
+  const filterNavItems = (inputItems: NavItem[]): NavItem[] => {
+    return inputItems.reduce<NavItem[]>((acc, item) => {
+      const target = `${item.label ?? ""} ${item.href ?? ""} ${
+        item.groupLabel ?? ""
+      } ${item.type ?? ""}`.toLowerCase();
+      const childMatches = item.children.length
+        ? filterNavItems(item.children)
+        : [];
+      if (target.includes(normalizedQuery) || childMatches.length > 0) {
+        acc.push({ ...item, children: childMatches });
+      }
+      return acc;
+    }, []);
+  };
+
   // Get all items flattened for parent selection
   const getAllItems = (items: NavItem[]): NavItem[] => {
     const result: NavItem[] = [];
@@ -175,6 +193,15 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
 
   const allItemsFlat = getAllItems(items);
   const topLevelItems = allItemsFlat.filter((item) => !item.parentId);
+  const displayItems = useMemo(() => {
+    if (!normalizedQuery) {
+      return items;
+    }
+    return filterNavItems(items);
+  }, [items, normalizedQuery]);
+  const displayTopLevelItems = getAllItems(displayItems).filter(
+    (item) => !item.parentId
+  );
 
   const renderItem = (item: NavItem, level: number = 0) => (
     <div
@@ -491,7 +518,11 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
           </p>
         ) : (
           <div className="space-y-2">
-            {items.map((item) => renderItem(item))}
+            {displayTopLevelItems.length === 0 ? (
+              <p className="text-sm text-zinc-500">No matches found.</p>
+            ) : (
+              displayTopLevelItems.map((item) => renderItem(item))
+            )}
           </div>
         )}
       </div>

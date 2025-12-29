@@ -281,12 +281,12 @@ function renderBlock(
       const headerAlign = getBlockAlignment(block, block.data.text);
 
       const headerSizes = {
-        1: "text-4xl md:text-5xl mb-6 mt-12 leading-tight",
-        2: "text-3xl md:text-4xl mb-5 mt-10 leading-tight",
-        3: "text-2xl md:text-3xl mb-4 mt-8 leading-snug",
-        4: "text-xl md:text-2xl mb-4 mt-7 leading-snug",
-        5: "text-lg md:text-xl mb-3 mt-6 leading-snug",
-        6: "text-base md:text-lg mb-3 mt-5 leading-snug",
+        1: "text-3xl md:text-5xl mb-6 mt-12 leading-tight",
+        2: "text-2xl md:text-4xl mb-5 mt-10 leading-tight",
+        3: "text-xl md:text-3xl mb-4 mt-8 leading-snug",
+        4: "text-lg md:text-2xl mb-4 mt-7 leading-snug",
+        5: "text-base md:text-xl mb-3 mt-6 leading-snug",
+        6: "text-sm md:text-lg mb-3 mt-5 leading-snug",
       };
 
       const headerProps = {

@@ -10,6 +10,7 @@ import type { OutputData } from "@editorjs/editorjs";
 import { EditorJsRenderer } from "@/components/rich-text/editorjs-renderer";
 import Image from "next/image";
 import { SEOMetaEditor } from "@/components/admin/seo-meta-editor";
+import { useAdminSearch } from "@/components/admin/admin-search-context";
 
 // Types
 type Blog = {
@@ -114,6 +115,7 @@ const blogAuthorSchema = z.object({
 });
 
 const blogSchema = z.object({
+  slug: z.string().min(1, "Slug is required"),
   title: z.string().min(1, "Title is required"),
   image: z.string().optional(),
   content: z.string().min(1, "Content is required"),
@@ -152,7 +154,48 @@ export function BlogManager({
   const [blogAuthors, setBlogAuthors] = useState<BlogAuthor[]>([]);
   const [isEditorReady, setIsEditorReady] = useState(false);
   const [authorImageFile, setAuthorImageFile] = useState<File | null>(null);
-  const [authorImagePreview, setAuthorImagePreview] = useState<string | null>(null);
+  const [authorImagePreview, setAuthorImagePreview] = useState<string | null>(
+    null
+  );
+  const { query } = useAdminSearch();
+  const normalizedQuery = query.trim().toLowerCase();
+  const filteredBlogAuthors = useMemo(() => {
+    if (!normalizedQuery) {
+      return blogAuthors;
+    }
+    return blogAuthors.filter((author) => {
+      const target = `${author.name ?? ""} ${author.description ?? ""}`.toLowerCase();
+      return target.includes(normalizedQuery);
+    });
+  }, [blogAuthors, normalizedQuery]);
+  const filteredBlogGroups = useMemo(() => {
+    if (!normalizedQuery) {
+      return blogGroups;
+    }
+    return blogGroups.reduce<BlogGroupWithBlogs[]>((acc, group) => {
+      const groupTarget = `${group.name ?? ""}`.toLowerCase();
+      const groupMatches = groupTarget.includes(normalizedQuery);
+      if (groupMatches) {
+        acc.push(group);
+        return acc;
+      }
+      const matchingBlogs = group.blogs.filter((blog) => {
+        const blogTarget = `${blog.title ?? ""} ${blog.status ?? ""}`.toLowerCase();
+        return blogTarget.includes(normalizedQuery);
+      });
+      if (matchingBlogs.length > 0) {
+        acc.push({ ...group, blogs: matchingBlogs });
+      }
+      return acc;
+    }, []);
+  }, [blogGroups, normalizedQuery]);
+  const [confirmModal, setConfirmModal] = useState<{
+    title: string;
+    message: string;
+    confirmLabel?: string;
+    cancelLabel?: string;
+    onConfirm: () => void;
+  } | null>(null);
 
   const groupForm = useForm<BlogGroupForm>({
     resolver: zodResolver(blogGroupSchema),
@@ -164,6 +207,7 @@ export function BlogManager({
   const blogForm = useForm<BlogForm>({
     resolver: zodResolver(blogSchema),
     defaultValues: {
+      slug: "",
       title: "",
       image: "",
       content: "",
@@ -232,6 +276,7 @@ export function BlogManager({
 
       // Reset form with editing blog data
       blogForm.reset({
+        slug: (editingBlog as any).slug || "",
         title: editingBlog.title,
         image: (editingBlog.image as string | null) || "",
         content: editingBlog.content as string,
@@ -250,6 +295,7 @@ export function BlogManager({
 
       // Reset form for new blog
       blogForm.reset({
+        slug: "",
         title: "",
         image: "",
         content: "",
@@ -432,78 +478,84 @@ export function BlogManager({
   });
 
   const handleDeleteGroup = async (groupId: string) => {
-    if (
-      !confirm(
-        "Are you sure you want to delete this blog group? All blogs in this group will also be deleted."
-      )
-    ) {
-      return;
-    }
+    setConfirmModal({
+      title: "Delete Blog Group",
+      message:
+        "Are you sure you want to delete this blog group? All blogs in this group will also be deleted.",
+      confirmLabel: "Delete Group",
+      onConfirm: async () => {
+        try {
+          const response = await fetch(`/api/admin/blog-groups?id=${groupId}`, {
+            method: "DELETE",
+          });
 
-    try {
-      const response = await fetch(`/api/admin/blog-groups?id=${groupId}`, {
-        method: "DELETE",
-      });
+          if (!response.ok) {
+            setMessage("Failed to delete blog group");
+            return;
+          }
 
-      if (!response.ok) {
-        setMessage("Failed to delete blog group");
-        return;
-      }
-
-      setMessage("Blog group deleted successfully!");
-      await fetchData();
-    } catch (error) {
-      setMessage("Network error. Please try again.");
-      console.error("Error deleting blog group:", error);
-    }
+          setMessage("Blog group deleted successfully!");
+          await fetchData();
+        } catch (error) {
+          setMessage("Network error. Please try again.");
+          console.error("Error deleting blog group:", error);
+        }
+      },
+    });
   };
 
   const handleDeleteBlog = async (blogId: string) => {
-    if (!confirm("Are you sure you want to delete this blog?")) {
-      return;
-    }
+    setConfirmModal({
+      title: "Delete Blog",
+      message: "Are you sure you want to delete this blog?",
+      confirmLabel: "Delete Blog",
+      onConfirm: async () => {
+        try {
+          const response = await fetch(`/api/admin/blogs?id=${blogId}`, {
+            method: "DELETE",
+          });
 
-    try {
-      const response = await fetch(`/api/admin/blogs?id=${blogId}`, {
-        method: "DELETE",
-      });
+          if (!response.ok) {
+            setMessage("Failed to delete blog");
+            return;
+          }
 
-      if (!response.ok) {
-        setMessage("Failed to delete blog");
-        return;
-      }
-
-      setMessage("Blog deleted successfully!");
-      setSelectedBlogId(null);
-      await fetchData();
-    } catch (error) {
-      setMessage("Network error. Please try again.");
-      console.error("Error deleting blog:", error);
-    }
+          setMessage("Blog deleted successfully!");
+          setSelectedBlogId(null);
+          await fetchData();
+        } catch (error) {
+          setMessage("Network error. Please try again.");
+          console.error("Error deleting blog:", error);
+        }
+      },
+    });
   };
 
   const handleDeleteAuthor = async (authorId: string) => {
-    if (!confirm("Are you sure you want to delete this author?")) {
-      return;
-    }
+    setConfirmModal({
+      title: "Delete Author",
+      message: "Are you sure you want to delete this author?",
+      confirmLabel: "Delete Author",
+      onConfirm: async () => {
+        try {
+          const response = await fetch(`/api/admin/blog-authors?id=${authorId}`, {
+            method: "DELETE",
+          });
 
-    try {
-      const response = await fetch(`/api/admin/blog-authors?id=${authorId}`, {
-        method: "DELETE",
-      });
+          if (!response.ok) {
+            const result = await response.json();
+            setMessage(result.error || "Failed to delete author");
+            return;
+          }
 
-      if (!response.ok) {
-        const result = await response.json();
-        setMessage(result.error || "Failed to delete author");
-        return;
-      }
-
-      setMessage("Author deleted successfully!");
-      await fetchAuthors();
-    } catch (error) {
-      setMessage("Network error. Please try again.");
-      console.error("Error deleting author:", error);
-    }
+          setMessage("Author deleted successfully!");
+          await fetchAuthors();
+        } catch (error) {
+          setMessage("Network error. Please try again.");
+          console.error("Error deleting author:", error);
+        }
+      },
+    });
   };
 
   const handleImageUpload = async (file: File): Promise<string> => {
@@ -519,6 +571,73 @@ export function BlogManager({
       throw new Error(result.error || "Upload failed");
     }
     return result.url;
+  };
+
+  const renderConfirmModal = () => {
+    if (!confirmModal) {
+      return null;
+    }
+
+    return (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-white/40 backdrop-blur-sm"
+        onClick={() => setConfirmModal(null)}
+      >
+        <div
+          className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-red-100">
+              <svg
+                className="w-5 h-5 text-red-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">
+                {confirmModal.title}
+              </h3>
+              <p className="text-sm text-slate-600">
+                This action cannot be undone.
+              </p>
+            </div>
+          </div>
+
+          <p className="text-sm text-slate-700 mb-6">{confirmModal.message}</p>
+
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setConfirmModal(null)}
+              className="flex-1 px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
+            >
+              {confirmModal.cancelLabel || "Cancel"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const action = confirmModal.onConfirm;
+                setConfirmModal(null);
+                action();
+              }}
+              className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition"
+            >
+              {confirmModal.confirmLabel || "Confirm"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   // Find selected blog with its group
@@ -686,6 +805,7 @@ export function BlogManager({
             />
           </div>
         </div>
+        {renderConfirmModal()}
       </div>
     );
   }
@@ -802,6 +922,22 @@ export function BlogManager({
 
             <div>
               <label className="block text-sm font-semibold text-slate-900 mb-2">
+                Slug <span className="text-red-500">*</span>
+              </label>
+              <input
+                {...blogForm.register("slug")}
+                className="w-full rounded-lg border border-slate-200 px-4 py-2"
+                placeholder="e.g., why-company-registration-matters"
+              />
+              {blogForm.formState.errors.slug && (
+                <p className="text-xs text-red-600 mt-1">
+                  {blogForm.formState.errors.slug.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-900 mb-2">
                 Image URL
               </label>
               <input
@@ -900,6 +1036,7 @@ export function BlogManager({
             </div>
           )}
         </div>
+        {renderConfirmModal()}
       </div>
     );
   }
@@ -1062,58 +1199,70 @@ export function BlogManager({
       )}
 
       {showGroupForm && (
-        <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">
-            {editingGroup ? "Edit Blog Group" : "Create Blog Group"}
-          </h3>
-          <form onSubmit={handleCreateGroup} className="space-y-4">
-            <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">
-                Group Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                {...groupForm.register("name")}
-                className="w-full rounded-lg border border-slate-200 px-4 py-2"
-                placeholder="e.g., Company Registration"
-              />
-              {groupForm.formState.errors.name && (
-                <p className="text-xs text-red-600 mt-1">
-                  {groupForm.formState.errors.name.message}
-                </p>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <button
-                type="submit"
-                disabled={isPending}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
-              >
-                {isPending ? "Saving..." : editingGroup ? "Update" : "Create"}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowGroupForm(false);
-                  setEditingGroup(null);
-                  groupForm.reset();
-                }}
-                className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-white/40 backdrop-blur-sm"
+          onClick={() => {
+            setShowGroupForm(false);
+            setEditingGroup(null);
+            groupForm.reset();
+          }}
+        >
+          <div
+            className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">
+              {editingGroup ? "Edit Blog Group" : "Create Blog Group"}
+            </h3>
+            <form onSubmit={handleCreateGroup} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-900 mb-2">
+                  Group Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  {...groupForm.register("name")}
+                  className="w-full rounded-lg border border-slate-200 px-4 py-2"
+                  placeholder="e.g., Company Registration"
+                />
+                {groupForm.formState.errors.name && (
+                  <p className="text-xs text-red-600 mt-1">
+                    {groupForm.formState.errors.name.message}
+                  </p>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  disabled={isPending}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  {isPending ? "Saving..." : editingGroup ? "Update" : "Create"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowGroupForm(false);
+                    setEditingGroup(null);
+                    groupForm.reset();
+                  }}
+                  className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
       {/* Authors List Section */}
-      {blogAuthors.length > 0 && (
+      {filteredBlogAuthors.length > 0 && (
         <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
           <h3 className="text-xl font-semibold text-slate-900 mb-4">
             Blog Authors
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {blogAuthors.map((author) => (
+            {filteredBlogAuthors.map((author) => (
               <div
                 key={author.id}
                 className="rounded-lg border border-slate-200 p-4"
@@ -1168,7 +1317,14 @@ export function BlogManager({
             </p>
           </div>
         ) : (
-          blogGroups.map((group) => (
+          filteredBlogGroups.length === 0 ? (
+            <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm text-center">
+              <p className="text-slate-600">
+                No matches found.
+              </p>
+            </div>
+          ) : (
+          filteredBlogGroups.map((group) => (
             <div
               key={group.id}
               className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm"
@@ -1185,13 +1341,13 @@ export function BlogManager({
                     }}
                     className="px-3 py-1 text-sm text-indigo-600 hover:bg-indigo-50 rounded-lg"
                   >
-                    Edit
+                    Edit Group
                   </button>
                   <button
                     onClick={() => handleDeleteGroup(group.id)}
                     className="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded-lg"
                   >
-                    Delete
+                    Delete Group
                   </button>
                 </div>
               </div>
@@ -1249,8 +1405,10 @@ export function BlogManager({
               )}
             </div>
           ))
+          )
         )}
       </div>
+      {renderConfirmModal()}
     </div>
   );
 }

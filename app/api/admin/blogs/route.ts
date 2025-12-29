@@ -6,6 +6,7 @@ import { z } from "zod";
 
 const blogSchema = z.object({
   id: z.string().optional(),
+  slug: z.string().min(1, "Slug is required"),
   title: z.string().min(1, "Title is required"),
   image: z.string().optional(),
   content: z.string().min(1, "Content is required"),
@@ -78,6 +79,7 @@ export async function POST(request: Request) {
 
     const blog = await prisma.blog.create({
       data: {
+        slug: parsed.data.slug,
         title: parsed.data.title,
         image: parsed.data.image,
         content: parsed.data.content,
@@ -129,6 +131,7 @@ export async function PUT(request: Request) {
     const blog = await prisma.blog.update({
       where: { id: parsed.data.id },
       data: {
+        slug: parsed.data.slug,
         title: parsed.data.title,
         image: parsed.data.image,
         content: parsed.data.content,

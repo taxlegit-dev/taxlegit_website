@@ -92,7 +92,7 @@ export default function BlogCard({ blog, showCategory = true }: BlogCardProps) {
     : FALLBACK_IMAGE_SRC;
   return (
     <Link
-      href={`/blog/${blog.id}`}
+      href={`/blog/${blog.slug || blog.id}`}
       className="group flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
     >
       <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden">

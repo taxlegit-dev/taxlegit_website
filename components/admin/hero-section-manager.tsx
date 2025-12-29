@@ -6,6 +6,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import type { NavbarItem, PageHero } from "@prisma/client";
+import { useAdminSearch } from "@/components/admin/admin-search-context";
 
 type HeroWithNavItem = PageHero & {
   navbarItem: NavbarItem | null;
@@ -60,6 +61,14 @@ export function HeroSectionManager({
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
   const selectedItemId = selectedNavbarItemId || "";
+  const { query } = useAdminSearch();
+  const normalizedQuery = query.trim().toLowerCase();
+  const filteredNavItems = normalizedQuery
+    ? navItems.filter((item) => {
+        const target = `${item.label ?? ""} ${item.href ?? ""}`.toLowerCase();
+        return target.includes(normalizedQuery);
+      })
+    : navItems;
 
   // India form
   const indiaForm = useForm<IndiaHeroForm>({
@@ -291,32 +300,36 @@ export function HeroSectionManager({
             Choose a navbar item to create or edit its hero section
           </p>
           <div className="space-y-2">
-            {navItems.map((item) => {
-              const hasHero = allHeroes.some((h) => h.navbarItemId === item.id);
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleNavbarItemSelect(item.id)}
-                  className="w-full text-left rounded-lg border border-slate-200 p-4 hover:bg-slate-50 transition"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-semibold text-slate-900">
-                        {item.label}
+            {filteredNavItems.length === 0 ? (
+              <p className="text-sm text-slate-500">No matches found.</p>
+            ) : (
+              filteredNavItems.map((item) => {
+                const hasHero = allHeroes.some((h) => h.navbarItemId === item.id);
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleNavbarItemSelect(item.id)}
+                    className="w-full text-left rounded-lg border border-slate-200 p-4 hover:bg-slate-50 transition"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-semibold text-slate-900">
+                          {item.label}
+                        </div>
+                        <div className="text-xs text-slate-500 mt-1">
+                          {item.href}
+                        </div>
                       </div>
-                      <div className="text-xs text-slate-500 mt-1">
-                        {item.href}
-                      </div>
+                      {hasHero && (
+                        <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
+                          Has Hero
+                        </span>
+                      )}
                     </div>
-                    {hasHero && (
-                      <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
-                        Has Hero
-                      </span>
-                    )}
-                  </div>
-                </button>
+                  </button>
               );
-            })}
+              })
+            )}
           </div>
         </div>
       </div>

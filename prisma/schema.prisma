@@ -250,6 +250,7 @@ model BlogAuthor {
 /// Blog Post - Individual blog posts
 model Blog {
   id          String        @id @default(cuid())
+  slug        String?
   title       String
   image       String? // Image URL
   content     String // Blog content (Editor.js JSON or HTML)
@@ -268,6 +269,7 @@ model Blog {
   @@index([region, status])
   @@index([blogGroupId])
   @@index([authorId])
+  @@unique([slug, region])
 }
 
 /// Static Page - For static pages like Home, About

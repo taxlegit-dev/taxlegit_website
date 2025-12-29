@@ -7,6 +7,7 @@ import FollowUs from "@/components/pages/common/FollowUs";
 
 interface Blog {
   id: string;
+  slug?: string | null;
   title: string;
   image?: string | null;
   createdAt: Date;
@@ -44,6 +45,7 @@ export default async function AuthorCard({
       },
       select: {
         id: true,
+        slug: true,
         title: true,
         image: true,
         createdAt: true,
@@ -74,7 +76,7 @@ export default async function AuthorCard({
             {recentBlogs.map((blog) => (
               <Link
                 key={blog.id}
-                href={`/blog/${blog.id}`}
+                href={`/blog/${blog.slug || blog.id}`}
                 className="group flex items-start gap-3 rounded-lg p-2 transition-colors hover:bg-slate-50"
               >
                 {/* Blog Image */}
