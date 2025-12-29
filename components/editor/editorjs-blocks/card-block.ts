@@ -125,6 +125,7 @@ export default class ContentCardsBlock implements BlockTool {
       if (this.cardsPerRowInput) {
         this.cardsPerRowInput.value = value.toString();
       }
+      this.notifyChange();
     });
 
     const hint = document.createElement("span");
