@@ -32,17 +32,28 @@ type MegaNavbarProps = {
 };
 
 export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
+  const pathname = usePathname();
+
+  return (
+    <MegaNavbarContent
+      key={pathname}
+      region={region}
+      initialItems={initialItems}
+    />
+  );
+}
+
+function MegaNavbarContent({
+  region,
+  initialItems = [],
+}: {
+  region: Region;
+  initialItems: NavbarItem[];
+}) {
   const [items, setItems] = useState<NavbarItem[]>(initialItems);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openMobileItem, setOpenMobileItem] = useState<string | null>(null);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-  const pathname = usePathname();
-
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-    setOpenMobileItem(null);
-    setHoveredItem(null);
-  }, [pathname]);
 
   useEffect(() => {
     const fetchNavbar = async () => {

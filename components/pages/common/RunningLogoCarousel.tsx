@@ -1,6 +1,7 @@
 "use client";
 import AOS from "aos";
 import { useEffect } from "react";
+import Image from "next/image";
 
 export default function RunningLogoCarousel() {
   useEffect(() => {
@@ -51,10 +52,12 @@ export default function RunningLogoCarousel() {
                 key={index}
                 className="flex-shrink-0 bg-white/70 backdrop-blur-md border border-purple-100 rounded-xl px-6 py-4 shadow-sm hover:shadow-md transition"
               >
-                <img
+                <Image
                   src={logo}
                   alt="Brand logo"
-                  className="h-12 w-auto object-contain  transition"
+                  width={96}
+                  height={48}
+                  className="h-12 w-auto object-contain transition"
                 />
               </div>
             ))}

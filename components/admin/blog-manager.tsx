@@ -15,6 +15,7 @@ import { useAdminSearch } from "@/components/admin/admin-search-context";
 // Types
 type Blog = {
   id: string;
+  slug?: string | null;
   title: string;
   image: string | null;
   content: string;
@@ -280,13 +281,13 @@ export function BlogManager({
 
       // Reset form with editing blog data
       blogForm.reset({
-        slug: (editingBlog as any).slug || "",
+        slug: editingBlog.slug ?? "",
         title: editingBlog.title,
         image: (editingBlog.image as string | null) || "",
         content: editingBlog.content as string,
         blogGroupId: editingBlog.blogGroupId,
-        authorId: (editingBlog as any).authorId || "",
-        readTime: (editingBlog as any).readTime || "",
+        authorId: editingBlog.authorId ?? "",
+        readTime: editingBlog.readTime ?? "",
         status: editingBlog.status,
       });
 

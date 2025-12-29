@@ -12,7 +12,7 @@ import AnimatedFlowDiagram from "@/components/pages/home/AnimatedFlowDiagram";
 import RunningLogoCarousel from "@/components/pages/common/RunningLogoCarousel";
 import Footer from "@/components/footer";
 import OurProduct from "@/components/pages/home/OurProduct";
-import MediaMentions from "@/components/pages/home/MediaMentions";
+import MediaMentions from "@/components/pages/common/MediaMentions";
 export default async function IndiaHomePage() {
   const region = Region.INDIA;
 

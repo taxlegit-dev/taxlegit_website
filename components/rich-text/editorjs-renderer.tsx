@@ -4,6 +4,8 @@ import React, { useId } from "react";
 import type { OutputData } from "@editorjs/editorjs";
 import Image from "next/image";
 
+type ClampStyle = React.CSSProperties & { ["--clamp-lines"]?: number };
+
 function normalizeUrl(url?: string): string {
   if (!url) return "";
   if (url.startsWith("/")) {
@@ -41,7 +43,9 @@ function extractTextAlign(html?: string): React.CSSProperties {
   if (styleMatch) {
     const textAlignMatch = styleMatch[1].match(/text-align:\s*([^;]+)/);
     if (textAlignMatch) {
-      return { textAlign: textAlignMatch[1].trim() as any };
+      return {
+        textAlign: textAlignMatch[1].trim() as React.CSSProperties["textAlign"],
+      };
     }
   }
   return {};
@@ -80,9 +84,9 @@ function ReadMoreHtml({
   const resolvedClampLines =
     clampLines ??
     (wordLimit <= WORD_LIMIT2 ? SHORT_CLAMP_LINES : DEFAULT_CLAMP_LINES);
-  const wrapperStyle = {
+  const wrapperStyle: ClampStyle = {
     ...style,
-    ["--clamp-lines" as any]: resolvedClampLines,
+    ["--clamp-lines"]: resolvedClampLines,
   };
 
   return (
@@ -133,9 +137,9 @@ function ReadMoreText({
   const resolvedClampLines =
     clampLines ??
     (wordLimit <= WORD_LIMIT2 ? SHORT_CLAMP_LINES : DEFAULT_CLAMP_LINES);
-  const wrapperStyle = {
+  const wrapperStyle: ClampStyle = {
     ...style,
-    ["--clamp-lines" as any]: resolvedClampLines,
+    ["--clamp-lines"]: resolvedClampLines,
   };
 
   return (
@@ -281,12 +285,12 @@ function renderBlock(
       const headerAlign = getBlockAlignment(block, block.data.text);
 
       const headerSizes = {
-        1: "text-3xl md:text-5xl mb-6 mt-12 leading-tight",
-        2: "text-2xl md:text-4xl mb-5 mt-10 leading-tight",
-        3: "text-xl md:text-3xl mb-4 mt-8 leading-snug",
-        4: "text-lg md:text-2xl mb-4 mt-7 leading-snug",
-        5: "text-base md:text-xl mb-3 mt-6 leading-snug",
-        6: "text-sm md:text-lg mb-3 mt-5 leading-snug",
+        1: "text-2xl md:text-[32px] mb-6 mt-12 leading-tight",
+        2: "text-xl md:text-[24px] mb-5 mt-10 leading-tight",
+        3: "text-lg md:text-[20px] mb-4 mt-8 leading-snug",
+        4: "text-base md:text-[18px] mb-4 mt-7 leading-snug",
+        5: "text-sm md:text-[16px] mb-3 mt-6 leading-snug",
+        6: "text-xs md:text-[14px] mb-3 mt-5 leading-snug",
       };
 
       const headerProps = {
@@ -742,9 +746,12 @@ function renderBlock(
               >
                 {card.icon && (
                   <div className="mb-4 flex justify-center">
-                    <img
+                    <Image
                       src={normalizeUrl(card.icon)}
                       alt={card.heading || "Card icon"}
+                      width={64}
+                      height={64}
+                      unoptimized
                       className="h-16 w-16 object-contain"
                     />
                   </div>
