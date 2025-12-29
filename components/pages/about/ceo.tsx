@@ -28,6 +28,7 @@ export default function LeadershipTeam() {
                 width={120}
                 height={120}
                 className="rounded-full object-cover"
+                unoptimized
               />
 
               <div className="flex-1">
@@ -78,6 +79,7 @@ export default function LeadershipTeam() {
                 width={120}
                 height={120}
                 className="rounded-full object-cover"
+                unoptimized
               />
 
               <div className="flex-1">

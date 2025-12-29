@@ -3,6 +3,7 @@ import { Region, ContentStatus } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createPageHeroSchema, updatePageHeroSchema } from "@/lib/validators";
+import { revalidateContentPage } from "@/lib/revalidate";
 
 // GET - Fetch hero sections for a region
 export async function GET(request: Request) {
@@ -83,6 +84,10 @@ export async function POST(request: Request) {
         status: parsed.data.status === "PUBLISHED" ? ContentStatus.PUBLISHED : ContentStatus.DRAFT,
       },
     });
+    if (navbarItem.href) {
+      revalidateContentPage(navbarItem.href, navbarItem.region);
+    }
+
     return NextResponse.json({ hero, message: "Hero section updated successfully" });
   }
 
@@ -97,6 +102,10 @@ export async function POST(request: Request) {
       status: parsed.data.status === "PUBLISHED" ? ContentStatus.PUBLISHED : ContentStatus.DRAFT,
     },
   });
+
+  if (navbarItem.href) {
+    revalidateContentPage(navbarItem.href, navbarItem.region);
+  }
 
   return NextResponse.json({ hero });
 }
@@ -147,6 +156,15 @@ export async function PUT(request: Request) {
     },
   });
 
+  const navbarItem = await prisma.navbarItem.findUnique({
+    where: { id: parsed.data.navbarItemId },
+    select: { href: true, region: true },
+  });
+
+  if (navbarItem?.href) {
+    revalidateContentPage(navbarItem.href, navbarItem.region);
+  }
+
   return NextResponse.json({ hero });
 }
 
@@ -165,9 +183,24 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Hero ID is required" }, { status: 400 });
   }
 
+  const hero = await prisma.pageHero.findUnique({
+    where: { id },
+  });
+
   await prisma.pageHero.delete({
     where: { id },
   });
+
+  if (hero) {
+    const navbarItem = await prisma.navbarItem.findUnique({
+      where: { id: hero.navbarItemId },
+      select: { href: true, region: true },
+    });
+
+    if (navbarItem?.href) {
+      revalidateContentPage(navbarItem.href, navbarItem.region);
+    }
+  }
 
   return NextResponse.json({ success: true, message: "Hero section deleted successfully" });
 }

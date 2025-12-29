@@ -78,6 +78,7 @@ export default function OurProduct() {
                     fill
                     className="object-contain"
                     sizes="(min-width: 1024px) 240px, 60vw"
+                    unoptimized
                   />
                 </div>
               </div>

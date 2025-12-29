@@ -106,125 +106,132 @@ export default async function UsBlogDetailPage({
     <>
       {/* Render meta tags server-side */}
       <MetaDataRenderer pageType="BLOG" pageId={blog.id} />
-        <div className="min-h-screen bg-slate-950 text-white">
+      <div className="min-h-screen bg-slate-950 text-white">
         <main className="mx-auto w-full max-w-4xl px-6 py-12">
-        <Link
-          href="/us/blog"
-          className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-slate-200 mb-8"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+          <Link
+            href="/us/blog"
+            className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-slate-200 mb-8"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          Back to Blogs
-        </Link>
-
-        <article>
-          <div className="mb-6">
-            <span className="inline-block px-3 py-1 rounded-full bg-emerald-900/50 text-emerald-300 text-sm font-medium mb-4">
-              {blog.blogGroup.name}
-            </span>
-            <h1 className="text-4xl font-semibold mb-4">{blog.title}</h1>
-            <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400">
-              <span>
-                {new Date(blog.createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </span>
-              {blog.readTime && (
-                <span className="flex items-center gap-1">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  {blog.readTime}
-                </span>
-              )}
-              <BlogViewCounter blogId={blog.id} initialCount={blog.viewCount} />
-            </div>
-          </div>
-
-          {blog.image && (
-            <div className="w-full h-48 overflow-hidden mb-8">
-              <Image
-                src={blog.image}
-                alt={blog.title}
-                width={800}
-                height={500}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
               />
-            </div>
-          )}
+            </svg>
+            Back to Blogs
+          </Link>
 
-          {/* Author Information */}
-          {blog.author && (
-            <div className="mb-8 rounded-xl border border-white/10 bg-white/5 p-6">
-              <h3 className="mb-4 font-semibold text-white">About the Author</h3>
-              <div className="flex items-start gap-4">
-                {blog.author.image && (
-                  <Image
-                    src={blog.author.image}
-                    alt={blog.author.name}
-                    width={80}
-                    height={80}
-                    className="rounded-full object-cover"
-                  />
+          <article>
+            <div className="mb-6">
+              <span className="inline-block px-3 py-1 rounded-full bg-emerald-900/50 text-emerald-300 text-sm font-medium mb-4">
+                {blog.blogGroup.name}
+              </span>
+              <h1 className="text-4xl font-semibold mb-4">{blog.title}</h1>
+              <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400">
+                <span>
+                  {new Date(blog.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </span>
+                {blog.readTime && (
+                  <span className="flex items-center gap-1">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    {blog.readTime}
+                  </span>
                 )}
-                <div>
-                  <h4 className="font-semibold text-white mb-2">
-                    {blog.author.name}
-                  </h4>
-                  {blog.author.description && (
-                    <p className="text-sm text-slate-300">
-                      {blog.author.description}
-                    </p>
-                  )}
-                </div>
+                <BlogViewCounter
+                  blogId={blog.id}
+                  initialCount={blog.viewCount}
+                />
               </div>
             </div>
-          )}
 
-          <div className="prose prose-lg max-w-none prose-invert prose-slate prose-headings:text-white prose-p:text-slate-300">
-            {editorData ? (
-              <EditorJsRenderer
-                data={editorData}
-                theme="dark"
-                fullBleedColumns={false}
-              />
-            ) : (
-              <div
-                dangerouslySetInnerHTML={{ __html: blog.content }}
-                className="blog-content"
-              />
+            {blog.image && (
+              <div className="w-full h-48 overflow-hidden mb-8">
+                <Image
+                  src={blog.image}
+                  alt={blog.title}
+                  width={800}
+                  height={500}
+                  unoptimized
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
             )}
+
+            {/* Author Information */}
+            {blog.author && (
+              <div className="mb-8 rounded-xl border border-white/10 bg-white/5 p-6">
+                <h3 className="mb-4 font-semibold text-white">
+                  About the Author
+                </h3>
+                <div className="flex items-start gap-4">
+                  {blog.author.image && (
+                    <Image
+                      src={blog.author.image}
+                      alt={blog.author.name}
+                      width={80}
+                      height={80}
+                      unoptimized
+                      className="rounded-full object-cover"
+                    />
+                  )}
+                  <div>
+                    <h4 className="font-semibold text-white mb-2">
+                      {blog.author.name}
+                    </h4>
+                    {blog.author.description && (
+                      <p className="text-sm text-slate-300">
+                        {blog.author.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="prose prose-lg max-w-none prose-invert prose-slate prose-headings:text-white prose-p:text-slate-300">
+              {editorData ? (
+                <EditorJsRenderer
+                  data={editorData}
+                  theme="dark"
+                  fullBleedColumns={false}
+                />
+              ) : (
+                <div
+                  dangerouslySetInnerHTML={{ __html: blog.content }}
+                  className="blog-content"
+                />
+              )}
+            </div>
+          </article>
+        </main>
+        <footer className="border-t border-white/10">
+          <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-8 text-sm text-slate-400">
+            <p>© {new Date().getFullYear()} Taxlegit. US Region</p>
           </div>
-        </article>
-      </main>
-      <footer className="border-t border-white/10">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-8 text-sm text-slate-400">
-          <p>© {new Date().getFullYear()} Taxlegit. US Region</p>
-        </div>
-      </footer>
+        </footer>
       </div>
     </>
   );

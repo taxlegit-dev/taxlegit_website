@@ -438,6 +438,7 @@ function renderBlock(
             alt={imageData.caption || ""}
             width={1200}
             height={800}
+            unoptimized
             className={`${
               imageData.stretched ? "w-full" : "w-full max-w-full"
             } ${imageData.withBorder ? `border ${borderColor}` : ""} ${
@@ -561,6 +562,7 @@ function renderBlock(
                   width={700}
                   height={600}
                   className="w-full max-h-full object-contain"
+                  unoptimized
                 />
               </div>
             )}

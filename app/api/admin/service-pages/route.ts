@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { revalidateContentPage } from "@/lib/revalidate";
 
 // DELETE - Delete a service page
 export async function DELETE(request: Request) {
@@ -37,6 +38,15 @@ export async function DELETE(request: Request) {
     await prisma.servicePage.delete({
       where: { id: servicePageId },
     });
+
+    const navbarItem = await prisma.navbarItem.findUnique({
+      where: { id: existingServicePage.navbarItemId },
+      select: { href: true, region: true },
+    });
+
+    if (navbarItem?.href) {
+      revalidateContentPage(navbarItem.href, navbarItem.region);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {

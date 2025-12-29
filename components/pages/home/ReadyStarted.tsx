@@ -25,6 +25,7 @@ export default function CallToActionBanner() {
             width={260}
             height={260}
             className="object-contain drop-shadow-lg"
+            unoptimized
           />
         </div>
 

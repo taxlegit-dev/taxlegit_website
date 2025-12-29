@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import { Region, ContentStatus } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { createServicePageFAQSchema, updateServicePageFAQSchema } from "@/lib/validators";
+import {
+  createServicePageFAQSchema,
+  updateServicePageFAQSchema,
+} from "@/lib/validators";
+import { revalidateContentPage } from "@/lib/revalidate";
 
 // GET - Fetch FAQ sections for a region
 export async function GET(request: Request) {
@@ -70,14 +74,24 @@ export async function POST(request: Request) {
   // Verify navbar item exists and matches region
   const navbarItem = await prisma.navbarItem.findUnique({
     where: { id: parsed.data.navbarItemId },
+    select: { href: true, region: true },
   });
 
   if (!navbarItem) {
-    return NextResponse.json({ error: "Navbar item not found" }, { status: 404 });
+    return NextResponse.json(
+      { error: "Navbar item not found" },
+      { status: 404 }
+    );
   }
 
-  if (navbarItem.region !== (parsed.data.region === "US" ? Region.US : Region.INDIA)) {
-    return NextResponse.json({ error: "Navbar item region mismatch" }, { status: 400 });
+  if (
+    navbarItem.region !==
+    (parsed.data.region === "US" ? Region.US : Region.INDIA)
+  ) {
+    return NextResponse.json(
+      { error: "Navbar item region mismatch" },
+      { status: 400 }
+    );
   }
 
   // Check if FAQ already exists for this navbar item
@@ -114,7 +128,14 @@ export async function POST(request: Request) {
         },
       },
     });
-    return NextResponse.json({ faq, message: "FAQ section updated successfully" });
+    if (navbarItem?.href) {
+      revalidateContentPage(navbarItem.href, navbarItem.region);
+    }
+
+    return NextResponse.json({
+      faq,
+      message: "FAQ section updated successfully",
+    });
   }
 
   const faq = await prisma.servicePageFAQ.create({
@@ -139,6 +160,10 @@ export async function POST(request: Request) {
       },
     },
   });
+
+  if (navbarItem?.href) {
+    revalidateContentPage(navbarItem.href, navbarItem.region);
+  }
 
   return NextResponse.json({ faq });
 }
@@ -166,7 +191,10 @@ export async function PUT(request: Request) {
   });
 
   if (!existing) {
-    return NextResponse.json({ error: "FAQ section not found" }, { status: 404 });
+    return NextResponse.json(
+      { error: "FAQ section not found" },
+      { status: 404 }
+    );
   }
 
   // Verify navbar item if changed
@@ -176,7 +204,10 @@ export async function PUT(request: Request) {
     });
 
     if (!navbarItem) {
-      return NextResponse.json({ error: "Navbar item not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Navbar item not found" },
+        { status: 404 }
+      );
     }
   }
 
@@ -209,6 +240,15 @@ export async function PUT(request: Request) {
     },
   });
 
+  const navbarItem = await prisma.navbarItem.findUnique({
+    where: { id: parsed.data.navbarItemId },
+    select: { href: true, region: true },
+  });
+
+  if (navbarItem?.href) {
+    revalidateContentPage(navbarItem.href, navbarItem.region);
+  }
+
   return NextResponse.json({ faq });
 }
 
@@ -227,13 +267,27 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "FAQ ID is required" }, { status: 400 });
   }
 
+  const faq = await prisma.servicePageFAQ.findUnique({
+    where: { id },
+  });
+
   await prisma.servicePageFAQ.delete({
     where: { id },
   });
+
+  if (faq) {
+    const navbarItem = await prisma.navbarItem.findUnique({
+      where: { id: faq.navbarItemId },
+      select: { href: true, region: true },
+    });
+
+    if (navbarItem?.href) {
+      revalidateContentPage(navbarItem.href, navbarItem.region);
+    }
+  }
 
   return NextResponse.json({
     success: true,
     message: "FAQ section deleted successfully",
   });
 }
-

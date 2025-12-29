@@ -3,6 +3,7 @@ import { Region } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { revalidateBlogListing, revalidateBlogPage } from "@/lib/revalidate";
 
 const blogAuthorSchema = z.object({
   id: z.string().optional(),
@@ -70,6 +71,8 @@ export async function POST(request: Request) {
       },
     });
 
+    revalidateBlogListing(blogAuthor.region);
+
     return NextResponse.json({ blogAuthor });
   } catch (error: unknown) {
     console.error("Error creating blog author:", error);
@@ -111,6 +114,11 @@ export async function PUT(request: Request) {
         },
       },
     });
+
+    blogAuthor.blogs.forEach((blog) => {
+      revalidateBlogPage(blog.slug || blog.id, blog.region);
+    });
+    revalidateBlogListing(blogAuthor.region);
 
     return NextResponse.json({ blogAuthor });
   } catch (error: unknown) {
@@ -159,6 +167,10 @@ export async function DELETE(request: Request) {
     await prisma.blogAuthor.delete({
       where: { id },
     });
+
+    if (author) {
+      revalidateBlogListing(author.region);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {

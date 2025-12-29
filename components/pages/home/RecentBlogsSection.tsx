@@ -87,12 +87,13 @@ export default function RecentBlogsSection() {
                       : FALLBACK_IMAGE_SRC;
 
                     return (
-                  <Image
-                    src={imageSrc}
-                    alt={blog.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
+                      <Image
+                        src={imageSrc}
+                        alt={blog.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        unoptimized
+                      />
                     );
                   })()}
                   {/* Gradient Overlay */}
