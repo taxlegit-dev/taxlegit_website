@@ -88,6 +88,7 @@ export default async function AuthorCard({
                       width={48}
                       height={48}
                       className="object-contain bg-white"
+                      unoptimized
                     />
                   ) : (
                     <div className="h-full w-full bg-gradient-to-br from-slate-300 to-slate-400" />

@@ -105,6 +105,7 @@ export default function FeaturedBlog({ blog }: FeaturedBlogProps) {
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 45vw"
             priority
+            unoptimized
           />
         </div>
 
@@ -145,6 +146,7 @@ export default function FeaturedBlog({ blog }: FeaturedBlogProps) {
                   width={36}
                   height={36}
                   className="h-8 w-8 sm:h-9 sm:w-9 rounded-full object-cover"
+                  unoptimized
                 />
               ) : (
                 <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-slate-300" />

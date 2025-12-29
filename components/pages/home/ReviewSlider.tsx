@@ -177,6 +177,7 @@ export default function ReviewSlider() {
                         className="w-full h-full rounded-full object-cover border-2 border-white"
                         height={50}
                         width={50}
+                        unoptimized
                       />
                     </div>
                   ) : (

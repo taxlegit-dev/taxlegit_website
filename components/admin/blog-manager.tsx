@@ -164,7 +164,9 @@ export function BlogManager({
       return blogAuthors;
     }
     return blogAuthors.filter((author) => {
-      const target = `${author.name ?? ""} ${author.description ?? ""}`.toLowerCase();
+      const target = `${author.name ?? ""} ${
+        author.description ?? ""
+      }`.toLowerCase();
       return target.includes(normalizedQuery);
     });
   }, [blogAuthors, normalizedQuery]);
@@ -180,7 +182,9 @@ export function BlogManager({
         return acc;
       }
       const matchingBlogs = group.blogs.filter((blog) => {
-        const blogTarget = `${blog.title ?? ""} ${blog.status ?? ""}`.toLowerCase();
+        const blogTarget = `${blog.title ?? ""} ${
+          blog.status ?? ""
+        }`.toLowerCase();
         return blogTarget.includes(normalizedQuery);
       });
       if (matchingBlogs.length > 0) {
@@ -538,9 +542,12 @@ export function BlogManager({
       confirmLabel: "Delete Author",
       onConfirm: async () => {
         try {
-          const response = await fetch(`/api/admin/blog-authors?id=${authorId}`, {
-            method: "DELETE",
-          });
+          const response = await fetch(
+            `/api/admin/blog-authors?id=${authorId}`,
+            {
+              method: "DELETE",
+            }
+          );
 
           if (!response.ok) {
             const result = await response.json();
@@ -775,6 +782,7 @@ export function BlogManager({
                 alt={selectedBlog.title}
                 width={800}
                 height={500}
+                unoptimized
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -1135,6 +1143,7 @@ export function BlogManager({
                     width={100}
                     height={100}
                     className="rounded-lg object-cover"
+                    unoptimized
                   />
                 </div>
               )}
@@ -1147,6 +1156,7 @@ export function BlogManager({
                     width={100}
                     height={100}
                     className="rounded-lg object-cover"
+                    unoptimized
                   />
                 </div>
               )}
@@ -1274,6 +1284,7 @@ export function BlogManager({
                       alt={author.name}
                       width={200}
                       height={200}
+                      unoptimized
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -1316,14 +1327,11 @@ export function BlogManager({
               No blog groups found. Create one to get started.
             </p>
           </div>
+        ) : filteredBlogGroups.length === 0 ? (
+          <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm text-center">
+            <p className="text-slate-600">No matches found.</p>
+          </div>
         ) : (
-          filteredBlogGroups.length === 0 ? (
-            <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm text-center">
-              <p className="text-slate-600">
-                No matches found.
-              </p>
-            </div>
-          ) : (
           filteredBlogGroups.map((group) => (
             <div
               key={group.id}
@@ -1380,6 +1388,7 @@ export function BlogManager({
                             alt={blog.title}
                             width={800}
                             height={500}
+                            unoptimized
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         </div>
@@ -1405,7 +1414,6 @@ export function BlogManager({
               )}
             </div>
           ))
-          )
         )}
       </div>
       {renderConfirmModal()}

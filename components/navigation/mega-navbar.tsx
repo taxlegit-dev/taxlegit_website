@@ -85,6 +85,7 @@ export function MegaNavbar({ region, initialItems = [] }: MegaNavbarProps) {
             alt="My Logo"
             width={70}
             height={70}
+            unoptimized
           />
         </Link>
 

@@ -11,6 +11,7 @@ export default function AboutCompanyHero() {
         fill
         priority
         className="object-cover"
+        unoptimized
       />
 
       {/* Dark Gradient Overlay */}

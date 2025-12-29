@@ -102,6 +102,7 @@ export default function BlogCard({ blog, showCategory = true }: BlogCardProps) {
           fill
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
           sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          unoptimized
         />
       </div>
       <div className="flex flex-1 flex-col gap-2 sm:gap-3 p-4 sm:p-5">

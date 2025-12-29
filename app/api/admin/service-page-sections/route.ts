@@ -3,6 +3,7 @@ import { Region } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { revalidateContentPage } from "@/lib/revalidate";
 
 const sectionCreateSchema = z.object({
   servicePageId: z.string().optional(),
@@ -100,6 +101,22 @@ export async function POST(request: Request) {
       },
     });
 
+    const servicePage = await prisma.servicePage.findUnique({
+      where: { id: servicePageId },
+      select: {
+        navbarItem: {
+          select: { href: true, region: true },
+        },
+      },
+    });
+
+    if (servicePage?.navbarItem?.href) {
+      revalidateContentPage(
+        servicePage.navbarItem.href,
+        servicePage.navbarItem.region
+      );
+    }
+
     return NextResponse.json({ section });
   } catch (error: unknown) {
     console.error("Error creating section:", error);
@@ -147,6 +164,22 @@ export async function PUT(request: Request) {
       },
     });
 
+    const servicePage = await prisma.servicePage.findUnique({
+      where: { id: existingSection.servicePageId },
+      select: {
+        navbarItem: {
+          select: { href: true, region: true },
+        },
+      },
+    });
+
+    if (servicePage?.navbarItem?.href) {
+      revalidateContentPage(
+        servicePage.navbarItem.href,
+        servicePage.navbarItem.region
+      );
+    }
+
     return NextResponse.json({ section });
   } catch (error: unknown) {
     console.error("Error updating section:", error);
@@ -188,6 +221,22 @@ export async function DELETE(request: Request) {
     await prisma.servicePageSection.delete({
       where: { id: sectionId },
     });
+
+    const servicePage = await prisma.servicePage.findUnique({
+      where: { id: existingSection.servicePageId },
+      select: {
+        navbarItem: {
+          select: { href: true, region: true },
+        },
+      },
+    });
+
+    if (servicePage?.navbarItem?.href) {
+      revalidateContentPage(
+        servicePage.navbarItem.href,
+        servicePage.navbarItem.region
+      );
+    }
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {

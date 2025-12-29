@@ -7,6 +7,7 @@ import {
   updateNavItemSchema,
   reorderNavItemsSchema,
 } from "@/lib/validators";
+import { revalidateNavbarItems } from "@/lib/revalidate";
 
 const navTypeMap: Record<"LINK" | "DROPDOWN", NavbarItemType> = {
   LINK: NavbarItemType.LINK,
@@ -122,6 +123,10 @@ export async function POST(request: Request) {
       children: true,
     },
   });
+
+  revalidateNavbarItems(
+    parsed.data.region === "US" ? Region.US : Region.INDIA
+  );
 
   return NextResponse.json({ item });
 }
@@ -243,6 +248,8 @@ export async function PUT(request: Request) {
     },
   });
 
+  revalidateNavbarItems(existingItem.region);
+
   return NextResponse.json({ item });
 }
 
@@ -276,6 +283,8 @@ export async function DELETE(request: Request) {
     where: { id },
   });
 
+  revalidateNavbarItems(existingItem.region);
+
   return NextResponse.json({
     success: true,
     message: "Item deleted successfully",
@@ -308,6 +317,10 @@ export async function PATCH(request: Request) {
         data: { order: item.order },
       })
     )
+  );
+
+  revalidateNavbarItems(
+    parsed.data.region === "US" ? Region.US : Region.INDIA
   );
 
   return NextResponse.json({
