@@ -76,7 +76,7 @@ export default async function AdminLayout({
           </form>
         </div>
       </aside>
-      <main className="flex-1 px-4 py-8 md:px-10">
+      <main className="w-full px-4 py-8 md:ml-64 md:w-[calc(100%-16rem)] md:px-10">
         <AdminLayoutClient>{children}</AdminLayoutClient>
       </main>
     </div>
