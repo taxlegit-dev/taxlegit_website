@@ -51,7 +51,7 @@ function extractTextAlign(html?: string): React.CSSProperties {
   return {};
 }
 
-const WORD_LIMIT1 = 60;
+const WORD_LIMIT1 = 90;
 const WORD_LIMIT2 = 20;
 const DEFAULT_CLAMP_LINES = 4;
 const SHORT_CLAMP_LINES = 2;
@@ -107,7 +107,7 @@ function ReadMoreHtml({
       {isLong && (
         <label
           htmlFor={contentId}
-          className="read-more-button ml-2 text-sm text-purple-600 hover:text-purple-700 cursor-pointer"
+          className="read-more-button block mx-auto  text-lg text-purple-600 hover:text-purple-700 cursor-pointer underline text-center"
         >
           <span className="read-more-label-collapsed">Read more</span>
           <span className="read-more-label-expanded">Read less</span>
@@ -274,7 +274,7 @@ function renderBlock(
       return (
         <ReadMoreHtml
           key={block.id}
-          className={`mb-5 text-base font-[Calibri]  ${textColor}`}
+          className={`mb-5 text-[18px] font-[Calibri]  ${textColor}`}
           style={paragraphAlign} // Apply alignment
           html={block.data.text || ""}
         />
@@ -294,7 +294,7 @@ function renderBlock(
       };
 
       const headerProps = {
-        className: `font-[Poppins] font-semibold ${headingColor} ${
+        className: `font-[PTSerif] font-semibold ${headingColor} ${
           headerSizes[level as keyof typeof headerSizes] || headerSizes[2]
         } `,
         style: headerAlign, // Apply alignment
