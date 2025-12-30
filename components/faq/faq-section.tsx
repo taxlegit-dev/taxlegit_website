@@ -23,9 +23,9 @@ export function FAQSection({ questions, region }: FAQSectionProps) {
     <section
       className={`${
         isIndia
-          ? "bg-gradient-to-br from-indigo-50 via-white to-indigo-100"
+          ? "bg-gradient-to-br from-purple-50 via-white to-purple-100"
           : "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
-      } py-20`}
+      } py-10`}
     >
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
         {/* LEFT STATIC SECTION */}
@@ -64,7 +64,7 @@ export function FAQSection({ questions, region }: FAQSectionProps) {
         </div>
 
         {/* RIGHT SIDE FAQ ACCORDIONS */}
-        <div className="space-y-4">
+        <div className="space-y-2">
           {questions.map((item, index) => {
             const isOpen = openIndex === index;
 
@@ -83,7 +83,7 @@ export function FAQSection({ questions, region }: FAQSectionProps) {
                 {/* Question row */}
                 <button
                   onClick={() => toggleQuestion(index)}
-                  className="w-full flex justify-between items-center py-5 px-6 text-left"
+                  className="w-full flex justify-between items-center py-3 px-6 text-left"
                 >
                   <span
                     className={`text-lg font-semibold ${
@@ -98,8 +98,8 @@ export function FAQSection({ questions, region }: FAQSectionProps) {
                     className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300
                       ${
                         isIndia
-                          ? "bg-indigo-100 text-indigo-600"
-                          : "bg-indigo-400/20 text-indigo-300"
+                          ? "bg-purple-100 text-purple-600"
+                          : "bg-purple-400/20 text-purple-300"
                       }
                       ${isOpen ? "rotate-180" : ""}
                     `}
