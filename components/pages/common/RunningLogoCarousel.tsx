@@ -2,7 +2,7 @@
 import AOS from "aos";
 import { useEffect } from "react";
 import Image from "next/image";
-
+import Link from "next/link";
 export default function RunningLogoCarousel() {
   useEffect(() => {
     AOS.init({
@@ -63,6 +63,20 @@ export default function RunningLogoCarousel() {
             ))}
           </div>
         </div>
+
+        {/* CTA */}
+        <div className="mt-10 flex flex-col items-center gap-4 text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+            Be the one next
+          </p>
+          <Link
+            href="/calculateQuote"
+            className="sparkle-button relative inline-flex items-center justify-center rounded-2xl bg-purple-600 px-8 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-purple-700"
+          >
+            Get Quote Instantly
+            <span className="sparkle-base" aria-hidden="true" />
+          </Link>
+        </div>
       </div>
 
       <style>{`
@@ -81,6 +95,39 @@ export default function RunningLogoCarousel() {
 
         .animate-scroll:hover {
           animation-play-state: paused;
+        }
+
+        .sparkle-button {
+          overflow: hidden;
+        }
+
+        .sparkle-base {
+          position: absolute;
+          bottom: -12px;
+          left: 20%;
+          width: 60%;
+          height: 18px;
+          background: radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.85) 0%,
+            rgba(255, 255, 255, 0) 70%
+          );
+          filter: blur(6px);
+          opacity: 0.7;
+          animation: sparklePulse 2s ease-in-out infinite;
+          pointer-events: none;
+        }
+
+        @keyframes sparklePulse {
+          0%,
+          100% {
+            transform: translateY(0);
+            opacity: 0.6;
+          }
+          50% {
+            transform: translateY(-4px);
+            opacity: 1;
+          }
         }
       `}</style>
     </section>
