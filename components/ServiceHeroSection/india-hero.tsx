@@ -1,12 +1,12 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { Star, ArrowRight, Handshake, Scale, Building2 } from "lucide-react";
-import { FcGoogle } from "react-icons/fc";
+import { ArrowRight, Handshake, Scale, Building2 } from "lucide-react";
 import { FaYoutube } from "react-icons/fa";
 import Link from "next/link";
 import type { PageHero } from "@prisma/client";
 import ContactForm from "@/components/pages/common/contactForm";
 import RunningLogoCarousel from "../pages/common/RunningLogoCarousel";
+import AIGenerator from "../pages/common/AIResultBox";
 type IndiaHeroProps = {
   hero: PageHero;
   breadcrumbParent?: string | null;
@@ -174,31 +174,8 @@ export function IndiaHero({
                 ))}
               </div>
             )}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm">
-              <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-              <span className="text-sm font-semibold text-gray-700">
-                Rated at 4.7/5, 1500+ Happy Reviews on
-              </span>
-              <FcGoogle className="w-5 h-5 " />
-            </div>
-            {/* CTAs + Rating */}
-            <div className="flex flex-wrap items-center gap-4">
-              <Link
-                href="#contact-form"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-800 px-5 py-3 text-white font-semibold shadow-lg shadow-purple-200 hover:shadow-purple-300 transition"
-              >
-                Schedule a call
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                href="#how-it-works-video"
-                className="inline-flex items-center gap-2 text-black font-semibold hover:underline"
-              >
-                <span className="inline-flex items-center justify-center w-10 h-10 rounded-full text-red-600 ">
-                  <FaYoutube className="w-10 h-10" />
-                </span>
-                <span>Checkout Related Shorts/Video </span>
-              </Link>
+            <div className="w-full max-w-lg">
+              <AIGenerator />
             </div>
 
             {/* Stats Section with ref for intersection observer */}
@@ -223,6 +200,18 @@ export function IndiaHero({
           <div className="flex justify-end lg:col-span-2" id="contact-form">
             <div className="w-full max-w-sm">
               <ContactForm />
+              {/* CTAs + Rating */}
+              <div className="flex flex-wrap items-center pt-4 ml-2">
+                <Link
+                  href="#how-it-works-video"
+                  className="inline-flex items-center gap-2 text-black font-semibold underline"
+                >
+                  <span className="inline-flex items-center justify-center w-10 h-10 rounded-full text-red-600 ">
+                    <FaYoutube className="w-10 h-10" />
+                  </span>
+                  <span>Checkout Related Shorts/Video </span>
+                </Link>
+              </div>
             </div>
           </div>
         </div>

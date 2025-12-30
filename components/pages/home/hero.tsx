@@ -55,7 +55,9 @@ export default function HeroSection() {
             Registration with AI. Start Your Business with free consultation.
           </p>
         </div>
-        <AIGenerator />
+        <div className="w-full max-w-lg item-center">
+          <AIGenerator />
+        </div>{" "}
       </section>
     </>
   );
