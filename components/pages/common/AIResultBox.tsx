@@ -40,25 +40,23 @@ export default function AIGenerator() {
   };
 
   return (
-    <section className="w-full bg-white px-6 mt-12">
-      <div className="mx-auto max-w-4xl">
+    <section className="w-full mt-8">
+      <div className="w-full">
         {/* INPUT */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <input
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="How to register a private limited company?"
-            className="w-full sm:w-[420px] px-5 py-3 rounded-xl border
-                       focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="flex-1 min-w-0 px-5 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
 
           <button
             onClick={handleGenerate}
             disabled={isLoading}
-            className="px-7 py-3 rounded-xl bg-purple-600 text-white
-                       hover:bg-purple-700 disabled:opacity-60"
+            className="w-full sm:w-auto sm:min-w-[150px] px-7 py-3 rounded-xl bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-60"
           >
-            {isLoading ? "Generating..." : "✨ Generate"}
+            {isLoading ? "Generating..." : "Ai Overview ✨"}
           </button>
         </div>
 

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-
+import { Star } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
 const services = [
   "TDS Return Filing Online",
   "GST Returns Filing Online",
@@ -119,7 +120,13 @@ export default function ContactForm() {
         >
           {loading ? "Submitting..." : "Book Free Consultation"}
         </button>
-
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm">
+          <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+          <span className="text-[12px]  text-gray-700">
+            Rated at 4.7/5, 1500+ Happy Reviews on
+          </span>
+          <FcGoogle className="w-5 h-5 " />
+        </div>
         {status === "success" && (
           <p className="text-green-600 text-center">
             ✅ Details submitted successfully
