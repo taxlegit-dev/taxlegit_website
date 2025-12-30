@@ -3,12 +3,58 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { MetaPageType } from "@prisma/client";
 import { z } from "zod";
+import { revalidateBlogPage, revalidateContentPage } from "@/lib/revalidate";
 
 const metaDataSchema = z.object({
   pageType: z.enum(["SERVICE", "BLOG"]),
   pageId: z.string().min(1),
   metaBlock: z.string(),
 });
+
+async function revalidateMetaTarget(pageType: MetaPageType, pageId: string) {
+  if (pageType === "SERVICE") {
+    const servicePage = await prisma.servicePage.findUnique({
+      where: { id: pageId },
+      select: {
+        navbarItem: {
+          select: { href: true, region: true },
+        },
+      },
+    });
+
+    if (servicePage?.navbarItem?.href) {
+      revalidateContentPage(
+        servicePage.navbarItem.href,
+        servicePage.navbarItem.region
+      );
+    }
+    return;
+  }
+
+  if (pageType === "BLOG") {
+    const blog = await prisma.blog.findUnique({
+      where: { id: pageId },
+      select: { id: true, slug: true, region: true },
+    });
+
+    if (blog) {
+      const slugOrId = blog.slug || blog.id;
+      revalidateBlogPage(slugOrId, blog.region);
+    }
+    return;
+  }
+
+  if (pageType === "GENERIC") {
+    const genericPage = await prisma.genericPage.findUnique({
+      where: { id: pageId },
+      select: { slug: true, region: true },
+    });
+
+    if (genericPage?.slug) {
+      revalidateContentPage(genericPage.slug, genericPage.region);
+    }
+  }
+}
 
 // GET - Fetch meta data for a specific page
 export async function GET(request: Request) {
@@ -94,6 +140,7 @@ export async function POST(request: Request) {
       },
     });
 
+    await revalidateMetaTarget(pageType, parsed.data.pageId);
     return NextResponse.json({ metaData });
   } catch (error: unknown) {
     console.error("Error creating meta data:", error);
@@ -141,6 +188,7 @@ export async function PUT(request: Request) {
       },
     });
 
+    await revalidateMetaTarget(pageType, parsed.data.pageId);
     return NextResponse.json({ metaData });
   } catch (error: unknown) {
     console.error("Error updating meta data:", error);
@@ -178,6 +226,8 @@ export async function DELETE(request: Request) {
         },
       },
     });
+
+    await revalidateMetaTarget(pageType, pageId);
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {

@@ -8,13 +8,13 @@ export default function MissionVisionValues() {
           {/* LEFT – CARDS */}
           <div className="space-y-6">
             {/* Mission */}
-            <div className="flex items-start gap-5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white shadow-lg">
+            <div className="flex items-start gap-5 rounded-xl bg-gradient-to-b from-[#F7F2F8] to-[#EFE4EF]  p-6 text-black shadow-lg">
               <div className="rounded-lg bg-white/20 p-3">
                 <Target className="h-6 w-6" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold">Our Mission</h3>
-                <p className="mt-1 text-sm text-white/90">
+                <p className="mt-1 text-sm text-gray-800">
                   To simplify legal, tax, and compliance services for startups
                   and businesses with transparency and speed.
                 </p>
@@ -22,13 +22,13 @@ export default function MissionVisionValues() {
             </div>
 
             {/* Vision */}
-            <div className="flex items-start gap-5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white shadow-lg">
+            <div className="flex items-start gap-5 rounded-xl bg-gradient-to-b from-[#F7F2F7] to-[#EFE4EF]  p-6 text-black shadow-lg">
               <div className="rounded-lg bg-white/20 p-3">
                 <Eye className="h-6 w-6" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold">Our Vision</h3>
-                <p className="mt-1 text-sm text-white/90">
+                <p className="mt-1 text-sm text-gray-800">
                   To become India’s most trusted digital platform for business
                   registrations and compliance solutions.
                 </p>
@@ -36,13 +36,13 @@ export default function MissionVisionValues() {
             </div>
 
             {/* Values */}
-            <div className="flex items-start gap-5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white shadow-lg">
+            <div className="flex items-start gap-5 rounded-xl bg-gradient-to-b from-[#F7F2F7] to-[#EFE4EF] p-6 text-black shadow-lg">
               <div className="rounded-lg bg-white/20 p-3">
                 <Heart className="h-6 w-6" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold">Our Values</h3>
-                <p className="mt-1 text-sm text-white/90">
+                <p className="mt-1 text-sm text-gray-800">
                   Integrity, customer-first approach, accountability, and
                   continuous innovation.
                 </p>
@@ -54,7 +54,7 @@ export default function MissionVisionValues() {
           <div>
             <h2 className="text-4xl font-extrabold text-gray-900">
               Mission, Vision <br />
-              <span className="text-indigo-600">& Values</span>
+              <span className="text-purple-700">& Values</span>
             </h2>
 
             <p className="mt-4 max-w-md text-gray-600">

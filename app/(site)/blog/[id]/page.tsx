@@ -188,6 +188,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
                   priority
                   className="object-cover"
                   sizes="(min-width: 1024px) 75vw, 100vw"
+                  unoptimized
                 />
               </div>
 
@@ -225,6 +226,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
                           width={100}
                           height={100}
                           className="rounded-full object-cover"
+                          unoptimized
                         />
                       </div>
                     )}

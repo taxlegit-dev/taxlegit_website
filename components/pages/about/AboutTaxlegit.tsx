@@ -14,6 +14,7 @@ export default function AboutUsSection() {
                 width={600}
                 height={500}
                 className="h-full w-full object-cover"
+                unoptimized
               />
             </div>
 
@@ -25,6 +26,7 @@ export default function AboutUsSection() {
                 width={260}
                 height={200}
                 className="h-full w-full object-cover"
+                unoptimized
               />
             </div>
 

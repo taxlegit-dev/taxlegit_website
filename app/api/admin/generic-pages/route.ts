@@ -3,6 +3,7 @@ import { Region, ContentStatus, Prisma } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { revalidateContentPage } from "@/lib/revalidate";
 
 const genericPageSchema = z.object({
   id: z.string().optional(),
@@ -98,6 +99,8 @@ export async function POST(request: Request) {
       },
     });
 
+    revalidateContentPage(parsed.data.slug, region);
+
     return NextResponse.json({ genericPage });
   } catch (error) {
     console.error("Error creating generic page:", error);
@@ -143,6 +146,8 @@ export async function PUT(request: Request) {
       },
     });
 
+    revalidateContentPage(parsed.data.slug, region);
+
     return NextResponse.json({ genericPage });
   } catch (error: unknown) {
     console.error("Error updating generic page:", error);
@@ -171,9 +176,18 @@ export async function DELETE(request: Request) {
       );
     }
 
+    const existingPage = await prisma.genericPage.findUnique({
+      where: { id },
+      select: { slug: true, region: true },
+    });
+
     await prisma.genericPage.delete({
       where: { id },
     });
+
+    if (existingPage?.slug) {
+      revalidateContentPage(existingPage.slug, existingPage.region);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {

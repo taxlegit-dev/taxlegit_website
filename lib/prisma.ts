@@ -15,7 +15,6 @@ if (!connectionString) {
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    // ⛔ query logs removed to stop spam
     log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
   });
 

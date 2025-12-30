@@ -3,6 +3,7 @@ import type {
   BlockToolConstructorOptions,
   BlockToolData,
   API,
+  BlockAPI,
 } from "@editorjs/editorjs";
 
 export interface ContentCardsBlockData extends BlockToolData {
@@ -21,6 +22,7 @@ export default class ContentCardsBlock implements BlockTool {
   private cardsPerRowInput: HTMLInputElement | null = null;
   private imageUploadHandler?: (file: File) => Promise<string>;
   private api: API;
+  private block?: BlockAPI;
 
   static get toolbox() {
     return {
@@ -36,6 +38,7 @@ export default class ContentCardsBlock implements BlockTool {
   constructor({
     data,
     api,
+    block,
     config,
   }: BlockToolConstructorOptions<ContentCardsBlockData> & {
     config?: { imageUploadHandler?: (file: File) => Promise<string> };
@@ -49,6 +52,7 @@ export default class ContentCardsBlock implements BlockTool {
     };
 
     this.api = api;
+    this.block = block;
 
     const blockConfig = config as
       | { imageUploadHandler?: (file: File) => Promise<string> }
@@ -59,9 +63,11 @@ export default class ContentCardsBlock implements BlockTool {
   }
 
   private notifyChange() {
-    if (!this.wrapper) {
+    if (this.block && typeof this.block.dispatchChange === "function") {
+      this.block.dispatchChange();
       return;
     }
+    if (!this.wrapper) return;
     const blockApi = this.api.blocks.getBlockByElement(this.wrapper);
     if (blockApi) {
       void this.api.blocks.update(blockApi.id, this.data);
@@ -125,6 +131,7 @@ export default class ContentCardsBlock implements BlockTool {
       if (this.cardsPerRowInput) {
         this.cardsPerRowInput.value = value.toString();
       }
+      this.notifyChange();
     });
 
     const hint = document.createElement("span");

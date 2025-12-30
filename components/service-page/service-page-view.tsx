@@ -58,7 +58,7 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
   };
 
   return (
-    <div className="min-h-screen ">
+    <div className=" ">
       {/* Sticky TOC Bar - Below Fixed Navbar */}
       <div
         ref={tocRef}
@@ -92,7 +92,7 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
               sectionRefs.current[index] = el;
             }}
             id={`section-${section.id}`}
-            className="mb-16 scroll-mt-24"
+            className="mb-10 scroll-mt-24"
           >
             {/* Content */}
             {(() => {

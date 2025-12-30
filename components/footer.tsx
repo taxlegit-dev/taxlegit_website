@@ -99,6 +99,7 @@ const Footer = () => {
                   alt="Consultation"
                   width={260}
                   height={260}
+                  unoptimized
                   className="
             object-contain drop-shadow-2xl 
             -mt-20 md:-mt-24   /* 💥 THIS MAKES IMAGE FLOAT ABOVE */

@@ -55,24 +55,27 @@ export default async function UsBlogListingPage() {
                       href={`/us/blog/${blog.slug || blog.id}`}
                       className="group rounded-lg border border-white/10 overflow-hidden hover:border-white/20 transition"
                     >
-{blog.image && (
-  <div className="w-full h-48 overflow-hidden">
-    <Image
-      src={blog.image}
-      alt={blog.title}
-      width={800}
-      height={500}
-      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-    />
-  </div>
-)}
+                      {blog.image && (
+                        <div className="w-full h-48 overflow-hidden">
+                          <Image
+                            src={blog.image}
+                            alt={blog.title}
+                            width={800}
+                            height={500}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            unoptimized
+                          />
+                        </div>
+                      )}
 
                       <div className="p-6 bg-slate-900">
                         <h3 className="text-xl font-semibold mb-2 group-hover:text-emerald-400 transition">
                           {blog.title}
                         </h3>
                         <div className="flex items-center justify-between text-sm text-slate-400">
-                          <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
+                          <span>
+                            {new Date(blog.createdAt).toLocaleDateString()}
+                          </span>
                           <span className="px-2 py-1 rounded-full bg-slate-800 text-slate-300">
                             {blog.blogGroup.name}
                           </span>
@@ -97,4 +100,3 @@ export default async function UsBlogListingPage() {
     </div>
   );
 }
-

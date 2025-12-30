@@ -3,6 +3,7 @@ import { Region, ContentStatus, Prisma } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { revalidateBlogListing, revalidateBlogPage } from "@/lib/revalidate";
 
 const blogSchema = z.object({
   id: z.string().optional(),
@@ -95,6 +96,9 @@ export async function POST(request: Request) {
       },
     });
 
+    revalidateBlogPage(blog.slug || blog.id, blog.region);
+    revalidateBlogListing(blog.region);
+
     return NextResponse.json({ blog });
   } catch (error: unknown) {
     console.error("Error creating blog:", error);
@@ -147,6 +151,9 @@ export async function PUT(request: Request) {
       },
     });
 
+    revalidateBlogPage(blog.slug || blog.id, blog.region);
+    revalidateBlogListing(blog.region);
+
     return NextResponse.json({ blog });
   } catch (error: unknown) {
     console.error("Error updating blog:", error);
@@ -175,9 +182,22 @@ export async function DELETE(request: Request) {
       );
     }
 
+    const existingBlog = await prisma.blog.findUnique({
+      where: { id },
+      select: { id: true, slug: true, region: true },
+    });
+
     await prisma.blog.delete({
       where: { id },
     });
+
+    if (existingBlog) {
+      revalidateBlogPage(
+        existingBlog.slug || existingBlog.id,
+        existingBlog.region
+      );
+      revalidateBlogListing(existingBlog.region);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
