@@ -51,7 +51,7 @@ function extractTextAlign(html?: string): React.CSSProperties {
   return {};
 }
 
-const WORD_LIMIT1 = 60;
+const WORD_LIMIT1 = 90;
 const WORD_LIMIT2 = 20;
 const DEFAULT_CLAMP_LINES = 4;
 const SHORT_CLAMP_LINES = 2;
@@ -107,7 +107,7 @@ function ReadMoreHtml({
       {isLong && (
         <label
           htmlFor={contentId}
-          className="read-more-button ml-2 text-sm text-purple-600 hover:text-purple-700 cursor-pointer"
+          className="read-more-button block mx-auto  text-lg text-purple-600 hover:text-purple-700 cursor-pointer underline text-center"
         >
           <span className="read-more-label-collapsed">Read more</span>
           <span className="read-more-label-expanded">Read less</span>
@@ -262,7 +262,7 @@ function renderBlock(
   fullBleedColumns: boolean
 ): React.ReactNode {
   const textColor = theme === "dark" ? "text-slate-300" : "text-slate-700";
-  const headingColor = theme === "dark" ? "text-slate-50" : "text-slate-900";
+  const headingColor = theme === "dark" ? "text-slate-50" : "text-slate-800";
   const cardBg = theme === "dark" ? "bg-slate-900" : "bg-white";
   const borderColor =
     theme === "dark" ? "border-slate-800" : "border-slate-200";
@@ -274,7 +274,7 @@ function renderBlock(
       return (
         <ReadMoreHtml
           key={block.id}
-          className={`mb-5 text-base leading-relaxed ${textColor}`}
+          className={`mb-5 text-[18px] font-[Calibri]  ${textColor}`}
           style={paragraphAlign} // Apply alignment
           html={block.data.text || ""}
         />
@@ -285,18 +285,18 @@ function renderBlock(
       const headerAlign = getBlockAlignment(block, block.data.text);
 
       const headerSizes = {
-        1: "text-2xl md:text-[32px] mb-6 mt-12 leading-tight",
-        2: "text-xl md:text-[24px] mb-5 mt-10 leading-tight",
-        3: "text-lg md:text-[20px] mb-4 mt-8 leading-snug",
-        4: "text-base md:text-[18px] mb-4 mt-7 leading-snug",
-        5: "text-sm md:text-[16px] mb-3 mt-6 leading-snug",
-        6: "text-xs md:text-[14px] mb-3 mt-5 leading-snug",
+        1: "text-3xl md:text-[42px] py-3  ",
+        2: "text-2xl md:text-[34px] py-3 ",
+        3: "text-xl md:text-[28px] py-3 ",
+        4: "text-lg md:text-[24px] py-3 ",
+        5: "text-base md:text-[20px] py-3 ",
+        6: "text-sm md:text-[16px] py-3 ",
       };
 
       const headerProps = {
-        className: `font-semibold ${headingColor} ${
+        className: `font-[PTSerif] font-semibold ${headingColor} ${
           headerSizes[level as keyof typeof headerSizes] || headerSizes[2]
-        } tracking-tight`,
+        } `,
         style: headerAlign, // Apply alignment
         dangerouslySetInnerHTML: { __html: block.data.text || "" },
       };
