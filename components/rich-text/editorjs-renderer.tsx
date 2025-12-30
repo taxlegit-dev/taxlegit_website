@@ -200,8 +200,7 @@ export function EditorJsRenderer({
     return null;
   }
 
-  const containerClass =
-    theme === "dark" ? "bg-slate-950 min-h-screen" : "bg-white min-h-screen";
+  const containerClass = theme === "dark" ? "bg-slate-950 " : "bg-white";
 
   const contentClass =
     theme === "dark"
@@ -294,7 +293,7 @@ function renderBlock(
       };
 
       const headerProps = {
-        className: `font-[PTSerif] font-semibold ${headingColor} ${
+        className: `font-[PTSerif] font-semibold  ${headingColor} ${
           headerSizes[level as keyof typeof headerSizes] || headerSizes[2]
         } `,
         style: headerAlign, // Apply alignment
@@ -559,13 +558,13 @@ function renderBlock(
         >
           <div className="flex-1 min-w-0">
             {columnData.imageUrl && (
-              <div className="overflow-hidden rounded-lg flex items-center justify-center">
+              <div className="w-[500px] h-[300px] overflow-hidden rounded-lg flex items-center justify-center ">
                 <Image
                   src={columnData.imageUrl}
                   alt={columnData.heading || "Column image"}
-                  width={700}
-                  height={600}
-                  className="w-full max-h-full object-contain"
+                  width={500}
+                  height={300}
+                  className="max-w-full max-h-full object-contain"
                   unoptimized
                 />
               </div>
@@ -590,17 +589,23 @@ function renderBlock(
 
           <div className="flex-1 min-w-0">
             {columnData.heading && (
-              <h3 className={`text-3xl  mb-3 ${headingColor}`}>
+              <h3
+                className={`text-3xl font-bold font-[PTSerif] mb-3 ${headingColor}`}
+              >
                 {columnData.heading}
               </h3>
             )}
-            {columnData.description && (
+            {/* {columnData.description && (
               <ReadMoreText
                 text={columnData.description}
                 className={`mb-4 text-lg ${textColor}`}
                 wordLimit={WORD_LIMIT2}
               />
+            )} */}
+            {columnData.description && (
+              <p className={`mb-6 text-slate-800`}>{columnData.description}</p>
             )}
+
             {columnData.points && columnData.points.length > 0 && (
               <ul className={`space-y-2 ${textColor}`}>
                 {columnData.points.map((point, idx) => (
@@ -610,7 +615,9 @@ function renderBlock(
                         theme === "dark" ? "bg-purple-400" : "bg-purple-600"
                       }`}
                     />
-                    <span className="text-base leading-relaxed">{point}</span>
+                    <span className="text-base leading-relaxed text-gray-800">
+                      {point}
+                    </span>
                   </li>
                 ))}
               </ul>
