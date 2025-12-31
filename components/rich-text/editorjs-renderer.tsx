@@ -273,7 +273,7 @@ function renderBlock(
       return (
         <ReadMoreHtml
           key={block.id}
-          className={`mb-5 text-[18px] font-[Calibri]  ${textColor}`}
+          className={`mb-5 text-lg font-[Calibri]  ${textColor}`}
           style={paragraphAlign} // Apply alignment
           html={block.data.text || ""}
         />
@@ -603,7 +603,9 @@ function renderBlock(
               />
             )} */}
             {columnData.description && (
-              <p className={`mb-6 text-slate-800`}>{columnData.description}</p>
+              <p className={`mb-6 text-slate-800 font-[Calibri] text-lg`}>
+                {columnData.description}
+              </p>
             )}
 
             {columnData.points && columnData.points.length > 0 && (
@@ -615,7 +617,7 @@ function renderBlock(
                         theme === "dark" ? "bg-purple-400" : "bg-purple-600"
                       }`}
                     />
-                    <span className="text-base leading-relaxed text-gray-800">
+                    <span className="text-lg leading-relaxed text-gray-800 font-[Calibri]">
                       {point}
                     </span>
                   </li>
@@ -771,7 +773,9 @@ function renderBlock(
                   </h3>
                 )}
                 {card.description && (
-                  <p className={`mt-2 text-sm leading-relaxed  ${textColor}`}>
+                  <p
+                    className={`mt-2 text-md leading-relaxed font-[Calibri]  ${textColor}`}
+                  >
                     {card.description}
                   </p>
                 )}

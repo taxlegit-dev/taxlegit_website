@@ -62,7 +62,7 @@ const HowWeWork: React.FC = () => {
     },
     {
       number: "03",
-      title: "Online Documentation Registration",
+      title: "Documentation Registration",
       description:
         "Our experts collect the required documents online quickly and effortlessly.",
       icon: <FileCheck className="w-8 h-8" />,

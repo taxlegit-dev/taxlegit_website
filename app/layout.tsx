@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, PT_Serif, Tagesschrift } from "next/font/google";
 import "./globals.css";
 import { ProviderTree } from "@/components/providers/provider-tree";
 import "aos/dist/aos.css";
@@ -12,6 +12,17 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const ptSerif = PT_Serif({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-pt-serif",
+});
+const tagesschrift = Tagesschrift({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-tagesschrift",
 });
 
 export const metadata: Metadata = {
@@ -27,8 +38,11 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="min-h-screen bg-white text-black antialiased ">
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} ${ptSerif.variable}${tagesschrift.variable}`}
+    >
+      <body className="min-h-screen bg-white text-black antialiased">
         <ProviderTree>{children}</ProviderTree>
       </body>
     </html>
