@@ -4,9 +4,7 @@ const config: Config = {
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
   theme: {
     extend: {
-      fontFamily: {
-        serifpt: ["var(--font-pt-serif)", "serif"],
-      },
+      fontFamily: {},
     },
   },
   plugins: [],

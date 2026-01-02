@@ -153,9 +153,7 @@ export function IndiaHero({
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    <p className="text-lg text-zinc-700 font-[Calibri]">
-                      {benefit}
-                    </p>
+                    <p className="text-lg text-zinc-700 ">{benefit}</p>
                   </div>
                 ))}
               </div>
