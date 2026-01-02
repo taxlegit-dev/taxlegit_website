@@ -66,7 +66,7 @@ export default function MediaMentions() {
       <div className="max-w-6xl mx-auto lg:px-0 px-5">
         {/* Heading */}
         <div className="text-center mb-12 md:mb-16">
-          <h2 className="font-[Gilroy] text-3xl md:text-4xl lg:text-5xl font-bold text-slate-700 mb-4">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-700 mb-4">
             Featured Media Mentions
           </h2>
           <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
