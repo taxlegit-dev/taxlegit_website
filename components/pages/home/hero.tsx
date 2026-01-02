@@ -40,7 +40,7 @@ export default function HeroSection() {
 
           {/* Heading */}
           <h1
-            className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight"
+            className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight font-[var(--font-pt-serif)]"
             data-aos="zoom-in"
           >
             Tax Worry business <span className="text-gray-400">worry</span>

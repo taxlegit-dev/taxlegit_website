@@ -130,7 +130,7 @@ export function IndiaHero({
                   <span className=" text-slate-700">{trimmedCurrent}</span>
                 </nav>
               )}
-              <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6 font-serifpt">
+              <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6 font-[var(--font-pt-serif)]">
                 {hero.title}
               </h1>
             </div>

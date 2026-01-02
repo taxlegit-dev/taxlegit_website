@@ -589,7 +589,9 @@ function renderBlock(
 
           <div className="flex-1 min-w-0">
             {columnData.heading && (
-              <h3 className={`text-3xl font-bold  mb-3 ${headingColor}`}>
+              <h3
+                className={`text-3xl font-bold font-[PTSerif] mb-3 ${headingColor}`}
+              >
                 {columnData.heading}
               </h3>
             )}
