@@ -293,7 +293,7 @@ function renderBlock(
       };
 
       const headerProps = {
-        className: `font-[PTSerif] font-semibold  ${headingColor} ${
+        className: `font-[var(--font-pt-serif)] font-semibold ${headingColor} ${
           headerSizes[level as keyof typeof headerSizes] || headerSizes[2]
         } `,
         style: headerAlign, // Apply alignment
@@ -590,7 +590,7 @@ function renderBlock(
           <div className="flex-1 min-w-0">
             {columnData.heading && (
               <h3
-                className={`text-3xl font-bold font-[PTSerif] mb-3 ${headingColor}`}
+                className={`text-3xl font-bold font-[var(--font-pt-serif)] mb-3 ${headingColor}`}
               >
                 {columnData.heading}
               </h3>
