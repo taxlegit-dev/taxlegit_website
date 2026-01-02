@@ -70,7 +70,7 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
               <button
                 key={section.id}
                 onClick={() => scrollToSection(index)}
-                className={`whitespace-nowrap px-5 py-2 text-[13px]  transition-all duration-200 ${
+                className={`whitespace-nowrap px-5 py-2 text-sm   transition-all duration-200 ${
                   activeSection === index
                     ? "border-b-1 border-purple-400  text-lg"
                     : "text-slate-700  hover:border-b-2 hover:border-purple-300"

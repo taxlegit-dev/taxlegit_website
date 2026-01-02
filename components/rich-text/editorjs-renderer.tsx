@@ -273,7 +273,7 @@ function renderBlock(
       return (
         <ReadMoreHtml
           key={block.id}
-          className={`mb-5 text-[18px] font-[Calibri]  ${textColor}`}
+          className={`mb-5 text-lg   ${textColor}`}
           style={paragraphAlign} // Apply alignment
           html={block.data.text || ""}
         />
@@ -293,7 +293,7 @@ function renderBlock(
       };
 
       const headerProps = {
-        className: `font-[PTSerif] font-semibold  ${headingColor} ${
+        className: ` font-semibold  ${headingColor} ${
           headerSizes[level as keyof typeof headerSizes] || headerSizes[2]
         } `,
         style: headerAlign, // Apply alignment
@@ -589,9 +589,7 @@ function renderBlock(
 
           <div className="flex-1 min-w-0">
             {columnData.heading && (
-              <h3
-                className={`text-3xl font-bold font-[PTSerif] mb-3 ${headingColor}`}
-              >
+              <h3 className={`text-3xl font-bold  mb-3 ${headingColor}`}>
                 {columnData.heading}
               </h3>
             )}
@@ -603,7 +601,9 @@ function renderBlock(
               />
             )} */}
             {columnData.description && (
-              <p className={`mb-6 text-slate-800`}>{columnData.description}</p>
+              <p className={`mb-6 text-slate-800  text-lg`}>
+                {columnData.description}
+              </p>
             )}
 
             {columnData.points && columnData.points.length > 0 && (
@@ -615,7 +615,7 @@ function renderBlock(
                         theme === "dark" ? "bg-purple-400" : "bg-purple-600"
                       }`}
                     />
-                    <span className="text-base leading-relaxed text-gray-800">
+                    <span className="text-lg leading-relaxed text-gray-800 ">
                       {point}
                     </span>
                   </li>
@@ -771,7 +771,7 @@ function renderBlock(
                   </h3>
                 )}
                 {card.description && (
-                  <p className={`mt-2 text-sm leading-relaxed  ${textColor}`}>
+                  <p className={`mt-2 text-md leading-relaxed   ${textColor}`}>
                     {card.description}
                   </p>
                 )}

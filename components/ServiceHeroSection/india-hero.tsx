@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { ArrowRight, Handshake, Scale, Building2 } from "lucide-react";
+import { Handshake, Scale, Building2 } from "lucide-react";
 import { FaYoutube } from "react-icons/fa";
 import Link from "next/link";
 import type { PageHero } from "@prisma/client";
@@ -127,21 +127,19 @@ export function IndiaHero({
                     Home
                   </Link>
                   <span className="mx-2">{">"}</span>
-                  <span className="text-slate-700">{trimmedParent}</span>
-                  <span className="mx-2">{">"}</span>
                   <span className=" text-slate-700">{trimmedCurrent}</span>
                 </nav>
               )}
-              <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6 font-[sourceSerifPro]">
+              <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
                 {hero.title}
               </h1>
             </div>
 
             {/* Benefits List */}
             {benefits.length > 0 && (
-              <div className="space-y-3">
+              <div className="space-y-1">
                 {benefits.map((benefit: string, index: number) => (
-                  <div key={index} className="flex items-start gap-3">
+                  <div key={index} className="flex items-start gap-2">
                     <svg
                       className="w-6 h-6 text-purple-600 flex-shrink-0 mt-0.5"
                       fill="none"
@@ -155,7 +153,7 @@ export function IndiaHero({
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    <p className="text-lg text-zinc-700">{benefit}</p>
+                    <p className="text-lg text-zinc-700 ">{benefit}</p>
                   </div>
                 ))}
               </div>

@@ -78,6 +78,52 @@ function MegaNavbarContent({
 
   const mappedRegion = toSupportedRegion(region);
   const regionPrefix = region === Region.US ? "/us" : "";
+  const displayItems =
+    region === Region.INDIA
+      ? [
+          ...items,
+          {
+            id: "static-other",
+            label: "Other",
+            href: null,
+            type: "DROPDOWN",
+            isLoginLink: false,
+            order: 999,
+            groups: [
+              {
+                label: "Other",
+                items: [
+                  {
+                    id: "other-calculate-quote",
+                    label: "Calculate Quote",
+                    href: "/calculateQuote",
+                    order: 1,
+                  },
+                  {
+                    id: "other-namecheck",
+                    label: "Namecheck",
+                    href: "/nameCheck",
+                    order: 5,
+                  },
+                  {
+                    id: "other-contact",
+                    label: "Contact",
+                    href: "/contact-us",
+                    order: 2,
+                  },
+                  {
+                    id: "other-about",
+                    label: "About",
+                    href: "/about",
+                    order: 3,
+                  },
+                  { id: "other-blog", label: "Blog", href: "/blog", order: 4 },
+                ],
+              },
+            ],
+          },
+        ]
+      : items;
 
   const toggleMobileItem = (itemId: string) => {
     setOpenMobileItem(openMobileItem === itemId ? null : itemId);
@@ -102,7 +148,7 @@ function MegaNavbarContent({
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-[42px] lg:flex">
-          {items.map((item) => {
+          {displayItems.map((item) => {
             if (item.type === "DROPDOWN" && item.groups.length > 0) {
               return (
                 <div
@@ -133,21 +179,19 @@ function MegaNavbarContent({
                   {/* Mega Menu Dropdown */}
                   {hoveredItem === item.id && (
                     <div
-                      className="
-      absolute left-4 right-4 top-full w-auto max-w-[800px]
-      z-[100]
-      rounded-xl 
-      border border-zinc-100
-      bg-white/95 
-      backdrop-blur-sm
-      shadow-[0_8px_30px_rgba(0,0,0,0.08)]
-      p-8 
-      animate-fadeIn
-      transition-all
-      lg:left-1/2 lg:right-auto lg:w-[900px] lg:-translate-x-1/2
-    "
+                      className={`absolute top-full z-[100] rounded-xl border border-zinc-100 bg-white/95 backdrop-blur-sm shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-8 animate-fadeIn transition-all ${
+                        item.id === "static-other"
+                          ? "left-0 w-max min-w-[220px]"
+                          : "left-4 right-4 w-auto max-w-[800px] lg:left-1/2 lg:right-auto lg:w-[900px] lg:-translate-x-1/2"
+                      }`}
                     >
-                      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                      <div
+                        className={
+                          item.id === "static-other"
+                            ? "grid grid-cols-1 gap-3"
+                            : "grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+                        }
+                      >
                         {item.groups.map((group, groupIndex) => (
                           <div key={groupIndex} className="space-y-2">
                             {/* Group Label */}
@@ -268,7 +312,7 @@ function MegaNavbarContent({
       {isMobileMenuOpen && (
         <div className="border-t border-gray-200 bg-white lg:hidden">
           <div className="mx-auto max-w-[1400px] space-y-2 px-6 py-4">
-            {items.map((item) => {
+            {displayItems.map((item) => {
               if (item.type === "DROPDOWN" && item.groups.length > 0) {
                 return (
                   <div

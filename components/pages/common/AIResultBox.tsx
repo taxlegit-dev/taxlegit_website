@@ -56,7 +56,7 @@ export default function AIGenerator() {
             disabled={isLoading}
             className="w-full sm:w-auto sm:min-w-[150px] px-7 py-3 rounded-xl bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-60"
           >
-            {isLoading ? "Generating..." : "Ai Overview ✨"}
+            {isLoading ? "Generating..." : "AI Overview ✨"}
           </button>
         </div>
 
