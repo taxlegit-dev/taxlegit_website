@@ -63,6 +63,12 @@ function stripHtml(html: string): string {
     .trim();
 }
 
+const decodeHtml = (html: string): string => {
+  const txt = document.createElement("textarea");
+  txt.innerHTML = html;
+  return txt.value;
+};
+
 function ReadMoreHtml({
   html,
   className,
@@ -590,7 +596,7 @@ function renderBlock(
           <div className="flex-1 min-w-0">
             {columnData.heading && (
               <h3 className={`text-3xl font-bold  mb-3 ${headingColor}`}>
-                {columnData.heading}
+                {decodeHtml(columnData.heading)}
               </h3>
             )}
             {/* {columnData.description && (
@@ -602,7 +608,7 @@ function renderBlock(
             )} */}
             {columnData.description && (
               <p className={`mb-6 text-slate-800  text-lg`}>
-                {columnData.description}
+                {decodeHtml(columnData.description)}
               </p>
             )}
 
@@ -611,12 +617,12 @@ function renderBlock(
                 {columnData.points.map((point, idx) => (
                   <li key={idx} className="flex items-start">
                     <span
-                      className={`mr-2 mt-2 flex-shrink-0 w-1.5 h-1.5 rounded-full ${
+                      className={`mr-2 mt-3 flex-shrink-0 w-1.5 h-1.5 rounded-full ${
                         theme === "dark" ? "bg-purple-400" : "bg-purple-600"
                       }`}
                     />
                     <span className="text-lg leading-relaxed text-gray-800 ">
-                      {point}
+                      {decodeHtml(point)}
                     </span>
                   </li>
                 ))}

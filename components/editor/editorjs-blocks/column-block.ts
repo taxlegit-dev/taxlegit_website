@@ -5,6 +5,12 @@ import type {
   API,
 } from "@editorjs/editorjs";
 
+const decodeHtml = (html: string): string => {
+  const txt = document.createElement("textarea");
+  txt.innerHTML = html;
+  return txt.value;
+};
+
 export interface ColumnBlockData extends BlockToolData {
   imageUrl: string;
   youtubeUrl?: string;
@@ -215,7 +221,7 @@ export default class ColumnBlock implements BlockTool {
 
     this.headingInput = document.createElement("input");
     this.headingInput.type = "text";
-    this.headingInput.value = this.data.heading;
+    this.headingInput.value = decodeHtml(this.data.heading);
     this.headingInput.placeholder = "Enter heading";
     this.headingInput.style.cssText =
       "width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; font-weight: 600;";
@@ -227,7 +233,7 @@ export default class ColumnBlock implements BlockTool {
       "display: block; font-size: 12px; font-weight: 500; margin-top: 8px;";
 
     this.descriptionTextarea = document.createElement("textarea");
-    this.descriptionTextarea.value = this.data.description;
+    this.descriptionTextarea.value = decodeHtml(this.data.description);
     this.descriptionTextarea.placeholder = "Enter description";
     this.descriptionTextarea.rows = 4;
     this.descriptionTextarea.style.cssText =
@@ -408,7 +414,7 @@ export default class ColumnBlock implements BlockTool {
 
       const pointInput = document.createElement("input");
       pointInput.type = "text";
-      pointInput.value = point;
+      pointInput.value = decodeHtml(point);
       pointInput.placeholder = "Enter point";
       pointInput.style.cssText =
         "flex: 1; padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;";
