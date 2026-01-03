@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { Region, ContentStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import Footer from "@/components/footer";

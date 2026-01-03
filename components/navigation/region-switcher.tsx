@@ -15,31 +15,21 @@ export function RegionSwitcher({
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
 
-  const current = supportedRegions.find((r) => r.value === currentRegion);
+  const current = supportedRegions.find(
+    (r) => r.value === currentRegion
+  );
 
-  const handleSelect = async (value: SupportedRegion) => {
-    setLoading(true);
-
-    await fetch("/api/region", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ region: value }),
-    });
-
-    router.push(regionPathMap[value]);
-    router.refresh();
-
-    setLoading(false);
+  const handleSelect = (value: SupportedRegion) => {
     setOpen(false);
+
+    // 🚀 Pure client-side navigation (CDN safe)
+    router.push(regionPathMap[value]);
   };
 
   return (
     <div className="relative inline-block w-42">
-      {/* Trigger Button */}
       <button
-        disabled={loading}
         onClick={() => setOpen(!open)}
         className="
           flex w-full items-center justify-between
@@ -62,7 +52,6 @@ export function RegionSwitcher({
             overflow-hidden z-50
           "
         >
-          {/* Region List */}
           <div className="max-h-64 overflow-y-auto">
             {supportedRegions.map((region) => (
               <button
@@ -74,7 +63,9 @@ export function RegionSwitcher({
                 "
               >
                 <span>{region.flag}</span>
-                <span className="text-zinc-700">{region.label}</span>
+                <span className="text-zinc-700">
+                  {region.label}
+                </span>
               </button>
             ))}
           </div>

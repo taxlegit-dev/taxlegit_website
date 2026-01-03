@@ -14,11 +14,15 @@ import { parseMetaBlockForMetadata } from "@/lib/seo-utils";
 /* ----------------------------------------
    ✅ ISR — CDN CACHED HTML
 ---------------------------------------- */
-export const revalidate = 86400; // 24 hours
+export const revalidate = 86400;
 
+/* ----------------------------------------
+   TYPES
+---------------------------------------- */
 type DynamicPageProps = {
   params: Promise<{ slug: string }>;
 };
+
 
 /* ----------------------------------------
    PURE FUNCTION CACHE (SEO PARSING)
@@ -26,7 +30,7 @@ type DynamicPageProps = {
 const parseMetaCached = cache(parseMetaBlockForMetadata);
 
 /* ----------------------------------------
-   DATA LOADER (LIGHT & FAST)
+   DATA LOADER (BUILD / REVALIDATE ONLY)
 ---------------------------------------- */
 async function getServicePageData(slug: string, region: Region) {
   const navbarItem = await prisma.navbarItem.findFirst({
@@ -45,7 +49,7 @@ async function getServicePageData(slug: string, region: Region) {
 
   if (!navbarItem) return null;
 
-  const [hero, servicePage, faq, metaData] = await Promise.all([
+  const [hero, servicePage, faq] = await Promise.all([
     prisma.pageHero.findUnique({
       where: { navbarItemId: navbarItem.id },
     }),
@@ -58,10 +62,10 @@ async function getServicePageData(slug: string, region: Region) {
         sections: {
           orderBy: { order: "asc" },
           select: {
-            id:true,
+            id: true,
             title: true,
             content: true,
-            order: true
+            order: true,
           },
         },
       },
@@ -77,21 +81,24 @@ async function getServicePageData(slug: string, region: Region) {
             id: true,
             question: true,
             answer: true,
-            order: true
+            order: true,
           },
         },
       },
     }),
-
-    prisma.metaData.findFirst({
-      where: {
-        pageType: "SERVICE",
-      },
-      select: {
-        metaBlock: true,
-      },
-    }),
   ]);
+
+  const metaData =
+    servicePage &&
+    (await prisma.metaData.findUnique({
+      where: {
+        pageType_pageId: {
+          pageType: "SERVICE",
+          pageId: servicePage.id,
+        },
+      },
+      select: { metaBlock: true },
+    }));
 
   return {
     navbarItem,
@@ -103,52 +110,29 @@ async function getServicePageData(slug: string, region: Region) {
 }
 
 /* ----------------------------------------
-   SEO METADATA (FAST & STATIC)
+   SEO METADATA (STATIC)
 ---------------------------------------- */
 export async function generateMetadata({
   params,
 }: DynamicPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const region = Region.INDIA;
+  const data = await getServicePageData(slug, Region.INDIA);
 
-  const data = await getServicePageData(slug, region);
-
-  if (!data) {
-    return { title: "Page Not Found" };
-  }
+  if (!data) return { title: "Page Not Found" };
 
   const { navbarItem, metaData } = data;
 
-  const baseUrl = "https://taxlegit.com";
-  const pageUrl = `${baseUrl}/${slug}`;
+  const pageUrl = `https://taxlegit.com/${slug}`;
   const defaultTitle = `${navbarItem.label} | Taxlegit`;
   const defaultDescription = `Learn more about ${navbarItem.label} services at Taxlegit`;
 
   if (metaData?.metaBlock) {
     const parsed = parseMetaCached(metaData.metaBlock);
-
     return {
       ...parsed,
       title: parsed.title || defaultTitle,
       description: parsed.description || defaultDescription,
-      alternates: {
-        canonical: parsed.alternates?.canonical || pageUrl,
-      },
-      openGraph: {
-        ...(parsed.openGraph || {}),
-        title: parsed.openGraph?.title || defaultTitle,
-        description:
-          parsed.openGraph?.description || defaultDescription,
-        type: "website",
-        url: pageUrl,
-      },
-      twitter: {
-        ...(parsed.twitter || {}),
-        card: "summary",
-        title: parsed.twitter?.title || defaultTitle,
-        description:
-          parsed.twitter?.description || defaultDescription,
-      },
+      alternates: { canonical: pageUrl },
     };
   }
 
@@ -156,31 +140,17 @@ export async function generateMetadata({
     title: defaultTitle,
     description: defaultDescription,
     alternates: { canonical: pageUrl },
-    openGraph: {
-      title: defaultTitle,
-      description: defaultDescription,
-      type: "website",
-      url: pageUrl,
-    },
-    twitter: {
-      card: "summary",
-      title: defaultTitle,
-      description: defaultDescription,
-    },
   };
 }
 
 /* ----------------------------------------
    PAGE RENDER
 ---------------------------------------- */
-export default async function DynamicPage({
+export default async function ServicePage({
   params,
 }: DynamicPageProps) {
   const { slug } = await params;
-  const region = Region.INDIA;
-
-  const data = await getServicePageData(slug, region);
-
+  const data = await getServicePageData(slug, Region.INDIA);
   if (!data) notFound();
 
   const { navbarItem, hero, servicePage, faq, metaData } = data;
