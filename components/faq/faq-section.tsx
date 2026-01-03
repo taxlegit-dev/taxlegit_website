@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 
-import type { ServicePageFAQItem } from "@prisma/client";
+// import type { ServicePageFAQItem } from "@prisma/client";
+
+export type ServicePageFAQItem = {
+  id: string,
+  question: string,
+  answer: string,
+  order: number
+}
 
 type FAQSectionProps = {
   questions: ServicePageFAQItem[];
@@ -40,10 +47,9 @@ export function FAQSection({ questions, region }: FAQSectionProps) {
       <div
         key={item.id}
         className={`rounded-2xl border transition-all duration-300 overflow-hidden shadow-lg
-          ${
-            isIndia
-              ? "bg-white border-slate-200"
-              : "bg-white/5 backdrop-blur-xl border-slate-700"
+          ${isIndia
+            ? "bg-white border-slate-200"
+            : "bg-white/5 backdrop-blur-xl border-slate-700"
           }
           ${isOpen ? "shadow-xl scale-[1.01]" : "opacity-90"}
         `}
@@ -53,19 +59,17 @@ export function FAQSection({ questions, region }: FAQSectionProps) {
           className="w-full flex justify-between items-center py-3 px-6 text-left"
         >
           <span
-            className={`text-lg font-semibold ${
-              isIndia ? "text-slate-900" : "text-white"
-            }`}
+            className={`text-lg font-semibold ${isIndia ? "text-slate-900" : "text-white"
+              }`}
           >
             {item.question}
           </span>
 
           <div
             className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 ml-4
-              ${
-                isIndia
-                  ? "bg-purple-100 text-purple-600"
-                  : "bg-purple-400/20 text-purple-300"
+              ${isIndia
+                ? "bg-purple-100 text-purple-600"
+                : "bg-purple-400/20 text-purple-300"
               }
               ${isOpen ? "rotate-180" : ""}
             `}
@@ -87,16 +91,14 @@ export function FAQSection({ questions, region }: FAQSectionProps) {
         </button>
 
         <div
-          className={`transition-all duration-300 ${
-            isOpen ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
-          }`}
+          className={`transition-all duration-300 ${isOpen ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+            }`}
         >
           <div
-            className={`px-6 pb-5 prose max-w-none ${
-              isIndia
+            className={`px-6 pb-5 prose max-w-none ${isIndia
                 ? "prose-slate text-slate-700"
                 : "prose-invert prose-slate text-slate-300"
-            }`}
+              }`}
             dangerouslySetInnerHTML={{ __html: item.answer }}
           />
         </div>
@@ -106,11 +108,10 @@ export function FAQSection({ questions, region }: FAQSectionProps) {
 
   return (
     <section
-      className={`py-12 ${
-        isIndia
+      className={`py-12 ${isIndia
           ? "bg-gradient-to-br from-purple-50 via-white to-purple-100"
           : "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
-      }`}
+        }`}
     >
       <div className="max-w-6xl mx-auto px-6">
         {/* Two Column Layout */}
@@ -121,28 +122,25 @@ export function FAQSection({ questions, region }: FAQSectionProps) {
             <div className="space-y-4">
               <span
                 className={`text-sm font-medium px-3 py-1 rounded-full inline-block
-                  ${
-                    isIndia
-                      ? "bg-purple-100 text-purple-700"
-                      : "bg-slate-700 text-purple-300"
+                  ${isIndia
+                    ? "bg-purple-100 text-purple-700"
+                    : "bg-slate-700 text-purple-300"
                   }`}
               >
                 Frequently asked questions
               </span>
 
               <h2
-                className={`text-4xl font-extrabold leading-snug ${
-                  isIndia ? "text-slate-900" : "text-white"
-                }`}
+                className={`text-4xl font-extrabold leading-snug ${isIndia ? "text-slate-900" : "text-white"
+                  }`}
               >
                 Frequently asked <br />
                 <span className="text-purple-600">questions</span>
               </h2>
 
               <p
-                className={`text-md ${
-                  isIndia ? "text-slate-600" : "text-slate-300"
-                } max-w-lg`}
+                className={`text-md ${isIndia ? "text-slate-600" : "text-slate-300"
+                  } max-w-lg`}
               >
                 Choose a plan that fits your business needs and budget. No hidden
                 fees—just straightforward answers to common questions.
@@ -164,18 +162,16 @@ export function FAQSection({ questions, region }: FAQSectionProps) {
         {/* Footer */}
         <div className="mt-12 text-center">
           <p
-            className={`text-sm ${
-              isIndia ? "text-slate-500" : "text-slate-400"
-            }`}
+            className={`text-sm ${isIndia ? "text-slate-500" : "text-slate-400"
+              }`}
           >
             Still have questions?{" "}
             <a
               href="tel:+918929218091"
-              className={`font-semibold hover:underline transition ${
-                isIndia
+              className={`font-semibold hover:underline transition ${isIndia
                   ? "text-purple-600 hover:text-purple-700"
                   : "text-purple-400 hover:text-purple-300"
-              }`}
+                }`}
             >
               Contact us
             </a>

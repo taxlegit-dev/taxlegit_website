@@ -1,12 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { ServicePageSection } from "@prisma/client";
+// import type { ServicePageSection } from "@prisma/client";
 import { EditorJsRenderer } from "@/components/rich-text/editorjs-renderer";
 import type { OutputData } from "@editorjs/editorjs";
 
+export type ServicePageSectionView = {
+  id:string;
+  title: string;
+  content: string;
+  order: number
+};
+
 type ServicePageViewProps = {
-  sections: ServicePageSection[];
+  sections: ServicePageSectionView[];
 };
 
 export function ServicePageView({ sections }: ServicePageViewProps) {

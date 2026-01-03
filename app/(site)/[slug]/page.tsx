@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { unstable_cache } from "next/cache";
 import { cache } from "react";
 import { Region } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -12,6 +11,11 @@ import Footer from "@/components/footer";
 import { MetaDataRenderer } from "@/components/seo/meta-data-renderer";
 import { parseMetaBlockForMetadata } from "@/lib/seo-utils";
 
+/* ----------------------------------------
+   ✅ ISR — CDN CACHED HTML
+---------------------------------------- */
+export const revalidate = 86400; // 24 hours
+
 type DynamicPageProps = {
   params: Promise<{ slug: string }>;
 };
@@ -22,79 +26,84 @@ type DynamicPageProps = {
 const parseMetaCached = cache(parseMetaBlockForMetadata);
 
 /* ----------------------------------------
-   SINGLE BUNDLED DATA LOADER (CRITICAL)
+   DATA LOADER (LIGHT & FAST)
 ---------------------------------------- */
-const getServicePageBundle = async (
-  slug: string,
-  region: Region
-) => {
-  const cachedFn = unstable_cache(
-    async () => {
-      const navbarItem = await prisma.navbarItem.findFirst({
-        where: {
-          region,
-          href: `/${slug}`,
-          isActive: true,
-        },
-        include: {
-          parent: true,
-        },
-      });
-
-      if (!navbarItem) return null;
-
-      const [hero, servicePage, faq] = await Promise.all([
-        prisma.pageHero.findUnique({
-          where: { navbarItemId: navbarItem.id },
-        }),
-        prisma.servicePage.findUnique({
-          where: { navbarItemId: navbarItem.id },
-          include: {
-            sections: { orderBy: { order: "asc" } },
-          },
-        }),
-        prisma.servicePageFAQ.findUnique({
-          where: { navbarItemId: navbarItem.id },
-          include: {
-            questions: { orderBy: { order: "asc" } },
-          },
-        }),
-      ]);
-
-      let metaData = null;
-      if (servicePage) {
-        metaData = await prisma.metaData.findUnique({
-          where: {
-            pageType_pageId: {
-              pageType: "SERVICE",
-              pageId: servicePage.id,
-            },
-          },
-        });
-      }
-
-      return {
-        navbarItem,
-        hero,
-        servicePage,
-        faq,
-        metaData,
-      };
-    },
-    [
-      "service-page-bundle",
-      slug,
+async function getServicePageData(slug: string, region: Region) {
+  const navbarItem = await prisma.navbarItem.findFirst({
+    where: {
+      href: `/${slug}`,
       region,
-    ],
-    { revalidate: 600 }
-  );
+      isActive: true,
+    },
+    select: {
+      id: true,
+      label: true,
+      groupLabel: true,
+      parent: { select: { label: true } },
+    },
+  });
 
-  return cachedFn();
-};
+  if (!navbarItem) return null;
 
+  const [hero, servicePage, faq, metaData] = await Promise.all([
+    prisma.pageHero.findUnique({
+      where: { navbarItemId: navbarItem.id },
+    }),
+
+    prisma.servicePage.findUnique({
+      where: { navbarItemId: navbarItem.id },
+      select: {
+        id: true,
+        status: true,
+        sections: {
+          orderBy: { order: "asc" },
+          select: {
+            id:true,
+            title: true,
+            content: true,
+            order: true
+          },
+        },
+      },
+    }),
+
+    prisma.servicePageFAQ.findUnique({
+      where: { navbarItemId: navbarItem.id },
+      select: {
+        status: true,
+        questions: {
+          orderBy: { order: "asc" },
+          select: {
+            id: true,
+            question: true,
+            answer: true,
+            order: true
+          },
+        },
+      },
+    }),
+
+    prisma.metaData.findFirst({
+      where: {
+        pageType: "SERVICE",
+      },
+      select: {
+        metaBlock: true,
+      },
+    }),
+  ]);
+
+  return {
+    navbarItem,
+    hero,
+    servicePage,
+    faq,
+    metaData,
+  };
+}
 
 /* ----------------------------------------
-   SEO METADATA (NO DUPLICATE QUERIES)
+   SEO METADATA (FAST & STATIC)
 ---------------------------------------- */
 export async function generateMetadata({
   params,
@@ -102,7 +111,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const region = Region.INDIA;
 
-  const data = await getServicePageBundle(slug, region);
+  const data = await getServicePageData(slug, region);
 
   if (!data) {
     return { title: "Page Not Found" };
@@ -122,7 +131,6 @@ export async function generateMetadata({
       ...parsed,
       title: parsed.title || defaultTitle,
       description: parsed.description || defaultDescription,
-      robots: parsed.robots || "index, follow",
       alternates: {
         canonical: parsed.alternates?.canonical || pageUrl,
       },
@@ -132,7 +140,7 @@ export async function generateMetadata({
         description:
           parsed.openGraph?.description || defaultDescription,
         type: "website",
-        url: parsed.openGraph?.url || pageUrl,
+        url: pageUrl,
       },
       twitter: {
         ...(parsed.twitter || {}),
@@ -147,7 +155,6 @@ export async function generateMetadata({
   return {
     title: defaultTitle,
     description: defaultDescription,
-    robots: "index, follow",
     alternates: { canonical: pageUrl },
     openGraph: {
       title: defaultTitle,
@@ -172,12 +179,11 @@ export default async function DynamicPage({
   const { slug } = await params;
   const region = Region.INDIA;
 
-  const data = await getServicePageBundle(slug, region);
+  const data = await getServicePageData(slug, region);
 
   if (!data) notFound();
 
-  const { navbarItem, hero, servicePage, faq, metaData } =
-    data;
+  const { navbarItem, hero, servicePage, faq, metaData } = data;
 
   return (
     <>
@@ -205,9 +211,7 @@ export default async function DynamicPage({
 
           {servicePage?.status === "PUBLISHED" &&
           servicePage.sections.length > 0 ? (
-            <ServicePageView
-              sections={servicePage.sections}
-            />
+            <ServicePageView sections={servicePage.sections} />
           ) : (
             <section className="mx-auto max-w-6xl px-6 py-12">
               <h1 className="text-4xl font-semibold">
