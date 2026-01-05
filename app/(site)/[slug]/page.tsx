@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { Region } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
@@ -10,117 +11,83 @@ import { FAQSection } from "@/components/faq/faq-section";
 import Footer from "@/components/footer";
 import { MetaDataRenderer } from "@/components/seo/meta-data-renderer";
 import { parseMetaBlockForMetadata } from "@/lib/seo-utils";
+import { getServiceContentCached } from "@/lib/service-cache";
 
-/* ----------------------------------------
-   ✅ ISR — CDN CACHED HTML
----------------------------------------- */
+/* -------------------------------------------------
+   ✅ ISR — HTML cached at CDN
+------------------------------------------------- */
 export const revalidate = 86400;
 
-/* ----------------------------------------
-   TYPES
----------------------------------------- */
-type DynamicPageProps = {
+/* -------------------------------------------------
+   TYPES (Next.js 16 SAFE)
+------------------------------------------------- */
+type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
-
-/* ----------------------------------------
-   PURE FUNCTION CACHE (SEO PARSING)
----------------------------------------- */
+/* -------------------------------------------------
+   PURE FUNCTION CACHE
+------------------------------------------------- */
 const parseMetaCached = cache(parseMetaBlockForMetadata);
 
-/* ----------------------------------------
-   DATA LOADER (BUILD / REVALIDATE ONLY)
----------------------------------------- */
-async function getServicePageData(slug: string, region: Region) {
-  const navbarItem = await prisma.navbarItem.findFirst({
-    where: {
-      href: `/${slug}`,
-      region,
-      isActive: true,
+/* -------------------------------------------------
+   SMALL DB CACHE (IDs + SEO only)
+------------------------------------------------- */
+function getServiceShellCached(slug: string, region: Region) {
+  return unstable_cache(
+    async () => {
+      const navbarItem = await prisma.navbarItem.findFirst({
+        where: {
+          href: `/${slug}`,
+          region,
+          isActive: true,
+        },
+        select: {
+          id: true,
+          label: true,
+          groupLabel: true,
+          parent: { select: { label: true } },
+        },
+      });
+
+      if (!navbarItem) return null;
+
+      const servicePage = await prisma.servicePage.findUnique({
+        where: { navbarItemId: navbarItem.id },
+        select: { id: true, status: true },
+      });
+
+      const metaData = servicePage
+        ? await prisma.metaData.findUnique({
+            where: {
+              pageType_pageId: {
+                pageType: "SERVICE",
+                pageId: servicePage.id,
+              },
+            },
+            select: { metaBlock: true },
+          })
+        : null;
+
+      return { navbarItem, servicePage, metaData };
     },
-    select: {
-      id: true,
-      label: true,
-      groupLabel: true,
-      parent: { select: { label: true } },
-    },
-  });
-
-  if (!navbarItem) return null;
-
-  const [hero, servicePage, faq] = await Promise.all([
-    prisma.pageHero.findUnique({
-      where: { navbarItemId: navbarItem.id },
-    }),
-
-    prisma.servicePage.findUnique({
-      where: { navbarItemId: navbarItem.id },
-      select: {
-        id: true,
-        status: true,
-        sections: {
-          orderBy: { order: "asc" },
-          select: {
-            id: true,
-            title: true,
-            content: true,
-            order: true,
-          },
-        },
-      },
-    }),
-
-    prisma.servicePageFAQ.findUnique({
-      where: { navbarItemId: navbarItem.id },
-      select: {
-        status: true,
-        questions: {
-          orderBy: { order: "asc" },
-          select: {
-            id: true,
-            question: true,
-            answer: true,
-            order: true,
-          },
-        },
-      },
-    }),
-  ]);
-
-  const metaData =
-    servicePage &&
-    (await prisma.metaData.findUnique({
-      where: {
-        pageType_pageId: {
-          pageType: "SERVICE",
-          pageId: servicePage.id,
-        },
-      },
-      select: { metaBlock: true },
-    }));
-
-  return {
-    navbarItem,
-    hero,
-    servicePage,
-    faq,
-    metaData,
-  };
+    ["service-shell", region, slug],
+    { revalidate: 86400 }
+  )();
 }
 
-/* ----------------------------------------
-   SEO METADATA (STATIC)
----------------------------------------- */
+/* -------------------------------------------------
+   SEO METADATA (FAST + SAFE)
+------------------------------------------------- */
 export async function generateMetadata({
   params,
-}: DynamicPageProps): Promise<Metadata> {
+}: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const data = await getServicePageData(slug, Region.INDIA);
 
-  if (!data) return { title: "Page Not Found" };
+  const shell = await getServiceShellCached(slug, Region.INDIA);
+  if (!shell) return { title: "Page Not Found" };
 
-  const { navbarItem, metaData } = data;
+  const { navbarItem, metaData } = shell;
 
   const pageUrl = `https://taxlegit.com/${slug}`;
   const defaultTitle = `${navbarItem.label} | Taxlegit`;
@@ -143,21 +110,28 @@ export async function generateMetadata({
   };
 }
 
-/* ----------------------------------------
+/* -------------------------------------------------
    PAGE RENDER
----------------------------------------- */
-export default async function ServicePage({
-  params,
-}: DynamicPageProps) {
+------------------------------------------------- */
+export default async function ServicePage({ params }: PageProps) {
   const { slug } = await params;
-  const data = await getServicePageData(slug, Region.INDIA);
-  if (!data) notFound();
 
-  const { navbarItem, hero, servicePage, faq, metaData } = data;
+  /* ---------- small cached fetch ---------- */
+  const shell = await getServiceShellCached(slug, Region.INDIA);
+  if (!shell) notFound();
+
+  const { navbarItem, servicePage, metaData } = shell;
+  if (!servicePage) notFound();
+
+  /* ---------- Redis cached heavy content ---------- */
+  const { hero, sections, faq } = await getServiceContentCached(
+    navbarItem.id,
+    servicePage.id
+  );
 
   return (
     <>
-      {metaData && servicePage && (
+      {metaData && (
         <MetaDataRenderer
           pageType="SERVICE"
           pageId={servicePage.id}
@@ -179,9 +153,8 @@ export default async function ServicePage({
             />
           )}
 
-          {servicePage?.status === "PUBLISHED" &&
-          servicePage.sections.length > 0 ? (
-            <ServicePageView sections={servicePage.sections} />
+          {servicePage.status === "PUBLISHED" && sections.length > 0 ? (
+            <ServicePageView sections={sections} />
           ) : (
             <section className="mx-auto max-w-6xl px-6 py-12">
               <h1 className="text-4xl font-semibold">
@@ -193,13 +166,9 @@ export default async function ServicePage({
             </section>
           )}
 
-          {faq?.status === "PUBLISHED" &&
-            faq.questions.length > 0 && (
-              <FAQSection
-                questions={faq.questions}
-                region="INDIA"
-              />
-            )}
+          {faq?.status === "PUBLISHED" && faq?.questions?.length > 0 && (
+            <FAQSection questions={faq.questions} region="INDIA" />
+          )}
         </main>
 
         <Footer />
