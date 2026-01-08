@@ -40,9 +40,9 @@ export default function AboutUsSection() {
 
           {/* RIGHT – CONTENT */}
           <div>
-            <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-purple-600">
+            <h1 className="mb-3 text-lg font-semibold uppercase tracking-wide text-purple-600">
               About Us
-            </p>
+            </h1>
 
             <h2 className="mb-6 text-4xl font-extrabold leading-tight text-slate-900">
               Committed Towards Building a Robust Future – Empowering
@@ -50,14 +50,15 @@ export default function AboutUsSection() {
             </h2>
 
             <p className="mb-6 text-slate-700">
-              At <strong>TaxLegit</strong>, we believe that dealing with legal
-              compliance and paperwork can be overwhelming — so we’re here to
-              make things easier. Our mission is simple: to help you launch,
-              grow, and manage your business hassle-free.
+              At <strong>TaxLegit</strong>, we help startups, NRIs, foreign investors, Section 8 companies, and businesses across India grow with confidence. We provide expert guidance in company registration, compliance, taxation, accounting, licensing, and intellectual property protection.
+            </p>
+
+            <p className="mb-6 text-slate-700">
+              Our services are trusted by professionals, corporates, foundations, international donors, educational institutions, healthcare organizations, and global investors. With 20+ years of experience and strong industry partnerships, we make business setup and compliance  simple, reliable, and efficient, so you can focus on growing your business.
             </p>
 
             {/* KEY SERVICES */}
-            <div className="mb-8 space-y-4">
+            {/* <div className="mb-8 space-y-4">
               <ServiceItem
                 title="Simple Business Setup"
                 description="Register your business online quickly and affordably."
@@ -70,7 +71,7 @@ export default function AboutUsSection() {
                 title="Expert Guidance"
                 description="Friendly experts providing clear answers and real solutions."
               />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

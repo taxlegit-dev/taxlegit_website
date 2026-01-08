@@ -112,7 +112,7 @@ function MegaNavbarContent({
                 onMouseEnter={() => setHoveredItem(item.id)}
                 onMouseLeave={() => setHoveredItem(null)}
               >
-                <button className="flex items-center gap-x-1.5 py-6 text-[14px] font-medium text-[#333333] hover:text-black">
+                <button className="flex items-center gap-x-1.5 py-2 text-lg font-medium text-[#333333] hover:text-black">
                   {item.label}
                   <svg
                     className={`h-3.5 w-3.5 transition-transform ${
@@ -145,7 +145,7 @@ function MegaNavbarContent({
                       {item.groups.map((group, i) => (
                         <div key={i} className="space-y-2">
                           {group.label && (
-                            <h3 className="border-b border-zinc-100 pb-2 text-[13px] font-semibold uppercase tracking-wider text-zinc-500">
+                            <h3 className="border-b border-zinc-100 pb-2 text-[14px] font-semibold uppercase tracking-wider text-zinc-500">
                               {group.label}
                             </h3>
                           )}
@@ -154,7 +154,7 @@ function MegaNavbarContent({
                               <li key={subItem.id}>
                                 <Link
                                   href={`${regionPrefix}${subItem.href}`}
-                                  className="block rounded-lg px-3 py-1 text-[12px] font-medium text-zinc-700 transition hover:bg-[#E6D3E6] hover:text-black"
+                                  className="block rounded-lg px-3 py-1 text-[14px] font-medium text-zinc-700 transition hover:bg-[#E6D3E6] hover:text-black"
                                 >
                                   {subItem.label}
                                 </Link>
@@ -183,9 +183,9 @@ function MegaNavbarContent({
         <div className="flex items-center gap-3">
           <Link
             href="tel:+918929218091"
-            className="hidden h-[44px] items-center gap-2.5 rounded-[6px] bg-purple-600 px-5 text-[15px] font-semibold text-white shadow-sm hover:bg-[#DC2626] lg:flex"
+            className="hidden h-[44px] items-center gap-2.5 rounded-[6px] bg-purple-600 px-5 text-[15px] font-semibold text-white shadow-sm hover:bg-purple-700 lg:flex"
           >
-            +91-8929218091
+            Schedule a call
           </Link>
 
           <button
@@ -247,7 +247,7 @@ function MegaNavbarContent({
                 href="tel:+918929218091"
                 className="flex h-[44px] w-full items-center justify-center gap-2.5 rounded-[6px] bg-purple-600 px-5 text-[15px] font-semibold text-white shadow-sm hover:bg-[#DC2626]"
               >
-                +91-8929218091
+                Schedule a call
               </Link>
             </div>
           </div>

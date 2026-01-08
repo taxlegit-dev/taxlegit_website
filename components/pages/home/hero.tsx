@@ -12,7 +12,7 @@ export default function HeroSection() {
 
   return (
     <>
-      <section className="w-full bg-white pt-24 px-6">
+      <section className="w-full bg-white pt-16 px-6">
         <div className="mx-auto max-w-6xl text-center">
           <a
             href="https://aarambh.taxlegit.com"
@@ -51,8 +51,7 @@ export default function HeroSection() {
 
           {/* Subheading */}
           <p className="mt-6 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            Commitment to Excellence the Best Services to you. Empower your
-            Registration with AI. Start Your Business with free consultation.
+            CEmpower your registration with AI-driven expertise and smart business solutions. Committed to excellence, we provide expert-led registration, accounting, valuation, ICFR, and subsidy services to help your business grow with compliance and confidence.
           </p>
         </div>
         <div className="w-full flex justify-center">
