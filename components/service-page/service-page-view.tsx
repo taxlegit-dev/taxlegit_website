@@ -66,10 +66,10 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
 
   return (
     <div className=" ">
-      {/* Sticky TOC Bar - Below Fixed Navbar */}
+      {/* Sticky TOC Bar - Below Fixed Navbar with Blur Effect */}
       <div
         ref={tocRef}
-        className="sticky top-[88px] z-40 mt-4 w-fit max-w-full mx-auto rounded-xl border border-slate-200 bg-white shadow-sm"
+        className="sticky top-[68px] z-40 mt-4 w-fit max-w-full mx-auto rounded-xl border border-slate-200 bg-white/80 backdrop-blur-md shadow-sm"
       >
         <div className="max-w-full px-4">
           <div className="flex w-fit max-w-full items-center gap-2 lg:gap-8 overflow-x-auto whitespace-nowrap scrollbar-hide py-2">
@@ -77,9 +77,9 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
               <button
                 key={section.id}
                 onClick={() => scrollToSection(index)}
-                className={`whitespace-nowrap px-5 py-2 text-sm   transition-all duration-200 ${
+                className={`whitespace-nowrap px-3 py-1 text-md   transition-all duration-200 ${
                   activeSection === index
-                    ? "border-b-1 border-purple-400  text-lg"
+                    ? "border-b-2 border-purple-400  text-lg"
                     : "text-slate-700  hover:border-b-2 hover:border-purple-300"
                 }`}
               >

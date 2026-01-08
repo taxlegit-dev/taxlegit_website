@@ -22,7 +22,7 @@ type Feature = {
 const features: Feature[] = [
   {
     id: 1,
-    title: "PVT",
+    title: "REGISTRATION",
     side: "left",
     x: 15,
     y: 18,
@@ -31,7 +31,7 @@ const features: Feature[] = [
   },
   {
     id: 2,
-    title: "tds rturn",
+    title: "LICENSES",
     side: "left",
     x: 15,
     y: 36,
@@ -40,7 +40,7 @@ const features: Feature[] = [
   },
   {
     id: 4,
-    title: "section-8",
+    title: "SUBSIDY",
     side: "right",
     x: 85,
     y: 18,
@@ -49,7 +49,7 @@ const features: Feature[] = [
   },
   {
     id: 5,
-    title: "audit itr",
+    title: "VALUATION",
     side: "right",
     x: 85,
     y: 35,
@@ -58,7 +58,7 @@ const features: Feature[] = [
   },
   {
     id: 6,
-    title: "llp",
+    title: "ACCOUNTING",
     side: "right",
     x: 85,
     y: 54,
@@ -67,7 +67,7 @@ const features: Feature[] = [
   },
   {
     id: 3,
-    title: "Ngo darpan",
+    title: "ICFR",
     side: "left",
     x: 15,
     y: 55,
@@ -143,14 +143,14 @@ export default function CashManagementDiagram() {
     }
   };
 
-  const handleCardClick = (feature: Feature) => {
-    if (!feature.link) return;
-    if (feature.link.startsWith("http")) {
-      window.open(feature.link, "_blank", "noopener,noreferrer");
-    } else {
-      router.push(feature.link);
-    }
-  };
+  // const handleCardClick = (feature: Feature) => {
+  //   if (!feature.link) return;
+  //   if (feature.link.startsWith("http")) {
+  //     window.open(feature.link, "_blank", "noopener,noreferrer");
+  //   } else {
+  //     router.push(feature.link);
+  //   }
+  // };
 
   const handleKeyDown = (
     event: React.KeyboardEvent<HTMLDivElement>,
@@ -158,7 +158,7 @@ export default function CashManagementDiagram() {
   ) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      handleCardClick(feature);
+      // handleCardClick(feature);
     }
   };
 
@@ -174,6 +174,15 @@ export default function CashManagementDiagram() {
         }
         .animate-dash-line {
           animation: dashAnimation 1.5s ease-in-out forwards;
+        }
+        
+        @keyframes bullet {
+          0%, 100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.5;
+          }
         }
       `,
         }}
@@ -198,10 +207,26 @@ export default function CashManagementDiagram() {
                 x2={dimensions.width}
                 y2="0"
               >
-                <stop offset="0%" stopColor="#3b82f6" stopOpacity="1" />
-                <stop offset="100%" stopColor="#8b5cf6" stopOpacity="1" />
+                <stop offset="0%" stopColor="#a855f7" stopOpacity="1" />
+                <stop offset="50%" stopColor="#8b5cf6" stopOpacity="1" />
+                <stop offset="100%" stopColor="#7c3aed" stopOpacity="1" />
               </linearGradient>
+              
+              <radialGradient id="bulletGradient">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
+                <stop offset="30%" stopColor="#e9d5ff" stopOpacity="1" />
+                <stop offset="100%" stopColor="#a855f7" stopOpacity="0.6" />
+              </radialGradient>
+              
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
             </defs>
+            
             {features.map((f) => (
               <g key={f.id}>
                 <path
@@ -212,15 +237,53 @@ export default function CashManagementDiagram() {
                   className="transition-all duration-300"
                 />
                 {(isHovered || isAutoActive) && (
-                  <path
-                    d={getPath(f)}
-                    stroke="url(#lineGradient)"
-                    strokeWidth="3"
-                    fill="none"
-                    strokeDasharray="2000"
-                    strokeDashoffset="2000"
-                    className="animate-dash-line"
-                  />
+                  <>
+                    <path
+                      d={getPath(f)}
+                      stroke="url(#lineGradient)"
+                      strokeWidth="3"
+                      fill="none"
+                      strokeDasharray="2000"
+                      strokeDashoffset="2000"
+                      className="animate-dash-line"
+                      filter="url(#glow)"
+                    />
+                    
+                    {/* Bullets moving forward then backward */}
+                    {[1, 2, 3].map((bulletNum) => (
+                      <circle
+                        key={`bullet-${f.id}-${bulletNum}`}
+                        r="4"
+                        fill="url(#bulletGradient)"
+                        filter="url(#glow)"
+                      >
+                        <animateMotion
+                          dur="3s"
+                          repeatCount="indefinite"
+                          begin={`${(bulletNum - 1) * 1}s`}
+                          keyPoints="0;1;0"
+                          keyTimes="0;0.5;1"
+                          calcMode="linear"
+                        >
+                          <mpath href={`#path-${f.id}`} />
+                        </animateMotion>
+                        <animate
+                          attributeName="opacity"
+                          values="1;0.5;1"
+                          dur="3s"
+                          repeatCount="indefinite"
+                          begin={`${(bulletNum - 1) * 1}s`}
+                        />
+                      </circle>
+                    ))}
+                    
+                    <path
+                      id={`path-${f.id}`}
+                      d={getPath(f)}
+                      fill="none"
+                      stroke="none"
+                    />
+                  </>
                 )}
               </g>
             ))}
@@ -252,7 +315,7 @@ export default function CashManagementDiagram() {
             }}
             role={f.link ? "button" : undefined}
             tabIndex={f.link ? 0 : -1}
-            onClick={() => handleCardClick(f)}
+            // onClick={() => handleCardClick(f)}
             onKeyDown={(event) => handleKeyDown(event, f)}
             className={`absolute z-10 w-44 rounded-xl bg-white border border-slate-200 shadow-md px-4 py-3 text-sm transition-all hover:-translate-y-1 hover:shadow-xl ${
               f.link ? "cursor-pointer" : "cursor-default"

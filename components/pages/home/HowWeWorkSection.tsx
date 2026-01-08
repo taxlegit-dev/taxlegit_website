@@ -115,12 +115,12 @@ const HowWeWork: React.FC = () => {
                 <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
                   {step.title}
                 </h3>
-                <ReadMoreText text={step.description} />
+                <p>{step.description}</p>
 
                 {/* Purple Accent Line */}
-                <div className="mt-6 pt-4 border-t border-gray-100">
+                {/* <div className="mt-6 pt-4 border-t border-gray-100">
                   <div className="w-12 h-1 bg-purple-600 rounded-full mx-auto"></div>
-                </div>
+                </div> */}
               </div>
 
               {/* Connector Line for Desktop */}

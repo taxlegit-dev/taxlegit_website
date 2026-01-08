@@ -122,95 +122,91 @@ function MegaNavbarContent({
             />
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden items-center gap-[42px] lg:flex">
-            {displayItems.map((item) =>
-              item.type === "DROPDOWN" ? (
-                <div
-                  key={item.id}
-                  className="relative"
-                  onMouseEnter={() => setHoveredItem(item.id)}
-                  onMouseLeave={() => setHoveredItem(null)}
-                >
-                  <button className="flex items-center gap-x-1.5 py-6 text-[14px] font-medium text-[#333333] hover:text-black">
-                    {item.label}
-                    <svg
-                      className={`h-3.5 w-3.5 transition-transform ${
-                        hoveredItem === item.id ? "rotate-180" : ""
-                      }`}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2.5}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </button>
-
-                  {hoveredItem === item.id && (
-                    <div
-                      className={`absolute top-full z-[100] rounded-xl border border-zinc-100 bg-white/95 backdrop-blur-sm shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-8 ${
-                        item.id === "static-other"
-                          ? "left-0 w-max min-w-[220px]"
-                          : "left-4 right-4 lg:left-1/2 lg:w-[900px] lg:-translate-x-1/2"
-                      }`}
-                    >
-                      <div
-                        className={
-                          item.id === "static-other"
-                            ? "grid grid-cols-1 gap-3"
-                            : "grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
-                        }
-                      >
-                        {item.groups.map((group, i) => (
-                          <div key={i} className="space-y-2">
-                            {group.label && (
-                              <h3 className="border-b border-zinc-100 pb-2 text-[13px] font-semibold uppercase tracking-wider text-zinc-500">
-                                {group.label}
-                              </h3>
-                            )}
-                            <ul>
-                              {group.items.map((subItem) => (
-                                <li key={subItem.id}>
-                                  <Link
-                                    href={`${regionPrefix}${subItem.href}`}
-                                    className="block rounded-lg px-3 py-1 text-[12px] font-medium text-zinc-700 transition hover:bg-[#E6D3E6] hover:text-black"
-                                  >
-                                    {subItem.label}
-                                  </Link>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <Link
-                  key={item.id}
-                  href={`${regionPrefix}${item.href}`}
-                  className="text-[18px] font-medium text-[#333333] hover:text-black"
-                >
+        {/* Desktop Navigation */}
+        <nav className="hidden items-center gap-[42px] lg:flex">
+          {displayItems.map((item) =>
+            item.type === "DROPDOWN" ? (
+              <div
+                key={item.id}
+                className="relative"
+                onMouseEnter={() => setHoveredItem(item.id)}
+                onMouseLeave={() => setHoveredItem(null)}
+              >
+                <button className="flex items-center gap-x-1.5 py-2 text-lg font-medium text-[#333333] hover:text-black">
                   {item.label}
-                </Link>
-              )
-            )}
-          </nav>
+                  <svg
+                    className={`h-3.5 w-3.5 transition-transform ${
+                      hoveredItem === item.id ? "rotate-180" : ""
+                    }`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
 
-          {/* Right Section */}
-          <div className="flex items-center gap-3">
-            <Link
-              href="tel:+918929218091"
-              className="hidden h-[44px] items-center gap-2.5 rounded-[6px] bg-purple-600 px-5 text-[15px] font-semibold text-white shadow-sm hover:bg-[#DC2626] lg:flex"
-            >
-              +91-8929218091
-            </Link>
+                {hoveredItem === item.id && (
+                  <div
+                    className={`absolute top-full z-[100] rounded-xl border border-zinc-100 bg-white/95 backdrop-blur-sm shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-8 ${
+                      item.id === "static-other"
+                        ? "left-0 w-max min-w-[220px]"
+                        : "left-4 right-4 lg:left-1/2 lg:w-[900px] lg:-translate-x-1/2"
+                    }`}
+                  >
+                    <div
+                      className={
+                        item.id === "static-other"
+                          ? "grid grid-cols-1 gap-3"
+                          : "grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+                      }
+                    >
+                      {item.groups.map((group, i) => (
+                        <div key={i} className="space-y-2">
+                          {group.label && (
+                            <h3 className="border-b border-zinc-100 pb-2 text-[14px] font-semibold uppercase tracking-wider text-zinc-500">
+                              {group.label}
+                            </h3>
+                          )}
+                          <ul>
+                            {group.items.map((subItem) => (
+                              <li key={subItem.id}>
+                                <Link
+                                  href={`${regionPrefix}${subItem.href}`}
+                                  className="block rounded-lg px-3 py-1 text-[14px] font-medium text-zinc-700 transition hover:bg-[#E6D3E6] hover:text-black"
+                                >
+                                  {subItem.label}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                key={item.id}
+                href={`${regionPrefix}${item.href}`}
+                className="text-[18px] font-medium text-[#333333] hover:text-black"
+              >
+                {item.label}
+              </Link>
+            )
+          )}
+        </nav>
+
+        {/* Right Section */}
+        <div className="flex items-center gap-3">
+          <Link
+            href="tel:+918929218091"
+            className="hidden h-[44px] items-center gap-2.5 rounded-[6px] bg-purple-600 px-5 text-[15px] font-semibold text-white shadow-sm hover:bg-purple-700 lg:flex"
+          >
+            Schedule a call
+          </Link>
 
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -264,20 +260,19 @@ function MegaNavbarContent({
                 )
               )}
 
-              {/* Mobile Region Switcher & Phone */}
-              <div className="space-y-3 border-t border-gray-100 pt-4">
-                <RegionSwitcher currentRegion={mappedRegion} />
-                <Link
-                  href="tel:+918929218091"
-                  className="flex h-[44px] w-full items-center justify-center gap-2.5 rounded-[6px] bg-purple-600 px-5 text-[15px] font-semibold text-white shadow-sm hover:bg-[#DC2626]"
-                >
-                  +91-8929218091
-                </Link>
-              </div>
+            {/* Mobile Region Switcher & Phone */}
+            <div className="space-y-3 border-t border-gray-100 pt-4">
+              <RegionSwitcher currentRegion={mappedRegion} />
+              <Link
+                href="tel:+918929218091"
+                className="flex h-[44px] w-full items-center justify-center gap-2.5 rounded-[6px] bg-purple-600 px-5 text-[15px] font-semibold text-white shadow-sm hover:bg-[#DC2626]"
+              >
+                Schedule a call
+              </Link>
             </div>
           </div>
-        )}
-      </header>
-    </>
+        </div>
+      )}
+    </header>
   );
 }
