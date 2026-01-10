@@ -158,6 +158,8 @@ export function BlogManager({
   const [authorImagePreview, setAuthorImagePreview] = useState<string | null>(
     null
   );
+  const [blogImageFile, setBlogImageFile] = useState<File | null>(null);
+  const [blogImagePreview, setBlogImagePreview] = useState<string | null>(null);
   const { query } = useAdminSearch();
   const normalizedQuery = query.trim().toLowerCase();
   const filteredBlogAuthors = useMemo(() => {
@@ -290,6 +292,8 @@ export function BlogManager({
         readTime: editingBlog.readTime ?? "",
         status: editingBlog.status,
       });
+      setBlogImagePreview(editingBlog.image || null);
+      setBlogImageFile(null);
 
       // Small delay to ensure clean editor mount
       const timer = setTimeout(() => setIsEditorReady(true), 50);
@@ -309,6 +313,8 @@ export function BlogManager({
         readTime: "",
         status: "DRAFT",
       });
+      setBlogImagePreview(null);
+      setBlogImageFile(null);
 
       // Small delay to ensure clean editor mount
       const timer = setTimeout(() => setIsEditorReady(true), 50);
@@ -443,14 +449,38 @@ export function BlogManager({
     }
   };
 
+  const handleBlogImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setBlogImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBlogImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleCreateBlog = blogForm.handleSubmit((data) => {
     startTransition(async () => {
       try {
+        let imageUrl = data.image;
+
+        if (blogImageFile) {
+          try {
+            imageUrl = await handleImageUpload(blogImageFile);
+          } catch (error) {
+            toast.error("Failed to upload image. Please try again.");
+            console.error("Error uploading image:", error);
+            return;
+          }
+        }
+
         const url = editingBlog ? "/api/admin/blogs" : "/api/admin/blogs";
         const method = editingBlog ? "PUT" : "POST";
         const payload = editingBlog
-          ? { ...data, id: editingBlog.id, region }
-          : { ...data, region };
+          ? { ...data, image: imageUrl, id: editingBlog.id, region }
+          : { ...data, image: imageUrl, region };
 
         const response = await fetch(url, {
           method,
@@ -470,6 +500,8 @@ export function BlogManager({
         setEditingBlog(null);
         setSelectedBlogId(null);
         setIsEditorReady(false);
+        setBlogImageFile(null);
+        setBlogImagePreview(null);
         blogForm.reset();
         await fetchData();
       } catch (error) {
@@ -891,13 +923,40 @@ export function BlogManager({
 
             <div>
               <label className="block text-sm font-semibold text-slate-900 mb-2">
-                Image URL
+                Blog Image
               </label>
+              <input type="hidden" {...blogForm.register("image")} />
               <input
-                {...blogForm.register("image")}
+                type="file"
+                accept="image/*"
+                onChange={handleBlogImageChange}
                 className="w-full rounded-lg border border-slate-200 px-4 py-2"
-                placeholder="https://example.com/image.jpg"
               />
+              {isSafeImageSrc(blogImagePreview) && (
+                <div className="mt-3">
+                  <Image
+                    src={blogImagePreview}
+                    alt="Preview"
+                    width={200}
+                    height={120}
+                    className="rounded-lg object-cover"
+                    unoptimized
+                  />
+                </div>
+              )}
+              {isSafeImageSrc(editingBlog?.image) && !blogImagePreview && (
+                <div className="mt-3">
+                  <p className="text-xs text-slate-500 mb-2">Current image:</p>
+                  <Image
+                    src={editingBlog.image}
+                    alt="Current"
+                    width={200}
+                    height={120}
+                    className="rounded-lg object-cover"
+                    unoptimized
+                  />
+                </div>
+              )}
               {blogForm.formState.errors.image && (
                 <p className="text-xs text-red-600 mt-1">
                   {blogForm.formState.errors.image.message}
