@@ -149,14 +149,12 @@ console.log(relatedBlogs);
       )}
 
       <div className="min-h-screen bg-white text-black">
-        <main className="pt-[72px]">
+        <main className="pt-[89px]">
           {hero?.status === "PUBLISHED" && (
             <IndiaHero
               hero={hero}
               breadcrumbParent={
-                navbarItem.parent?.label ||
-                navbarItem.groupLabel ||
-                "Services"
+                navbarItem.parent?.label || navbarItem.groupLabel || "Services"
               }
               breadcrumbCurrent={navbarItem.label}
             />
@@ -166,9 +164,7 @@ console.log(relatedBlogs);
             <ServicePageView sections={sections} />
           ) : (
             <section className="mx-auto max-w-6xl px-6 py-12">
-              <h1 className="text-4xl font-semibold">
-                {navbarItem.label}
-              </h1>
+              <h1 className="text-4xl font-semibold">{navbarItem.label}</h1>
               <p className="mt-4 text-zinc-600">
                 Content for this service is coming soon.
               </p>

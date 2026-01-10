@@ -36,7 +36,7 @@ export async function getServiceContentCached(
   const data = { hero, sections, faq };
 
   // 3️⃣ Cache for 24 hours
-  await redis.set(cacheKey, data, { ex: 20});
+  await redis.set(cacheKey, data, { ex: 20 });
 
   return data;
 }

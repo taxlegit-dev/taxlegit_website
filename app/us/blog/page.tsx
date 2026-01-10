@@ -31,7 +31,7 @@ export default async function UsBlogListingPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      <main className="mx-auto w-full max-w-6xl px-6 pt-[72px] pb-12">
+      <main className="mx-auto w-full max-w-6xl px-6 pt-[89px] pb-12">
         <div className="mb-12">
           <h1 className="text-4xl font-semibold mb-4">Blog</h1>
           <p className="text-lg text-slate-300">

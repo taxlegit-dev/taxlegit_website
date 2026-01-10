@@ -7,7 +7,7 @@ import Footer from "@/components/footer";
 export default function AboutCompanyHero() {
   return (
     <>
-      <section className="relative h-[400px] w-full overflow-hidden mt-[72px]">
+      <section className="relative h-[400px] w-full overflow-hidden mt-[89px]">
         {/* Background Image */}
         <Image
           src="/about/hero2.png" // 👉 replace with your image path

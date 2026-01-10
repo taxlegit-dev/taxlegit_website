@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Region } from "@prisma/client";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
 export async function POST(request: Request) {
   const session = await auth();
@@ -27,17 +28,49 @@ export async function POST(request: Request) {
       );
     }
 
-    // Convert file to base64 or upload to cloud storage
-    // For now, we'll use base64 encoding (in production, use cloud storage like S3, Cloudinary, etc.)
+    const awsRegion = process.env.AWS_REGION;
+    const awsAccessKeyId = process.env.AWS_ACCESS_KEY_ID;
+    const awsSecretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+    const bucketName = process.env.AWS_S3_BUCKET_NAME;
+
+    if (!awsRegion || !awsAccessKeyId || !awsSecretAccessKey || !bucketName) {
+      return NextResponse.json(
+        { error: "AWS S3 configuration missing" },
+        { status: 500 }
+      );
+    }
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const base64 = buffer.toString("base64");
-    const dataUrl = `data:${file.type};base64,${base64}`;
+
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const key = `uploads/${
+      region?.toLowerCase() || "unknown"
+    }/${Date.now()}-${safeName}`;
+
+    const s3 = new S3Client({
+      region: awsRegion,
+      credentials: {
+        accessKeyId: awsAccessKeyId,
+        secretAccessKey: awsSecretAccessKey,
+      },
+    });
+
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: bucketName,
+        Key: key,
+        Body: buffer,
+        ContentType: file.type,
+      })
+    );
+
+    const url = `https://${bucketName}.s3.${awsRegion}.amazonaws.com/${key}`;
 
     // Save to MediaAsset table
     const mediaAsset = await prisma.mediaAsset.create({
       data: {
-        url: dataUrl,
+        url,
         alt: file.name,
         mimeType: file.type,
         region: region === "US" ? Region.US : Region.INDIA,
@@ -45,9 +78,12 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ url: dataUrl, id: mediaAsset.id });
-  } catch {
-    console.error("Upload error:");
-    return NextResponse.json("Upload failed", { status: 500 });
+    return NextResponse.json({ url, id: mediaAsset.id });
+  } catch (error) {
+    console.error("Upload error:", error);
+    return NextResponse.json(
+      { error: "Upload failed", details: String(error) },
+      { status: 500 }
+    );
   }
 }

@@ -564,7 +564,7 @@ function renderBlock(
         >
           <div className="flex-1 min-w-0">
             {columnData.imageUrl && (
-              <div className="w-[500px] h-[300px] overflow-hidden rounded-lg flex items-center justify-center ">
+              <div className="relative w-full max-w-[500px] aspect-[5/3] overflow-hidden rounded-lg">
                 <Image
                   src={columnData.imageUrl}
                   alt={columnData.heading || "Column image"}

@@ -3,6 +3,7 @@
 import { ReactNode, useState } from "react";
 import { SessionProvider } from "next-auth/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "react-hot-toast";
 
 type ProviderTreeProps = {
   children: ReactNode;
@@ -13,7 +14,10 @@ export function ProviderTree({ children }: ProviderTreeProps) {
 
   return (
     <SessionProvider>
-      <QueryClientProvider client={client}>{children}</QueryClientProvider>
+      <QueryClientProvider client={client}>
+        {children}
+        <Toaster position="top-right" />
+      </QueryClientProvider>
     </SessionProvider>
   );
 }

@@ -9,7 +9,7 @@ import AboutUsSection from "@/components/pages/about/AboutTaxlegit";
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <div className="pt-[72px]">
+      <div className="pt-[89px]">
         <AboutCompanyHero />
         <AboutUsSection />
         <RunningLogoCarousel />

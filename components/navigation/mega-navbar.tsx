@@ -35,11 +35,7 @@ export function MegaNavbar({ region, initialItems }: MegaNavbarProps) {
   const pathname = usePathname();
 
   return (
-    <MegaNavbarContent
-      key={pathname}
-      region={region}
-      items={initialItems}
-    />
+    <MegaNavbarContent key={pathname} region={region} items={initialItems} />
   );
 }
 
@@ -72,10 +68,30 @@ function MegaNavbarContent({
               {
                 label: "Other",
                 items: [
-                  { id: "other-calculate-quote", label: "Calculate Quote", href: "/calculateQuote", order: 1 },
-                  { id: "other-namecheck", label: "Namecheck", href: "/nameCheck", order: 5 },
-                  { id: "other-contact", label: "Contact", href: "/contact-us", order: 2 },
-                  { id: "other-about", label: "About", href: "/about", order: 3 },
+                  {
+                    id: "other-calculate-quote",
+                    label: "Calculate Quote",
+                    href: "/calculateQuote",
+                    order: 1,
+                  },
+                  {
+                    id: "other-namecheck",
+                    label: "Namecheck",
+                    href: "/nameCheck",
+                    order: 5,
+                  },
+                  {
+                    id: "other-contact",
+                    label: "Contact",
+                    href: "/contact-us",
+                    order: 2,
+                  },
+                  {
+                    id: "other-about",
+                    label: "About",
+                    href: "/about",
+                    order: 3,
+                  },
                   { id: "other-blog", label: "Blog", href: "/blog", order: 4 },
                 ],
               },
@@ -89,10 +105,13 @@ function MegaNavbarContent({
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full bg-gradient-to-b from-[#E6D3E6] to-white">
-      <div className="mx-auto flex h-[72px] max-w-[1400px] items-center justify-between px-6">
+    <header className="fixed top-10 left-0 right-0 z-50 w-full bg-gradient-to-b from-[#E6D3E6] to-white">
+      <div className="mx-auto flex h-[70px] max-w-[1400px] items-center justify-between px-6">
         {/* Logo */}
-        <Link href={region === Region.US ? "/us" : "/"} className="flex items-center gap-2.5">
+        <Link
+          href={region === Region.US ? "/us" : "/"}
+          className="flex items-center gap-2.5"
+        >
           <Image
             src="/logo/taxlegitlogo.webp"
             alt="My Logo"
@@ -123,7 +142,11 @@ function MegaNavbarContent({
                     stroke="currentColor"
                     strokeWidth={2.5}
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
 
