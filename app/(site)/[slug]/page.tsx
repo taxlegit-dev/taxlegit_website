@@ -12,6 +12,9 @@ import Footer from "@/components/footer";
 import { MetaDataRenderer } from "@/components/seo/meta-data-renderer";
 import { parseMetaBlockForMetadata } from "@/lib/seo-utils";
 import { getServiceContentCached } from "@/lib/service-cache";
+import { getRelatedBlogsCached } from "@/lib/query/related-blogs";
+import { RelatedBlogsSection } from "@/components/related-blogs/RelatedBlogsSection";
+
 
 /* -------------------------------------------------
    ✅ ISR — HTML cached at CDN
@@ -128,6 +131,12 @@ export default async function ServicePage({ params }: PageProps) {
     navbarItem.id,
     servicePage.id
   );
+  const relatedBlogs = await getRelatedBlogsCached(
+  navbarItem.label,
+  Region.INDIA
+);
+console.log(relatedBlogs);
+
 
   return (
     <>
@@ -161,6 +170,8 @@ export default async function ServicePage({ params }: PageProps) {
               </p>
             </section>
           )}
+
+          <RelatedBlogsSection blogs={relatedBlogs} />
 
           {faq?.status === "PUBLISHED" && faq?.questions?.length > 0 && (
             <FAQSection questions={faq.questions} region="INDIA" />
