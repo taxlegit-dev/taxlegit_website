@@ -11,6 +11,7 @@ import { EditorJsRenderer } from "@/components/rich-text/editorjs-renderer";
 import Image from "next/image";
 import { SEOMetaEditor } from "@/components/admin/seo-meta-editor";
 import { useAdminSearch } from "@/components/admin/admin-search-context";
+import toast from "react-hot-toast";
 
 // Types
 type Blog = {
@@ -137,7 +138,6 @@ export function BlogManager({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const [message, setMessage] = useState<string | null>(null);
   const [blogGroups, setBlogGroups] =
     useState<BlogGroupWithBlogs[]>(initialBlogGroups);
   const [selectedBlogGroupId] = useState<string | null>(
@@ -345,7 +345,6 @@ export function BlogManager({
 
   const handleCreateGroup = groupForm.handleSubmit((data) => {
     startTransition(async () => {
-      setMessage(null);
       try {
         const url = editingGroup
           ? "/api/admin/blog-groups"
@@ -364,17 +363,17 @@ export function BlogManager({
         const result = await response.json();
 
         if (!response.ok) {
-          setMessage(result.error?.message || "Failed to save blog group");
+          toast.error(result.error?.message || "Failed to save blog group");
           return;
         }
 
-        setMessage("Blog group saved successfully!");
+        toast.success("Blog group saved successfully!");
         setShowGroupForm(false);
         setEditingGroup(null);
         groupForm.reset();
         await fetchData();
       } catch (error) {
-        setMessage("Network error. Please try again.");
+        toast.error("Network error. Please try again.");
         console.error("Error saving blog group:", error);
       }
     });
@@ -382,7 +381,6 @@ export function BlogManager({
 
   const handleCreateAuthor = authorForm.handleSubmit(async (data) => {
     startTransition(async () => {
-      setMessage(null);
       try {
         let imageUrl = data.image;
 
@@ -391,7 +389,7 @@ export function BlogManager({
           try {
             imageUrl = await handleImageUpload(authorImageFile);
           } catch (error) {
-            setMessage("Failed to upload image. Please try again.");
+            toast.error("Failed to upload image. Please try again.");
             console.error("Error uploading image:", error);
             return;
           }
@@ -414,11 +412,11 @@ export function BlogManager({
         const result = await response.json();
 
         if (!response.ok) {
-          setMessage(result.error?.message || "Failed to save blog author");
+          toast.error(result.error?.message || "Failed to save blog author");
           return;
         }
 
-        setMessage("Blog author saved successfully!");
+        toast.success("Blog author saved successfully!");
         setShowAuthorForm(false);
         setEditingAuthor(null);
         setAuthorImageFile(null);
@@ -426,7 +424,7 @@ export function BlogManager({
         authorForm.reset();
         await fetchAuthors();
       } catch (error) {
-        setMessage("Network error. Please try again.");
+        toast.error("Network error. Please try again.");
         console.error("Error saving blog author:", error);
       }
     });
@@ -447,7 +445,6 @@ export function BlogManager({
 
   const handleCreateBlog = blogForm.handleSubmit((data) => {
     startTransition(async () => {
-      setMessage(null);
       try {
         const url = editingBlog ? "/api/admin/blogs" : "/api/admin/blogs";
         const method = editingBlog ? "PUT" : "POST";
@@ -464,11 +461,11 @@ export function BlogManager({
         const result = await response.json();
 
         if (!response.ok) {
-          setMessage(result.error?.message || "Failed to save blog");
+          toast.error(result.error?.message || "Failed to save blog");
           return;
         }
 
-        setMessage("Blog saved successfully!");
+        toast.success("Blog saved successfully!");
         setShowBlogForm(false);
         setEditingBlog(null);
         setSelectedBlogId(null);
@@ -476,7 +473,7 @@ export function BlogManager({
         blogForm.reset();
         await fetchData();
       } catch (error) {
-        setMessage("Network error. Please try again.");
+        toast.error("Network error. Please try again.");
         console.error("Error saving blog:", error);
       }
     });
@@ -495,14 +492,14 @@ export function BlogManager({
           });
 
           if (!response.ok) {
-            setMessage("Failed to delete blog group");
+            toast.error("Failed to delete blog group");
             return;
           }
 
-          setMessage("Blog group deleted successfully!");
+          toast.success("Blog group deleted successfully!");
           await fetchData();
         } catch (error) {
-          setMessage("Network error. Please try again.");
+          toast.error("Network error. Please try again.");
           console.error("Error deleting blog group:", error);
         }
       },
@@ -521,15 +518,15 @@ export function BlogManager({
           });
 
           if (!response.ok) {
-            setMessage("Failed to delete blog");
+            toast.error("Failed to delete blog");
             return;
           }
 
-          setMessage("Blog deleted successfully!");
+          toast.success("Blog deleted successfully!");
           setSelectedBlogId(null);
           await fetchData();
         } catch (error) {
-          setMessage("Network error. Please try again.");
+          toast.error("Network error. Please try again.");
           console.error("Error deleting blog:", error);
         }
       },
@@ -552,14 +549,14 @@ export function BlogManager({
 
           if (!response.ok) {
             const result = await response.json();
-            setMessage(result.error || "Failed to delete author");
+            toast.error(result.error || "Failed to delete author");
             return;
           }
 
-          setMessage("Author deleted successfully!");
+          toast.success("Author deleted successfully!");
           await fetchAuthors();
         } catch (error) {
-          setMessage("Network error. Please try again.");
+          toast.error("Network error. Please try again.");
           console.error("Error deleting author:", error);
         }
       },
@@ -668,45 +665,6 @@ export function BlogManager({
   else if (selectedBlogId && selectedBlog) {
     return (
       <div className="space-y-6">
-        {message && (
-          <div
-            className={`rounded-lg p-4 border ${
-              message.includes("success")
-                ? "bg-green-50 text-green-800 border-green-200"
-                : "bg-red-50 text-red-800 border-red-200"
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              {message.includes("success") ? (
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              )}
-              <span className="font-medium">{message}</span>
-            </div>
-          </div>
-        )}
-
         <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
           <div className="mb-6">
             <button
@@ -823,20 +781,6 @@ export function BlogManager({
   if (showBlogForm) {
     return (
       <div className="space-y-6">
-        {message && (
-          <div
-            className={`rounded-lg p-4 border ${
-              message.includes("success")
-                ? "bg-green-50 text-green-800 border-green-200"
-                : "bg-red-50 text-red-800 border-red-200"
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              <span className="font-medium">{message}</span>
-            </div>
-          </div>
-        )}
-
         <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
           <div className="mb-6">
             <button
@@ -1053,20 +997,6 @@ export function BlogManager({
   // Main view - Blog groups and cards
   return (
     <div className="space-y-6">
-      {message && (
-        <div
-          className={`rounded-lg p-4 border ${
-            message.includes("success")
-              ? "bg-green-50 text-green-800 border-green-200"
-              : "bg-red-50 text-red-800 border-red-200"
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            <span className="font-medium">{message}</span>
-          </div>
-        </div>
-      )}
-
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold text-slate-900">
           Blog Management

@@ -13,6 +13,7 @@ import dynamic from "next/dynamic";
 import type { OutputData } from "@editorjs/editorjs";
 import { SEOMetaEditor } from "@/components/admin/seo-meta-editor";
 import { useAdminSearch } from "@/components/admin/admin-search-context";
+import toast from "react-hot-toast";
 
 const EditorJsEditor = dynamic(
   () =>
@@ -70,7 +71,6 @@ export function GenericPageManager({
 }: GenericPageManagerProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [message, setMessage] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [editorData, setEditorData] = useState<OutputData | null>(null);
   const { query } = useAdminSearch();
@@ -156,12 +156,11 @@ export function GenericPageManager({
     const data = form.getValues();
 
     if (!data.slug.trim() || !data.title.trim() || !data.content.trim()) {
-      setMessage("Please fill in slug, title and content");
+      toast.error("Please fill in slug, title and content");
       return;
     }
 
     setSaving(true);
-    setMessage(null);
 
     try {
       const isNewPage = !existingGenericPage?.id;
@@ -208,17 +207,16 @@ export function GenericPageManager({
             ? result.error
             : JSON.stringify(result.error)) ||
           "Failed to save page";
-        setMessage(errorMsg);
+        toast.error(errorMsg);
         return;
       }
 
-      setMessage(`Page ${isNewPage ? "created" : "updated"} successfully!`);
-      setTimeout(() => setMessage(null), 3000);
+      toast.success(`Page ${isNewPage ? "created" : "updated"} successfully!`);
 
       // Refresh the page data
       router.refresh();
     } catch (error) {
-      setMessage("Network error. Please try again.");
+      toast.error("Network error. Please try again.");
       console.error("Error saving page:", error);
     } finally {
       setSaving(false);
@@ -289,37 +287,6 @@ export function GenericPageManager({
 
   return (
     <div className="space-y-6">
-      {message && (
-        <div
-          className={`rounded-lg p-4 border ${
-            message.includes("success")
-              ? "bg-green-50 text-green-800 border-green-200"
-              : "bg-red-50 text-red-800 border-red-200"
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            {message.includes("success") ? (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            )}
-            <span className="font-medium">{message}</span>
-          </div>
-        </div>
-      )}
-
       <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">

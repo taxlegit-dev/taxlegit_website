@@ -105,22 +105,21 @@ function MegaNavbarContent({
   };
 
   return (
-    <>
-      <header className="fixed top-10 left-0 right-0 z-50 w-full bg-gradient-to-b from-[#E6D3E6] to-white">
-        <div className="mx-auto flex h-[72px] max-w-[1400px] items-center justify-between px-6">
-          {/* Logo */}
-          <Link
-            href={region === Region.US ? "/us" : "/"}
-            className="flex items-center gap-2.5"
-          >
-            <Image
-              src="/logo/taxlegitlogo.webp"
-              alt="My Logo"
-              width={70}
-              height={70}
-              priority
-            />
-          </Link>
+    <header className="fixed top-10 left-0 right-0 z-50 w-full bg-gradient-to-b from-[#E6D3E6] to-white">
+      <div className="mx-auto flex h-[70px] max-w-[1400px] items-center justify-between px-6">
+        {/* Logo */}
+        <Link
+          href={region === Region.US ? "/us" : "/"}
+          className="flex items-center gap-2.5"
+        >
+          <Image
+            src="/logo/taxlegitlogo.webp"
+            alt="My Logo"
+            width={70}
+            height={70}
+            priority
+          />
+        </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-[42px] lg:flex">
@@ -143,7 +142,11 @@ function MegaNavbarContent({
                     stroke="currentColor"
                     strokeWidth={2.5}
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
 
@@ -208,57 +211,57 @@ function MegaNavbarContent({
             Schedule a call
           </Link>
 
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="rounded-md p-2 lg:hidden"
-              aria-label="Toggle menu"
-            >
-              ☰
-            </button>
-          </div>
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="rounded-md p-2 lg:hidden"
+            aria-label="Toggle menu"
+          >
+            ☰
+          </button>
         </div>
+      </div>
 
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="border-t border-gray-200 bg-white lg:hidden">
-            <div className="mx-auto max-w-[1400px] space-y-2 px-6 py-4">
-              {displayItems.map((item) =>
-                item.type === "DROPDOWN" ? (
-                  <div key={item.id}>
-                    <button
-                      onClick={() => toggleMobileItem(item.id)}
-                      className="flex w-full justify-between px-4 py-3 text-[15px] font-medium"
-                    >
-                      {item.label}
-                    </button>
-                    {openMobileItem === item.id &&
-                      item.groups.map((group, i) => (
-                        <ul key={i} className="px-4">
-                          {group.items.map((sub) => (
-                            <li key={sub.id}>
-                              <Link
-                                href={`${regionPrefix}${sub.href}`}
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                className="block py-2 text-[14px]"
-                              >
-                                {sub.label}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      ))}
-                  </div>
-                ) : (
-                  <Link
-                    key={item.id}
-                    href={`${regionPrefix}${item.href}`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block px-4 py-3 text-[15px]"
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="border-t border-gray-200 bg-white lg:hidden">
+          <div className="mx-auto max-w-[1400px] space-y-2 px-6 py-4">
+            {displayItems.map((item) =>
+              item.type === "DROPDOWN" ? (
+                <div key={item.id}>
+                  <button
+                    onClick={() => toggleMobileItem(item.id)}
+                    className="flex w-full justify-between px-4 py-3 text-[15px] font-medium"
                   >
                     {item.label}
-                  </Link>
-                )
-              )}
+                  </button>
+                  {openMobileItem === item.id &&
+                    item.groups.map((group, i) => (
+                      <ul key={i} className="px-4">
+                        {group.items.map((sub) => (
+                          <li key={sub.id}>
+                            <Link
+                              href={`${regionPrefix}${sub.href}`}
+                              onClick={() => setIsMobileMenuOpen(false)}
+                              className="block py-2 text-[14px]"
+                            >
+                              {sub.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    ))}
+                </div>
+              ) : (
+                <Link
+                  key={item.id}
+                  href={`${regionPrefix}${item.href}`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block px-4 py-3 text-[15px]"
+                >
+                  {item.label}
+                </Link>
+              )
+            )}
 
             {/* Mobile Region Switcher & Phone */}
             <div className="space-y-3 border-t border-gray-100 pt-4">

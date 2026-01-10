@@ -7,6 +7,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createNavItemSchema, updateNavItemSchema } from "@/lib/validators";
 import { useAdminSearch } from "@/components/admin/admin-search-context";
+import toast from "react-hot-toast";
 
 type NavItem = {
   id: string;
@@ -44,7 +45,6 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
   const router = useRouter();
   const [items] = useState<NavItem[]>(initialItems);
   const [editingItem, setEditingItem] = useState<NavItem | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const { query } = useAdminSearch();
   const normalizedQuery = query.trim().toLowerCase();
@@ -80,7 +80,6 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
 
   const onSubmitCreate = handleSubmitCreate((values) => {
     startTransition(async () => {
-      setMessage(null);
       const response = await fetch("/api/admin/navbar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -89,19 +88,18 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
 
       if (!response.ok) {
         const data = await response.json();
-        setMessage(data.error ?? "Unable to save navigation item");
+        toast.error(data.error ?? "Unable to save navigation item");
         return;
       }
 
       resetCreate();
-      setMessage("Navigation item created successfully");
+      toast.success("Navigation item created successfully");
       router.refresh();
     });
   });
 
   const onSubmitUpdate = handleSubmitUpdate((values) => {
     startTransition(async () => {
-      setMessage(null);
       const response = await fetch("/api/admin/navbar", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -110,13 +108,13 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
 
       if (!response.ok) {
         const data = await response.json();
-        setMessage(data.error ?? "Unable to update navigation item");
+        toast.error(data.error ?? "Unable to update navigation item");
         return;
       }
 
       setEditingItem(null);
       resetUpdate();
-      setMessage("Navigation item updated successfully");
+      toast.success("Navigation item updated successfully");
       router.refresh();
     });
   });
@@ -131,18 +129,17 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
     }
 
     startTransition(async () => {
-      setMessage(null);
       const response = await fetch(`/api/admin/navbar?id=${id}`, {
         method: "DELETE",
       });
 
       if (!response.ok) {
         const data = await response.json();
-        setMessage(data.error ?? "Unable to delete navigation item");
+        toast.error(data.error ?? "Unable to delete navigation item");
         return;
       }
 
-      setMessage("Navigation item deleted successfully");
+      toast.success("Navigation item deleted successfully");
       router.refresh();
     });
   };
@@ -522,17 +519,6 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
         )}
       </div>
 
-      {message && (
-        <div
-          className={`rounded-2xl p-4 text-sm font-medium ${
-            message.includes("success")
-              ? "bg-green-50 text-green-700"
-              : "bg-red-50 text-red-700"
-          }`}
-        >
-          {message}
-        </div>
-      )}
     </div>
   );
 }

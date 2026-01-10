@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import type { NavbarItem, PageHero } from "@prisma/client";
 import { useAdminSearch } from "@/components/admin/admin-search-context";
+import toast from "react-hot-toast";
 
 type HeroWithNavItem = PageHero & {
   navbarItem: NavbarItem | null;
@@ -59,7 +60,6 @@ export function HeroSectionManager({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const [message, setMessage] = useState<string | null>(null);
   const selectedItemId = selectedNavbarItemId || "";
   const { query } = useAdminSearch();
   const normalizedQuery = query.trim().toLowerCase();
@@ -175,7 +175,7 @@ export function HeroSectionManager({
         // Validate benefits have at least one non-empty item
         const filteredBenefits = data.benefits.filter((b) => b.trim());
         if (filteredBenefits.length === 0) {
-          setMessage("Please add at least one benefit");
+          toast.error("Please add at least one benefit");
           return;
         }
 
@@ -183,12 +183,11 @@ export function HeroSectionManager({
         const finalNavbarItemId =
           data.navbarItemId || selectedItemId || selectedNavbarItemId;
         if (!finalNavbarItemId) {
-          setMessage("Please select a service page first");
+          toast.error("Please select a service page first");
           return;
         }
 
         startTransition(async () => {
-          setMessage(null);
           const payload = {
             ...(existingHero?.id && { id: existingHero.id }),
             navbarItemId: finalNavbarItemId,
@@ -223,17 +222,17 @@ export function HeroSectionManager({
                   ? result.error
                   : JSON.stringify(result.error)) ||
                 "Failed to save hero section";
-              setMessage(errorMsg);
+              toast.error(errorMsg);
               return;
             }
 
-            setMessage("Hero section saved successfully!");
+            toast.success("Hero section saved successfully!");
             setTimeout(() => {
               // Go back to list view after successful save
               handleBackToNavbar();
             }, 1500);
           } catch (error) {
-            setMessage("Network error. Please try again.");
+            toast.error("Network error. Please try again.");
             console.error("Error saving hero:", error);
           }
         });
@@ -242,7 +241,7 @@ export function HeroSectionManager({
         // Handle validation errors
         console.error("Form validation errors:", errors);
         const firstError = Object.values(errors)[0];
-        setMessage(
+        toast.error(
           firstError?.message?.toString() ||
             "Please fill in all required fields correctly."
         );
@@ -252,7 +251,6 @@ export function HeroSectionManager({
 
   const handleUsSubmit = usForm.handleSubmit((data) => {
     startTransition(async () => {
-      setMessage(null);
       const payload = {
         id: existingHero?.id,
         navbarItemId: data.navbarItemId,
@@ -276,11 +274,11 @@ export function HeroSectionManager({
 
       if (!response.ok) {
         const error = await response.json();
-        setMessage(error.error || "Failed to save hero section");
+        toast.error(error.error || "Failed to save hero section");
         return;
       }
 
-      setMessage("Hero section saved successfully!");
+      toast.success("Hero section saved successfully!");
       setTimeout(() => {
         // Go back to list view after successful save
         handleBackToNavbar();
@@ -342,37 +340,6 @@ export function HeroSectionManager({
 
   return (
     <div className="space-y-6">
-      {message && (
-        <div
-          className={`rounded-lg p-4 border ${
-            message.includes("success")
-              ? "bg-green-50 text-green-800 border-green-200"
-              : "bg-red-50 text-red-800 border-red-200"
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            {message.includes("success") ? (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            )}
-            <span className="font-medium">{message}</span>
-          </div>
-        </div>
-      )}
-
       <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">

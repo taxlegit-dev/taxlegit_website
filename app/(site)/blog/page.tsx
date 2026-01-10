@@ -44,12 +44,14 @@ export default async function BlogListingPage({
 
   return (
     <div className="min-h-screen bg-white text-black">
-      <main className="mx-auto w-full pt-[72px]">
+      <main className="mx-auto w-full pt-[89px]">
         <BlogHero />
         {!featuredBlog ? (
           <div className="py-12 text-center">
             <p className="text-slate-500">
-              {query ? "No blogs match your search." : "No blogs available at the moment."}
+              {query
+                ? "No blogs match your search."
+                : "No blogs available at the moment."}
             </p>
           </div>
         ) : (
