@@ -319,8 +319,7 @@ export function ServicePageManager({
 
       toast.success(`Section ${index + 1} saved successfully!`);
 
-      // Optionally refresh the page data
-      router.refresh();
+      // Refresh manually if needed
     } catch (error) {
       toast.error("Network error. Please try again.");
       console.error("Error saving section:", error);
@@ -386,7 +385,6 @@ export function ServicePageManager({
 
       removeSectionAtIndex(sectionToDelete);
       toast.success("Section removed successfully!");
-      router.refresh();
     } catch (error) {
       toast.error("Network error. Please try again.");
       console.error("Error deleting section:", error);
