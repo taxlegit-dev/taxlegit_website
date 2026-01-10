@@ -6,10 +6,10 @@ import { EditorJsRenderer } from "@/components/rich-text/editorjs-renderer";
 import type { OutputData } from "@editorjs/editorjs";
 
 export type ServicePageSectionView = {
-  id:string;
+  id: string;
   title: string;
   content: string;
-  order: number
+  order: number;
 };
 
 type ServicePageViewProps = {
@@ -69,7 +69,7 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
       {/* Sticky TOC Bar - Below Fixed Navbar with Blur Effect */}
       <div
         ref={tocRef}
-        className="sticky top-[68px] z-40 mt-4 w-fit max-w-full mx-auto rounded-xl border border-slate-200 bg-white/80 backdrop-blur-md shadow-sm"
+        className="sticky top-[110px] z-40 mt-4 w-fit max-w-full mx-auto rounded-xl border border-slate-200 bg-white/80 backdrop-blur-md shadow-sm"
       >
         <div className="max-w-full px-4">
           <div className="flex w-fit max-w-full items-center gap-2 lg:gap-8 overflow-x-auto whitespace-nowrap scrollbar-hide py-2">
