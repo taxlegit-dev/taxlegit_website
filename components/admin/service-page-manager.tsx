@@ -217,12 +217,9 @@ export function ServicePageManager({
         toast.error(errorMsg);
         return;
       }
-
       toast.success("Service page deleted successfully!");
-      setTimeout(() => {
-        // Navigate back to the list
-        handleBackToNavbar();
-      }, 2000);
+
+      handleBackToNavbar();
     } catch (error) {
       toast.error("Network error. Please try again.");
       console.error("Error deleting service page:", error);
@@ -411,32 +408,32 @@ export function ServicePageManager({
               <p className="text-sm text-slate-500">No matches found.</p>
             ) : (
               filteredNavItems.map((item) => {
-              const hasServicePage = allServicePages.some(
-                (sp) => sp.navbarItemId === item.id
-              );
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleNavbarItemSelect(item.id)}
-                  className="w-full text-left rounded-lg border border-slate-200 p-4 hover:bg-slate-50 transition"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-semibold text-slate-900">
-                        {item.label}
+                const hasServicePage = allServicePages.some(
+                  (sp) => sp.navbarItemId === item.id
+                );
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleNavbarItemSelect(item.id)}
+                    className="w-full text-left rounded-lg border border-slate-200 p-4 hover:bg-slate-50 transition"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-semibold text-slate-900">
+                          {item.label}
+                        </div>
+                        <div className="text-xs text-slate-500 mt-1">
+                          {item.href}
+                        </div>
                       </div>
-                      <div className="text-xs text-slate-500 mt-1">
-                        {item.href}
-                      </div>
+                      {hasServicePage && (
+                        <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
+                          {pageLabel} Created
+                        </span>
+                      )}
                     </div>
-                    {hasServicePage && (
-                      <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
-                        {pageLabel} Created
-                      </span>
-                    )}
-                  </div>
-                </button>
-              );
+                  </button>
+                );
               })
             )}
           </div>
@@ -447,7 +444,6 @@ export function ServicePageManager({
 
   return (
     <div className="space-y-6">
-
       <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">

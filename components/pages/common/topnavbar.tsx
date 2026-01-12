@@ -37,7 +37,7 @@ const TopNavbar = () => {
         {/* right Side - Contact Info */}
         <div className="flex items-center gap-4">
           <a
-            href="https://wa.me/919711765911"
+            href="https://wa.me/918929218091"
             target="_blank"
             className="flex items-center gap-1 hover:text-green-400 transition"
           >
@@ -46,19 +46,19 @@ const TopNavbar = () => {
           </a>
 
           <a
-            href="mailto:contact@taxlegit.com"
+            href="mailto:121@taxlegit.com"
             className="flex items-center gap-1 hover:text-yellow-500 transition"
           >
             <Mail className="w-4 h-4" />
-            <span>contact@taxlegit.com</span>
+            <span>121@taxlegit.com</span>
           </a>
 
           <a
-            href="tel:+919711765911"
+            href="tel:+918929218091"
             className="flex items-center gap-1 hover:text-gray-100 transition"
           >
             <Phone className="w-4 h-4" />
-            <span>+91 97117 65911</span>
+            <span>+91 8929218091</span>
           </a>
         </div>
       </div>

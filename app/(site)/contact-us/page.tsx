@@ -80,7 +80,7 @@ export default function AboutCompanyHero() {
                   <div>
                     <p className="text-sm text-gray-500">Call Us</p>
                     <p className="font-semibold text-gray-900">
-                      +91 97117 65911
+                      +91 8929218091
                     </p>
                   </div>
                 </div>
@@ -106,7 +106,7 @@ export default function AboutCompanyHero() {
                   <div>
                     <p className="text-sm text-gray-500">Mail Us</p>
                     <p className="font-semibold text-gray-900">
-                      support@taxlegit.com
+                      121@taxlegit.com
                     </p>
                   </div>
                 </div>

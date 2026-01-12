@@ -124,9 +124,7 @@ export async function POST(request: Request) {
     },
   });
 
-  revalidateNavbarItems(
-    parsed.data.region === "US" ? Region.US : Region.INDIA
-  );
+  revalidateNavbarItems(parsed.data.region === "US" ? Region.US : Region.INDIA);
 
   return NextResponse.json({ item });
 }
@@ -254,41 +252,65 @@ export async function PUT(request: Request) {
 }
 
 // DELETE - Delete a navbar item
+// DELETE - Delete a navbar item
 export async function DELETE(request: Request) {
-  const session = await auth();
+  try {
+    const session = await auth();
 
-  if (!session?.user || session.user.role !== "ADMIN") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Item ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Check if item exists
+    const existingItem = await prisma.navbarItem.findUnique({
+      where: { id },
+      include: { children: true },
+    });
+
+    if (!existingItem) {
+      return NextResponse.json({ error: "Item not found" }, { status: 404 });
+    }
+
+    // Store region before deletion
+    const region = existingItem.region;
+
+    // Delete item (children will be cascade deleted)
+    await prisma.navbarItem.delete({
+      where: { id },
+    });
+
+    // Revalidate after successful deletion
+    try {
+      await revalidateNavbarItems(region);
+    } catch (revalidateError) {
+      console.error("Revalidation error:", revalidateError);
+      // Continue even if revalidation fails
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Item deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete error:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to delete item",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
   }
-
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id");
-
-  if (!id) {
-    return NextResponse.json({ error: "Item ID is required" }, { status: 400 });
-  }
-
-  // Check if item exists
-  const existingItem = await prisma.navbarItem.findUnique({
-    where: { id },
-    include: { children: true },
-  });
-
-  if (!existingItem) {
-    return NextResponse.json({ error: "Item not found" }, { status: 404 });
-  }
-
-  // Delete item (children will be cascade deleted)
-  await prisma.navbarItem.delete({
-    where: { id },
-  });
-
-  revalidateNavbarItems(existingItem.region);
-
-  return NextResponse.json({
-    success: true,
-    message: "Item deleted successfully",
-  });
 }
 
 // PATCH - Reorder navbar items
@@ -319,9 +341,7 @@ export async function PATCH(request: Request) {
     )
   );
 
-  revalidateNavbarItems(
-    parsed.data.region === "US" ? Region.US : Region.INDIA
-  );
+  revalidateNavbarItems(parsed.data.region === "US" ? Region.US : Region.INDIA);
 
   return NextResponse.json({
     success: true,
