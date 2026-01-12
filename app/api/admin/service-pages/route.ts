@@ -31,7 +31,10 @@ export async function DELETE(request: Request) {
     });
 
     if (!existingServicePage) {
-      return NextResponse.json({ error: "Service page not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Service page not found" },
+        { status: 404 }
+      );
     }
 
     // Delete the service page (sections will be cascade deleted due to Prisma schema)

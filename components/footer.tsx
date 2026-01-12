@@ -9,7 +9,7 @@ import {
   FaMapMarkerAlt,
   FaChevronRight,
   FaEnvelope,
-  FaWhatsapp
+  FaWhatsapp,
 } from "react-icons/fa";
 import { MdPhone } from "react-icons/md";
 import Image from "next/image";
@@ -178,13 +178,13 @@ const Footer = () => {
                       <span>+91 89292 18091</span>
                     </a>
                     <a
-                      href="https://mail.google.com/mail/?view=cm&fs=1&to=info@taxlegit.com"
+                      href="https://mail.google.com/mail/?view=cm&fs=1&to=121@taxlegit.com"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-3 text-white hover:text-purple-400 transition-colors"
                     >
                       <FaEnvelope className="text-purple-400" />
-                      <span>info@taxlegit.com</span>
+                      <span>121@taxlegit.com</span>
                     </a>
                   </div>
                   <div className="flex items-start gap-3">
