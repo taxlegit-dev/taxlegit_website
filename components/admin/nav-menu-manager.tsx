@@ -80,42 +80,66 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
 
   const onSubmitCreate = handleSubmitCreate((values) => {
     startTransition(async () => {
-      const response = await fetch("/api/admin/navbar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
+      try {
+        const response = await fetch("/api/admin/navbar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        });
 
-      if (!response.ok) {
-        const data = await response.json();
-        toast.error(data.error ?? "Unable to save navigation item");
-        return;
+        if (!response.ok) {
+          let errorMessage = "Unable to save navigation item";
+          try {
+            const data = await response.json();
+            errorMessage = data.error || errorMessage;
+          } catch (e) {
+            console.error("Create error:", await response.text());
+          }
+          toast.error(errorMessage);
+          return;
+        }
+
+        await response.json();
+        resetCreate();
+        toast.success("Navigation item created successfully");
+        router.refresh();
+      } catch (error) {
+        console.error("Create failed:", error);
+        toast.error("Failed to create navigation item. Please try again.");
       }
-
-      resetCreate();
-      toast.success("Navigation item created successfully");
-      router.refresh();
     });
   });
 
   const onSubmitUpdate = handleSubmitUpdate((values) => {
     startTransition(async () => {
-      const response = await fetch("/api/admin/navbar", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
+      try {
+        const response = await fetch("/api/admin/navbar", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        });
 
-      if (!response.ok) {
-        const data = await response.json();
-        toast.error(data.error ?? "Unable to update navigation item");
-        return;
+        if (!response.ok) {
+          let errorMessage = "Unable to update navigation item";
+          try {
+            const data = await response.json();
+            errorMessage = data.error || errorMessage;
+          } catch (e) {
+            console.error("Update error:", await response.text());
+          }
+          toast.error(errorMessage);
+          return;
+        }
+
+        await response.json();
+        setEditingItem(null);
+        resetUpdate();
+        toast.success("Navigation item updated successfully");
+        router.refresh();
+      } catch (error) {
+        console.error("Update failed:", error);
+        toast.error("Failed to update navigation item. Please try again.");
       }
-
-      setEditingItem(null);
-      resetUpdate();
-      toast.success("Navigation item updated successfully");
-      router.refresh();
     });
   });
 
@@ -129,18 +153,30 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
     }
 
     startTransition(async () => {
-      const response = await fetch(`/api/admin/navbar?id=${id}`, {
-        method: "DELETE",
-      });
+      try {
+        const response = await fetch(`/api/admin/navbar?id=${id}`, {
+          method: "DELETE",
+        });
 
-      if (!response.ok) {
-        const data = await response.json();
-        toast.error(data.error ?? "Unable to delete navigation item");
-        return;
+        if (!response.ok) {
+          let errorMessage = "Unable to delete navigation item";
+          try {
+            const data = await response.json();
+            errorMessage = data.error || errorMessage;
+          } catch (e) {
+            console.error("Delete error:", await response.text());
+          }
+          toast.error(errorMessage);
+          return;
+        }
+
+        await response.json();
+        toast.success("Navigation item deleted successfully");
+        router.refresh();
+      } catch (error) {
+        console.error("Delete failed:", error);
+        toast.error("Failed to delete navigation item. Please try again.");
       }
-
-      toast.success("Navigation item deleted successfully");
-      router.refresh();
     });
   };
 
@@ -518,7 +554,6 @@ export function NavMenuManager({ region, initialItems }: NavMenuManagerProps) {
           </div>
         )}
       </div>
-
     </div>
   );
 }
