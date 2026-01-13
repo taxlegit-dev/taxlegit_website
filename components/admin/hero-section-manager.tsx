@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useTransition, useEffect } from "react";
+import React, { useTransition, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -302,7 +302,9 @@ export function HeroSectionManager({
               <p className="text-sm text-slate-500">No matches found.</p>
             ) : (
               filteredNavItems.map((item) => {
-                const hasHero = allHeroes.some((h) => h.navbarItemId === item.id);
+                const hasHero = allHeroes.some(
+                  (h) => h.navbarItemId === item.id
+                );
                 return (
                   <button
                     key={item.id}
@@ -325,7 +327,7 @@ export function HeroSectionManager({
                       )}
                     </div>
                   </button>
-              );
+                );
               })
             )}
           </div>

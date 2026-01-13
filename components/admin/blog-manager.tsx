@@ -12,9 +12,13 @@ import Image from "next/image";
 import { SEOMetaEditor } from "@/components/admin/seo-meta-editor";
 import { useAdminSearch } from "@/components/admin/admin-search-context";
 import toast from "react-hot-toast";
+import { ContentStatus } from "@prisma/client";
 
-// Types
-type Blog = {
+type BlogWithGroup = BlogFull & {
+  blogGroup: BlogGroupLite;
+};
+
+export type BlogFull = {
   id: string;
   slug?: string | null;
   title: string;
@@ -25,12 +29,12 @@ type Blog = {
   readTime: string | null;
   viewCount: number;
   region: "INDIA" | "US";
-  status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+  status: ContentStatus;
   createdAt: Date;
   updatedAt: Date;
 };
 
-type BlogGroup = {
+type BlogGroupLite = {
   id: string;
   name: string;
   region: "INDIA" | "US";
@@ -92,13 +96,17 @@ function isSafeImageSrc(src?: string | null): src is string {
   }
 }
 
-type BlogWithGroup = Blog & {
-  blogGroup: BlogGroup;
-  author?: BlogAuthor | null;
+export type BlogListItem = {
+  id: string;
+  title: string;
+  image?: string | null;
+  status: ContentStatus;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
-type BlogGroupWithBlogs = BlogGroup & {
-  blogs: Blog[];
+export type BlogGroupWithBlogs = BlogGroupLite & {
+  blogs: BlogListItem[];
 };
 
 type BlogManagerProps = {
@@ -149,7 +157,7 @@ export function BlogManager({
   const [showGroupForm, setShowGroupForm] = useState(false);
   const [showBlogForm, setShowBlogForm] = useState(false);
   const [showAuthorForm, setShowAuthorForm] = useState(false);
-  const [editingGroup, setEditingGroup] = useState<BlogGroup | null>(null);
+  const [editingGroup, setEditingGroup] = useState<BlogGroupLite | null>(null);
   const [editingBlog, setEditingBlog] = useState<BlogWithGroup | null>(null);
   const [editingAuthor, setEditingAuthor] = useState<BlogAuthor | null>(null);
   const [blogAuthors, setBlogAuthors] = useState<BlogAuthor[]>([]);
@@ -678,12 +686,14 @@ export function BlogManager({
   };
 
   // Find selected blog with its group
-  let selectedBlog: (Blog & { blogGroup: BlogGroup }) | undefined;
+  let selectedBlog: BlogWithGroup | undefined;
+
   if (selectedBlogId) {
     for (const group of blogGroups) {
       const blog = group.blogs.find((b) => b.id === selectedBlogId);
       if (blog) {
-        selectedBlog = { ...blog, blogGroup: group };
+        // ⚠️ List blog is NOT full blog → fetch full blog
+        // UI should open editor instead of assuming content
         break;
       }
     }

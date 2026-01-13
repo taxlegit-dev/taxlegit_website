@@ -17,22 +17,26 @@ export default async function AdminBlogPage({
   const params = await searchParams;
   const selectedRegion = params?.region === "US" ? Region.US : Region.INDIA;
 
-  // Fetch all blog groups with their blogs for the selected region
   const blogGroups = await prisma.blogGroup.findMany({
-    where: {
-      region: selectedRegion,
-    },
+    where: { region: selectedRegion },
+    orderBy: { order: "asc" },
     include: {
       blogs: {
-        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          updatedAt: true,
+          createdAt: true,
+        },
+        orderBy: { updatedAt: "desc" },
       },
     },
-    orderBy: { order: "asc" },
   });
 
   return (
     <div className="space-y-8 text-black">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-green-100 p-2 rounded-xl">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">
             Blog Management
@@ -41,12 +45,13 @@ export default async function AdminBlogPage({
             Manage Blogs
           </h1>
           <p className="mt-2 text-sm text-slate-600">
-            Create and manage blog posts organized by groups for{" "}
+            Create and manage blog posts for{" "}
             {selectedRegion === Region.US ? "US" : "India"} region
           </p>
         </div>
         <RegionFilter value={selectedRegion === Region.US ? "US" : "INDIA"} />
       </div>
+
       <BlogManager
         region={selectedRegion === Region.US ? "US" : "INDIA"}
         blogGroups={blogGroups}

@@ -5,15 +5,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import type {
-  NavbarItem,
-  GenericPage,
-} from "@prisma/client";
+import type { NavbarItem, GenericPage } from "@prisma/client";
 import dynamic from "next/dynamic";
 import type { OutputData } from "@editorjs/editorjs";
 import { SEOMetaEditor } from "@/components/admin/seo-meta-editor";
 import { useAdminSearch } from "@/components/admin/admin-search-context";
 import toast from "react-hot-toast";
+import { ContentStatus } from "@prisma/client";
 
 const EditorJsEditor = dynamic(
   () =>
@@ -42,14 +40,18 @@ function tryParseEditorJson(content: string): OutputData | null {
   }
 }
 
-
-
 type GenericPageManagerProps = {
   region: "INDIA" | "US";
   selectedSlug?: string;
   existingGenericPage?: GenericPage | null;
   genericNavbarItems: NavbarItem[];
-  allGenericPages: GenericPage[];
+  allGenericPages: {
+    id: string;
+    slug: string | null;
+    title: string;
+    status: ContentStatus;
+    updatedAt: Date;
+  }[];
 };
 
 const genericPageFormSchema = z.object({
@@ -76,10 +78,7 @@ export function GenericPageManager({
   const { query } = useAdminSearch();
   const normalizedQuery = query.trim().toLowerCase();
   const pageBySlug = useMemo(
-    () =>
-      new Map(
-        allGenericPages.map((page) => [page.slug || "", page])
-      ),
+    () => new Map(allGenericPages.map((page) => [page.slug || "", page])),
     [allGenericPages]
   );
   const filteredNavbarItems = normalizedQuery
@@ -111,7 +110,7 @@ export function GenericPageManager({
         content: existingGenericPage.content as string,
         status: existingGenericPage.status,
       });
-      
+
       // Parse content for editor
       const content = existingGenericPage.content as string;
       if (content) {
@@ -238,45 +237,47 @@ export function GenericPageManager({
               <p className="text-sm text-slate-500">No matches found.</p>
             ) : (
               filteredNavbarItems.map((item) => {
-              const correspondingPage = pageBySlug.get(item.href || "");
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleEditPage(item.href || "")}
-                  className="w-full text-left rounded-lg border border-slate-200 p-4 hover:bg-slate-50 transition"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-semibold text-slate-900">
-                        {item.label}
-                      </div>
-                      <div className="text-xs text-slate-500 mt-1">
-                        /{item.href}
-                      </div>
-                      {correspondingPage ? (
-                        <div className="text-xs text-slate-400 mt-1">
-                          Page: {correspondingPage.title}
+                const correspondingPage = pageBySlug.get(item.href || "");
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleEditPage(item.href || "")}
+                    className="w-full text-left rounded-lg border border-slate-200 p-4 hover:bg-slate-50 transition"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-semibold text-slate-900">
+                          {item.label}
                         </div>
-                      ) : (
-                        <div className="text-xs text-orange-500 mt-1">
-                          No page content created yet
+                        <div className="text-xs text-slate-500 mt-1">
+                          {item.href}
                         </div>
+                        {correspondingPage ? (
+                          <div className="text-xs text-slate-400 mt-1">
+                            Page: {correspondingPage.title}
+                          </div>
+                        ) : (
+                          <div className="text-xs text-orange-500 mt-1">
+                            No page content created yet
+                          </div>
+                        )}
+                      </div>
+                      {correspondingPage && (
+                        <span
+                          className={`text-xs px-2 py-1 rounded-full ${
+                            correspondingPage.status === "PUBLISHED"
+                              ? "bg-green-100 text-green-700"
+                              : correspondingPage.status === "DRAFT"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : "bg-red-100 text-red-700"
+                          }`}
+                        >
+                          {correspondingPage.status}
+                        </span>
                       )}
                     </div>
-                    {correspondingPage && (
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        correspondingPage.status === "PUBLISHED"
-                          ? "bg-green-100 text-green-700"
-                          : correspondingPage.status === "DRAFT"
-                          ? "bg-yellow-100 text-yellow-700"
-                          : "bg-red-100 text-red-700"
-                      }`}>
-                        {correspondingPage.status}
-                      </span>
-                    )}
-                  </div>
-                </button>
-              );
+                  </button>
+                );
               })
             )}
           </div>
@@ -379,17 +380,13 @@ export function GenericPageManager({
                 Content <span className="text-red-500">*</span>
               </label>
               <EditorJsEditor
-                key={`${existingGenericPage?.id || 'new'}-${selectedSlug}`}
+                key={`${existingGenericPage?.id || "new"}-${selectedSlug}`}
                 value={editorData}
                 onChange={(value) => {
-                  form.setValue(
-                    "content",
-                    JSON.stringify(value),
-                    {
-                      shouldDirty: true,
-                      shouldValidate: false,
-                    }
-                  );
+                  form.setValue("content", JSON.stringify(value), {
+                    shouldDirty: true,
+                    shouldValidate: false,
+                  });
                 }}
                 placeholder="Enter page content"
                 onImageUpload={async (file) => {
