@@ -77,6 +77,7 @@ model NavbarItem {
   children     NavbarItem[]   @relation("NavbarHierarchy")
   pageHeroes   PageHero?
   servicePages ServicePage?
+  genericPage  GenericPage?
 
   @@unique([region, label], map: "NavbarItem_region_label_unique")
   @@index([region, parentId, order])
@@ -233,18 +234,22 @@ model MetaData {
 }
 
 model GenericPage {
-  id        String        @id @default(cuid())
-  slug      String?
-  region    Region        @default(INDIA)
-  title     String
-  content   Json
-  status    ContentStatus @default(DRAFT)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id           String        @id @default(cuid())
+  navbarItemId String?       @unique
+  region       Region        @default(INDIA)
+  title        String
+  content      Json
+  status       ContentStatus @default(DRAFT)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
-  @@unique([slug, region])
+  navbarItem   NavbarItem?   @relation(fields: [navbarItemId], references: [id], onDelete: Cascade)
+
+  @@unique([navbarItemId, region])
   @@index([region, status])
 }
+
+
 
 enum Role {
   ADMIN

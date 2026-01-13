@@ -7,7 +7,7 @@ import { revalidateContentPage } from "@/lib/revalidate";
 
 const genericPageSchema = z.object({
   id: z.string().optional(),
-  slug: z.string().min(1, "Slug is required"),
+  navbarItemId: z.string().min(1, "Navbar item is required"),
   region: z.enum(["INDIA", "US"]),
   title: z.string().min(1, "Title is required"),
   content: z.string().min(1, "Content is required"),
@@ -24,15 +24,15 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const regionParam = searchParams.get("region");
-  const slug = searchParams.get("slug");
+  const navbarItemId = searchParams.get("navbarItemId");
   const pageId = searchParams.get("id");
 
   const where: Prisma.GenericPageWhereInput = {};
   if (regionParam) {
     where.region = regionParam === "US" ? Region.US : Region.INDIA;
   }
-  if (slug) {
-    where.slug = slug;
+  if (navbarItemId) {
+    where.navbarItemId = navbarItemId;
   }
   if (pageId) {
     where.id = pageId;
@@ -68,15 +68,13 @@ export async function POST(request: Request) {
     const region =
       parsed.data.region === "US" ? Region.US : Region.INDIA;
 
-    const status = parsed.data.status
-      ? (parsed.data.status as ContentStatus)
-      : ContentStatus.DRAFT;
+    const status = ContentStatus.PUBLISHED;
 
     // ✅ Correct uniqueness check
     const existingPage = await prisma.genericPage.findUnique({
       where: {
-        slug_region: {
-          slug: parsed.data.slug,
+        navbarItemId_region: {
+          navbarItemId: parsed.data.navbarItemId,
           region,
         },
       },
@@ -84,14 +82,14 @@ export async function POST(request: Request) {
 
     if (existingPage) {
       return NextResponse.json(
-        { error: "Generic page already exists for this slug and region" },
+        { error: "Generic page already exists for this navbar item and region" },
         { status: 400 }
       );
     }
 
     const genericPage = await prisma.genericPage.create({
       data: {
-        slug: parsed.data.slug,
+        navbarItemId: parsed.data.navbarItemId,
         region,
         title: parsed.data.title,
         content: parsed.data.content,
@@ -99,7 +97,11 @@ export async function POST(request: Request) {
       },
     });
 
-    revalidateContentPage(parsed.data.slug, region);
+    const navbarItem = await prisma.navbarItem.findUnique({
+      where: { id: parsed.data.navbarItemId },
+      select: { href: true },
+    });
+    revalidateContentPage(navbarItem?.href, region);
 
     return NextResponse.json({ genericPage });
   } catch (error) {
@@ -131,22 +133,24 @@ export async function PUT(request: Request) {
     }
 
     const region = parsed.data.region === "US" ? Region.US : Region.INDIA;
-    const status = parsed.data.status
-      ? (parsed.data.status as ContentStatus)
-      : undefined;
+    const status = ContentStatus.PUBLISHED;
 
     const genericPage = await prisma.genericPage.update({
       where: { id: parsed.data.id },
       data: {
-        slug: parsed.data.slug,
+        navbarItemId: parsed.data.navbarItemId,
         region,
         title: parsed.data.title,
         content: parsed.data.content,
-        ...(status && { status }),
+        status,
       },
     });
 
-    revalidateContentPage(parsed.data.slug, region);
+    const navbarItem = await prisma.navbarItem.findUnique({
+      where: { id: parsed.data.navbarItemId },
+      select: { href: true },
+    });
+    revalidateContentPage(navbarItem?.href, region);
 
     return NextResponse.json({ genericPage });
   } catch (error: unknown) {
@@ -178,15 +182,19 @@ export async function DELETE(request: Request) {
 
     const existingPage = await prisma.genericPage.findUnique({
       where: { id },
-      select: { slug: true, region: true },
+      select: { navbarItemId: true, region: true },
     });
 
     await prisma.genericPage.delete({
       where: { id },
     });
 
-    if (existingPage?.slug) {
-      revalidateContentPage(existingPage.slug, existingPage.region);
+    if (existingPage?.navbarItemId) {
+      const navbarItem = await prisma.navbarItem.findUnique({
+        where: { id: existingPage.navbarItemId },
+        select: { href: true },
+      });
+      revalidateContentPage(navbarItem?.href, existingPage.region);
     }
 
     return NextResponse.json({ success: true });

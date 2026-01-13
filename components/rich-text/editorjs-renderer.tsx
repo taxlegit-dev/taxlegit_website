@@ -64,9 +64,14 @@ function stripHtml(html: string): string {
 }
 
 const decodeHtml = (html: string): string => {
-  const txt = document.createElement("textarea");
-  txt.innerHTML = html;
-  return txt.value;
+  if (!html) return "";
+
+  return html
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'");
 };
 
 function ReadMoreHtml({

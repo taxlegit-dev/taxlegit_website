@@ -11,6 +11,8 @@ import { MetaDataRenderer } from "@/components/seo/meta-data-renderer";
 import { parseMetaBlockForMetadata } from "@/lib/seo-utils";
 import Footer from "@/components/footer";
 
+const normalizeSlug = (value: string) => value.replace(/^\/+/, "");
+
 type DynamicPageProps = {
   params: Promise<{ slug: string }>;
 };
@@ -20,7 +22,7 @@ const getNavbarItemBySlug = unstable_cache(
     prisma.navbarItem.findFirst({
       where: {
         region,
-        href: `/${slug}`,
+        href: `/${normalizeSlug(slug)}`,
         isActive: true,
       },
     }),
@@ -61,17 +63,15 @@ const getServicePageMetaByNavbarItemId = unstable_cache(
   { revalidate: 300 }
 );
 
-const getGenericPageBySlug = unstable_cache(
-  async (slug: string, region: Region) =>
-    prisma.genericPage.findUnique({
+const getGenericPageByNavbarItemId = unstable_cache(
+  async (navbarItemId: string, region: Region) =>
+    prisma.genericPage.findFirst({
       where: {
-        slug_region: {
-          slug,
-          region,
-        },
+        navbarItemId,
+        region,
       },
     }),
-  ["generic-page-by-slug"],
+  ["generic-page-by-navbar-item"],
   { revalidate: 300 }
 );
 
@@ -119,7 +119,7 @@ export async function generateMetadata({
 
   const [servicePage, genericPage] = await Promise.all([
     getServicePageMetaByNavbarItemId(navbarItem.id),
-    getGenericPageBySlug(slug, region),
+    getGenericPageByNavbarItemId(navbarItem.id, region),
   ]);
 
   // Try to fetch meta data for hero or service page
@@ -206,7 +206,7 @@ export default async function UsDynamicPage({ params }: DynamicPageProps) {
   const [hero, servicePage, genericPage, faq] = await Promise.all([
     getHeroByNavbarItemId(navbarItem.id),
     getServicePageByNavbarItemId(navbarItem.id),
-    getGenericPageBySlug(slug, region),
+    getGenericPageByNavbarItemId(navbarItem.id, region),
     getFaqByNavbarItemId(navbarItem.id),
   ]);
 

@@ -154,6 +154,8 @@ export function BlogManager({
   const [selectedBlogId, setSelectedBlogId] = useState<string | null>(
     searchParams?.get("blogId") || null
   );
+  const [selectedBlog, setSelectedBlog] = useState<BlogWithGroup | null>(null);
+  const [isSelectedBlogLoading, setIsSelectedBlogLoading] = useState(false);
   const [showGroupForm, setShowGroupForm] = useState(false);
   const [showBlogForm, setShowBlogForm] = useState(false);
   const [showAuthorForm, setShowAuthorForm] = useState(false);
@@ -331,6 +333,42 @@ export function BlogManager({
       setIsEditorReady(false);
     }
   }, [editingBlog, showBlogForm, blogForm, selectedBlogGroupId]);
+
+  useEffect(() => {
+    let isActive = true;
+    if (!selectedBlogId) {
+      setSelectedBlog(null);
+      setIsSelectedBlogLoading(false);
+      return;
+    }
+
+    setSelectedBlog(null);
+    setIsSelectedBlogLoading(true);
+    (async () => {
+      try {
+        const response = await fetch(`/api/admin/blogs?id=${selectedBlogId}`);
+        const result = await response.json();
+        if (!isActive) return;
+        if (response.ok) {
+          const blog = result.blogs?.[0] ?? null;
+          setSelectedBlog(blog);
+        } else {
+          setSelectedBlog(null);
+        }
+      } catch (error) {
+        if (!isActive) return;
+        console.error("Error fetching blog:", error);
+        setSelectedBlog(null);
+      } finally {
+        if (!isActive) return;
+        setIsSelectedBlogLoading(false);
+      }
+    })();
+
+    return () => {
+      isActive = false;
+    };
+  }, [selectedBlogId]);
 
   // Update group form when editing
   useEffect(() => {
@@ -685,20 +723,6 @@ export function BlogManager({
     );
   };
 
-  // Find selected blog with its group
-  let selectedBlog: BlogWithGroup | undefined;
-
-  if (selectedBlogId) {
-    for (const group of blogGroups) {
-      const blog = group.blogs.find((b) => b.id === selectedBlogId);
-      if (blog) {
-        // ⚠️ List blog is NOT full blog → fetch full blog
-        // UI should open editor instead of assuming content
-        break;
-      }
-    }
-  }
-
   // If showing blog form, show form first (higher priority)
   if (showBlogForm) {
     // Will return form below
@@ -815,6 +839,33 @@ export function BlogManager({
           </div>
         </div>
         {renderConfirmModal()}
+      </div>
+    );
+  }
+
+  if (selectedBlogId && !selectedBlog && isSelectedBlogLoading) {
+    return (
+      <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm text-center">
+        <p className="text-slate-600">Loading blog...</p>
+      </div>
+    );
+  }
+
+  if (selectedBlogId && !selectedBlog && !isSelectedBlogLoading) {
+    return (
+      <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm text-center">
+        <p className="text-slate-600">Blog not found.</p>
+        <button
+          onClick={() => {
+            setSelectedBlogId(null);
+            const next = new URLSearchParams(searchParams?.toString() ?? "");
+            next.delete("blogId");
+            router.replace(`/admin/blog?${next.toString()}`, { scroll: false });
+          }}
+          className="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
+        >
+          Back to Blogs
+        </button>
       </div>
     );
   }

@@ -49,6 +49,12 @@ type ServicePageManagerProps = {
     id: string;
     navbarItemId: string;
     updatedAt: Date;
+    sections?: {
+      id: string;
+      title: string;
+      content: string;
+      order: number;
+    }[];
   } | null;
 
   navbarItem?: NavbarItem | null;
@@ -138,18 +144,23 @@ export function ServicePageManager({
     control: form.control,
     name: "sections",
   });
-
   useEffect(() => {
     if (selectedItemId || selectedNavbarItemId) {
       const finalNavbarItemId = selectedItemId || selectedNavbarItemId || "";
       form.setValue("navbarItemId", finalNavbarItemId);
     }
 
-    if (selectedItemId || selectedNavbarItemId) {
+    if (existingServicePage?.sections?.length) {
       form.reset({
-        navbarItemId: selectedItemId || selectedNavbarItemId || "",
-        sections: [{ title: "", content: "", order: 1 }],
+        navbarItemId: existingServicePage.navbarItemId,
+        sections: existingServicePage.sections.map((section) => ({
+          id: section.id,
+          title: section.title,
+          content: section.content,
+          order: section.order,
+        })),
       });
+      setExpandedSections(new Set([0]));
     } else if (selectedItemId || selectedNavbarItemId) {
       form.reset({
         navbarItemId: selectedItemId || selectedNavbarItemId || "",
