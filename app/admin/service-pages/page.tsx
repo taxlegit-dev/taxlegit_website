@@ -11,56 +11,52 @@ export default async function AdminServicePagesPage({
   searchParams,
 }: AdminServicePagesProps) {
   const params = await searchParams;
+
   const selectedRegion = params?.region === "US" ? Region.US : Region.INDIA;
+
   const selectedNavbarItemId = params?.navbarItemId;
 
-  const [navItems, allServicePages] = await Promise.all([
-    // Query 1: Navbar items
-    prisma.navbarItem.findMany({
-      where: {
-        region: selectedRegion,
-        pageType: "SERVICE",
-        type: "LINK",
-        href: { not: null },
-        isActive: true,
-      },
-      orderBy: { order: "asc" },
-    }),
+  /**
+   * 1️⃣ NAVBAR ITEMS (REQUIRED FOR LIST)
+   */
+  const navItems = await prisma.navbarItem.findMany({
+    where: {
+      region: selectedRegion,
+      pageType: "SERVICE",
+      type: "LINK",
+      href: { not: null },
+      isActive: true,
+    },
+    orderBy: { order: "asc" },
+  });
 
-    prisma.servicePage.findMany({
-      where: { region: selectedRegion },
-      orderBy: { updatedAt: "desc" },
-      include: {
-        sections: {
-          orderBy: { order: "asc" },
-        },
-        navbarItem: true,
-      },
-    }),
-  ]);
+  /**
+   * 2️⃣ LIGHT SERVICE PAGE LINKS (NO SECTIONS, NO CONTENT)
+   */
+  const servicePageLinks = await prisma.servicePage.findMany({
+    where: { region: selectedRegion },
+    select: {
+      id: true,
+      navbarItemId: true,
+      updatedAt: true,
+    },
+  });
 
-  let existingServicePage = null;
-  let navbarItem = null;
+  /**
+   * 3️⃣ DERIVED VALUES (NO EXTRA DB CALL)
+   */
+  const existingServicePage = selectedNavbarItemId
+    ? servicePageLinks.find((sp) => sp.navbarItemId === selectedNavbarItemId) ||
+      null
+    : null;
 
-  if (selectedNavbarItemId) {
-    // Find from already fetched data - NO DATABASE CALL!
-    existingServicePage =
-      allServicePages.find((sp) => sp.navbarItemId === selectedNavbarItemId) ||
-      null;
-
-    if (existingServicePage) {
-      // Use the already included navbarItem
-      navbarItem = existingServicePage.navbarItem;
-    } else {
-      // If no service page exists yet, find from navItems
-      navbarItem =
-        navItems.find((item) => item.id === selectedNavbarItemId) || null;
-    }
-  }
+  const navbarItem = selectedNavbarItemId
+    ? navItems.find((item) => item.id === selectedNavbarItemId) || null
+    : null;
 
   return (
-    <div className="space-y-8 text-black">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div className="space-y-8 text-black ">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-blue-100 p-2 rounded-xl">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">
             Service Pages
@@ -73,8 +69,10 @@ export default async function AdminServicePagesPage({
             contents, and rich content
           </p>
         </div>
+
         <RegionFilter value={selectedRegion === Region.US ? "US" : "INDIA"} />
       </div>
+
       <ServicePageManager
         pageType="SERVICE"
         region={selectedRegion === Region.US ? "US" : "INDIA"}
@@ -82,7 +80,7 @@ export default async function AdminServicePagesPage({
         selectedNavbarItemId={selectedNavbarItemId || undefined}
         existingServicePage={existingServicePage}
         navbarItem={navbarItem}
-        allServicePages={allServicePages}
+        servicePageLinks={servicePageLinks} // 🔥 LIGHT DATA ONLY
       />
     </div>
   );

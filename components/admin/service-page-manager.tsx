@@ -1,15 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import type {
-  NavbarItem,
-  ServicePage,
-  ServicePageSection,
-} from "@prisma/client";
+import type { NavbarItem } from "@prisma/client";
 import dynamic from "next/dynamic";
 import type { OutputData } from "@editorjs/editorjs";
 import { SEOMetaEditor } from "@/components/admin/seo-meta-editor";
@@ -42,25 +38,27 @@ function tryParseEditorJson(content: string): OutputData | null {
     return null;
   }
 }
-
-type ServicePageWithSections = ServicePage & {
-  sections: ServicePageSection[];
-};
-
-type ServicePageWithNavItem = ServicePageWithSections & {
-  navbarItem: NavbarItem | null;
-};
-
-type PageType = "SERVICE" | "GENERIC";
-
 type ServicePageManagerProps = {
-  pageType: PageType;
+  pageType: "SERVICE";
   region: "INDIA" | "US";
   navItems: NavbarItem[];
   selectedNavbarItemId?: string;
-  existingServicePage?: ServicePageWithSections | null;
+
+  // 🔥 LIGHT INDICATOR ONLY
+  existingServicePage?: {
+    id: string;
+    navbarItemId: string;
+    updatedAt: Date;
+  } | null;
+
   navbarItem?: NavbarItem | null;
-  allServicePages?: ServicePageWithNavItem[];
+
+  // 🔥 NEW PROP (LIST PURPOSE ONLY)
+  servicePageLinks: {
+    id: string;
+    navbarItemId: string;
+    updatedAt: Date;
+  }[];
 };
 
 const sectionSchema = z.object({
@@ -83,7 +81,7 @@ export function ServicePageManager({
   navItems,
   selectedNavbarItemId,
   existingServicePage,
-  allServicePages = [],
+  servicePageLinks = [],
 }: ServicePageManagerProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -97,13 +95,26 @@ export function ServicePageManager({
   const [sectionToDelete, setSectionToDelete] = useState<number | null>(null);
   const [deletingSection, setDeletingSection] = useState(false);
   const { query } = useAdminSearch();
-  const normalizedQuery = query.trim().toLowerCase();
-  const filteredNavItems = normalizedQuery
-    ? navItems.filter((item) => {
-        const target = `${item.label ?? ""} ${item.href ?? ""}`.toLowerCase();
-        return target.includes(normalizedQuery);
-      })
-    : navItems;
+
+  // ✅ OPTIMIZATION 1: Memoize service page lookup map
+  const servicePagesMap = useMemo(() => {
+    const map = new Map<string, boolean>();
+    servicePageLinks.forEach((sp) => {
+      map.set(sp.navbarItemId, true);
+    });
+    return map;
+  }, [servicePageLinks]);
+
+  // ✅ OPTIMIZATION 2: Memoize filtered items
+  const filteredNavItems = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    if (!normalizedQuery) return navItems;
+
+    return navItems.filter((item) => {
+      const target = `${item.label ?? ""} ${item.href ?? ""}`.toLowerCase();
+      return target.includes(normalizedQuery);
+    });
+  }, [query, navItems]);
 
   const selectedItemId = selectedNavbarItemId || "";
   const pageLabel = pageType === "SERVICE" ? "Service Page" : "Generic Page";
@@ -117,20 +128,10 @@ export function ServicePageManager({
 
   const form = useForm<ServicePageForm>({
     resolver: zodResolver(servicePageFormSchema),
-    defaultValues: existingServicePage
-      ? {
-          navbarItemId: existingServicePage.navbarItemId,
-          sections: existingServicePage.sections.map((s) => ({
-            id: s.id,
-            title: s.title,
-            content: s.content,
-            order: s.order,
-          })),
-        }
-      : {
-          navbarItemId: selectedItemId || "",
-          sections: [{ title: "", content: "", order: 1 }],
-        },
+    defaultValues: {
+      navbarItemId: selectedItemId || "",
+      sections: [{ title: "", content: "", order: 1 }],
+    },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -144,15 +145,10 @@ export function ServicePageManager({
       form.setValue("navbarItemId", finalNavbarItemId);
     }
 
-    if (existingServicePage) {
+    if (selectedItemId || selectedNavbarItemId) {
       form.reset({
-        navbarItemId: existingServicePage.navbarItemId,
-        sections: existingServicePage.sections.map((s) => ({
-          id: s.id,
-          title: s.title,
-          content: s.content,
-          order: s.order,
-        })),
+        navbarItemId: selectedItemId || selectedNavbarItemId || "",
+        sections: [{ title: "", content: "", order: 1 }],
       });
     } else if (selectedItemId || selectedNavbarItemId) {
       form.reset({
@@ -248,7 +244,6 @@ export function ServicePageManager({
     setSavingSection(index);
 
     try {
-      // Check if this is an existing section (has id) or new section
       const isNewSection = !section.id;
 
       let payload;
@@ -256,9 +251,7 @@ export function ServicePageManager({
       let method;
 
       if (isNewSection) {
-        // New section - use service-page-sections endpoint
         if (existingServicePage?.id) {
-          // Service page exists, provide servicePageId
           payload = {
             servicePageId: existingServicePage.id,
             title: section.title,
@@ -266,8 +259,6 @@ export function ServicePageManager({
             order: section.order || index + 1,
           };
         } else {
-          // Service page doesn't exist, provide navbarItemId and region
-          // API will create service page automatically
           payload = {
             navbarItemId: finalNavbarItemId,
             region,
@@ -279,7 +270,6 @@ export function ServicePageManager({
         url = "/api/admin/service-page-sections";
         method = "POST";
       } else {
-        // Existing section - update it
         payload = {
           id: section.id,
           title: section.title,
@@ -309,14 +299,11 @@ export function ServicePageManager({
         return;
       }
 
-      // Update the form with the returned section id if it was a new section
       if (isNewSection && result.section?.id) {
         form.setValue(`sections.${index}.id`, result.section.id);
       }
 
       toast.success(`Section ${index + 1} saved successfully!`);
-
-      // Refresh manually if needed
     } catch (error) {
       toast.error("Network error. Please try again.");
       console.error("Error saving section:", error);
@@ -392,6 +379,7 @@ export function ServicePageManager({
     }
   };
 
+  // ✅ LIST VIEW - Optimized with memoization
   if (!selectedItemId && !selectedNavbarItemId) {
     return (
       <div className="space-y-6">
@@ -408,9 +396,9 @@ export function ServicePageManager({
               <p className="text-sm text-slate-500">No matches found.</p>
             ) : (
               filteredNavItems.map((item) => {
-                const hasServicePage = allServicePages.some(
-                  (sp) => sp.navbarItemId === item.id
-                );
+                // ✅ O(1) lookup instead of O(n)
+                const hasServicePage = servicePagesMap.has(item.id);
+
                 return (
                   <button
                     key={item.id}
