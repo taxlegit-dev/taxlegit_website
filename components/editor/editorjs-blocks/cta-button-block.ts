@@ -5,6 +5,7 @@ type CTAData = {
   phone?: string;
   message?: string;
   align?: "left" | "center" | "right";
+  target?: "_self" | "_blank";
 };
 
 export default class CTAButtonBlock {
@@ -36,6 +37,7 @@ export default class CTAButtonBlock {
       phone: data?.phone || "",
       message: data?.message || "",
       align: data?.align || "center",
+      target: data?.target || "_blank",
     };
 
     this.wrapper = document.createElement("div");
@@ -80,6 +82,17 @@ export default class CTAButtonBlock {
           <option value="right" ${
             this.data.align === "right" ? "selected" : ""
           }>Right</option>
+        </select>
+      </div>
+
+      <div class="cta-field">
+        <select class="cta-target">
+          <option value="_self" ${
+            this.data.target === "_self" ? "selected" : ""
+          }>Same Tab</option>
+          <option value="_blank" ${
+            this.data.target === "_blank" ? "selected" : ""
+          }>New Tab</option>
         </select>
       </div>
 
@@ -128,6 +141,16 @@ export default class CTAButtonBlock {
         | "left"
         | "center"
         | "right";
+      this.notifyChange();
+    });
+
+    const targetSelect = this.wrapper.querySelector(
+      ".cta-target"
+    ) as HTMLSelectElement;
+    targetSelect.addEventListener("change", (e) => {
+      this.data.target = (e.target as HTMLSelectElement).value as
+        | "_self"
+        | "_blank";
       this.notifyChange();
     });
 
@@ -196,6 +219,10 @@ export default class CTAButtonBlock {
       blockContent.querySelector(".cta-align") as HTMLSelectElement
     )?.value as "left" | "center" | "right";
 
+    const target = (
+      blockContent.querySelector(".cta-target") as HTMLSelectElement
+    )?.value as "_self" | "_blank";
+
     const url = (blockContent.querySelector(".cta-url") as HTMLInputElement)
       ?.value;
 
@@ -213,6 +240,7 @@ export default class CTAButtonBlock {
       phone,
       message,
       align,
+      target,
     };
   }
 
@@ -285,7 +313,7 @@ export default class CTAButtonBlock {
     });
 
     const selects = this.wrapper.querySelectorAll<HTMLSelectElement>(
-      ".cta-select, .cta-align"
+      ".cta-select, .cta-align, .cta-target"
     );
     selects.forEach((select) => {
       select.style.cssText = `

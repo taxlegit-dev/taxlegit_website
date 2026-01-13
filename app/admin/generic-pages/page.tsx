@@ -4,7 +4,7 @@ import { RegionFilter } from "@/components/admin/region-filter";
 import { GenericPageManager } from "@/components/admin/generic-page-manager";
 
 type AdminGenericPagesProps = {
-  searchParams?: Promise<{ region?: string; slug?: string }>;
+  searchParams?: Promise<{ region?: string; navbarItemId?: string }>;
 };
 
 export default async function AdminGenericPagesPage({
@@ -13,7 +13,7 @@ export default async function AdminGenericPagesPage({
   const params = await searchParams;
 
   const selectedRegion = params?.region === "US" ? Region.US : Region.INDIA;
-  const selectedSlug = params?.slug;
+  const selectedNavbarItemId = params?.navbarItemId;
 
   /**
    * 1️⃣ NAVBAR ITEMS (GENERIC LINKS ONLY)
@@ -24,7 +24,6 @@ export default async function AdminGenericPagesPage({
       pageType: "GENERIC",
       type: "LINK",
       href: { not: null },
-      isActive: true,
     },
     orderBy: { order: "asc" },
   });
@@ -36,7 +35,7 @@ export default async function AdminGenericPagesPage({
     where: { region: selectedRegion },
     select: {
       id: true,
-      slug: true,
+      navbarItemId: true,
       title: true,
       status: true,
       updatedAt: true,
@@ -47,13 +46,11 @@ export default async function AdminGenericPagesPage({
   /**
    * 3️⃣ SELECTED PAGE (ONLY WHEN EDITING)
    */
-  const existingGenericPage = selectedSlug
-    ? await prisma.genericPage.findUnique({
+  const existingGenericPage = selectedNavbarItemId
+    ? await prisma.genericPage.findFirst({
         where: {
-          slug_region: {
-            slug: selectedSlug,
-            region: selectedRegion,
-          },
+          region: selectedRegion,
+          navbarItemId: selectedNavbarItemId,
         },
       })
     : null;
@@ -79,7 +76,7 @@ export default async function AdminGenericPagesPage({
 
       <GenericPageManager
         region={selectedRegion === Region.US ? "US" : "INDIA"}
-        selectedSlug={selectedSlug}
+        selectedNavbarItemId={selectedNavbarItemId}
         existingGenericPage={existingGenericPage}
         genericNavbarItems={genericNavbarItems}
         allGenericPages={allGenericPages}

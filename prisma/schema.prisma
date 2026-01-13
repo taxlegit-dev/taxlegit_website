@@ -77,6 +77,7 @@ model NavbarItem {
   children     NavbarItem[]   @relation("NavbarHierarchy")
   pageHeroes   PageHero?
   servicePages ServicePage?
+  genericPage  GenericPage?
 
   @@unique([region, label], map: "NavbarItem_region_label_unique")
   @@index([region, parentId, order])
@@ -218,20 +219,6 @@ model Blog {
   @@index([authorId])
 }
 
-/// Static Page - For static pages like Home, About
-model StaticPage {
-  id        String        @id @default(cuid())
-  key       PageKey
-  region    Region        @default(INDIA)
-  title     String
-  content   Json
-  status    ContentStatus @default(DRAFT)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-
-  @@unique([key, region], map: "StaticPage_key_region_unique")
-  @@index([region, key])
-}
 
 /// Meta Data - Stores SEO meta tags and JSON-LD for any page
 model MetaData {
@@ -247,18 +234,22 @@ model MetaData {
 }
 
 model GenericPage {
-  id        String        @id @default(cuid())
-  slug      String?
-  region    Region        @default(INDIA)
-  title     String
-  content   Json
-  status    ContentStatus @default(DRAFT)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id           String        @id @default(cuid())
+  navbarItemId String?       @unique
+  region       Region        @default(INDIA)
+  title        String
+  content      Json
+  status       ContentStatus @default(DRAFT)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
-  @@unique([slug, region])
+  navbarItem   NavbarItem?   @relation(fields: [navbarItemId], references: [id], onDelete: Cascade)
+
+  @@unique([navbarItemId, region])
   @@index([region, status])
 }
+
+
 
 enum Role {
   ADMIN

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ProviderTree } from "@/components/providers/provider-tree";
 import "aos/dist/aos.css";
+import ZohoChat from "@/components/zoho/ZohoChat";
 
 export const metadata: Metadata = {
   title: "Taxlegit | Compliance and Registration",
@@ -21,6 +22,7 @@ export default async function RootLayout({
         <ProviderTree>
           {children}
         </ProviderTree>
+        <ZohoChat />
       </body>
     </html>
   );
