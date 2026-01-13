@@ -5,7 +5,7 @@ import { EditorJsRenderer } from "@/components/rich-text/editorjs-renderer";
 import type { OutputData } from "@editorjs/editorjs";
 
 type GenericPageViewProps = {
-  genericPage: GenericPage;
+  genericPage: Pick<GenericPage, "title" | "content">;
 };
 
 export function GenericPageView({ genericPage }: GenericPageViewProps) {
