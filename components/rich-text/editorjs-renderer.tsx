@@ -683,6 +683,7 @@ function renderBlock(
         phone,
         message,
         align = "center",
+        target = "_blank",
       } = block.data as {
         text?: string;
         type?: "url" | "whatsapp";
@@ -690,6 +691,7 @@ function renderBlock(
         phone?: string;
         message?: string;
         align?: "left" | "center" | "right";
+        target?: "_self" | "_blank";
       };
 
       if (!text) return null;
@@ -712,8 +714,8 @@ function renderBlock(
         <div key={block.id} className={`my-8 flex ${alignmentClass}`}>
           <a
             href={href}
-            target="_blank"
-            rel="noopener noreferrer"
+            target={target}
+            rel={target === "_blank" ? "noopener noreferrer" : undefined}
             className="inline-flex items-center justify-center rounded-lg px-6 py-3 text-base font-medium text-white bg-gradient-to-r from-[#4b1b66] to-[#8b2bbd] hover:from-[#3f1655] hover:to-[#7a27a6] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-white"
           >
             {text}
