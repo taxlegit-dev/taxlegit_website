@@ -218,20 +218,6 @@ model Blog {
   @@index([authorId])
 }
 
-/// Static Page - For static pages like Home, About
-model StaticPage {
-  id        String        @id @default(cuid())
-  key       PageKey
-  region    Region        @default(INDIA)
-  title     String
-  content   Json
-  status    ContentStatus @default(DRAFT)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-
-  @@unique([key, region], map: "StaticPage_key_region_unique")
-  @@index([region, key])
-}
 
 /// Meta Data - Stores SEO meta tags and JSON-LD for any page
 model MetaData {
