@@ -47,7 +47,7 @@ type GenericPageManagerProps = {
   genericNavbarItems: NavbarItem[];
   allGenericPages: {
     id: string;
-    navbarItemId: string;
+    navbarItemId: string | null;
     title: string;
     status: ContentStatus;
     updatedAt: Date;
@@ -76,10 +76,15 @@ export function GenericPageManager({
   const [editorKey, setEditorKey] = useState(0);
   const { query } = useAdminSearch();
   const normalizedQuery = query.trim().toLowerCase();
-  const pageByNavbarItemId = useMemo(
-    () => new Map(allGenericPages.map((page) => [page.navbarItemId, page])),
-    [allGenericPages]
-  );
+  const pageByNavbarItemId = useMemo(() => {
+    const map = new Map<string, (typeof allGenericPages)[number]>();
+    allGenericPages.forEach((page) => {
+      if (page.navbarItemId) {
+        map.set(page.navbarItemId, page);
+      }
+    });
+    return map;
+  }, [allGenericPages]);
   const filteredNavbarItems = normalizedQuery
     ? genericNavbarItems.filter((item) => {
         const matchingPage = pageByNavbarItemId.get(item.id);

@@ -32,7 +32,7 @@ export default async function AdminGenericPagesPage({
    * 2️⃣ ALL GENERIC PAGES (LIGHT LIST)
    */
   const allGenericPages = await prisma.genericPage.findMany({
-    where: { region: selectedRegion },
+    where: { region: selectedRegion, navbarItemId: { not: null } },
     select: {
       id: true,
       navbarItemId: true,
