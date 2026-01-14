@@ -29,17 +29,36 @@ export default function ZohoChat() {
 
   return (
     <>
-      <Script id="zoho-init" strategy="afterInteractive">
-        {`
-          window.$zoho = window.$zoho || {};
-          $zoho.salesiq = $zoho.salesiq || { ready: function(){} };
-        `}
-      </Script>
+      <Script
+        id="zoho-salesiq-init"
+        strategy="lazyOnload"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.$zoho = window.$zoho || {};
+            $zoho.salesiq = $zoho.salesiq || { ready: function(){} };
+          `,
+        }}
+      />
 
       <Script
-        id="zoho-salesiq"
+        id="zsiqscript"
         src="https://salesiq.zohopublic.com/widget?wc=siq0e51e73d307d4571c5cde2ed5c2d585af9a0b468d06b8658f9486e3b3d6ff665"
-        strategy="afterInteractive"
+        strategy="lazyOnload"
+      />
+
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+
+
+            @media (max-width: 1500px) {
+              .chat-iframe-wrap, .chat-iframe-wrap iframe, .chat-loader-cont {
+                min-height: 390px !important;
+                height: auto !important;
+              }
+            }
+          `,
+        }}
       />
     </>
   );

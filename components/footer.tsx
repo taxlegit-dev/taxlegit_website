@@ -52,25 +52,25 @@ const Footer = () => {
     },
     {
       icon: <FaTwitter />,
-      href: "#",
+      href: "https://x.com/taxlegit",
       label: "Twitter",
       color: "hover:bg-purple-500",
     },
     {
       icon: <FaFacebookF />,
-      href: "#",
+      href: "https://www.facebook.com/Taxlegitt/",
       label: "Facebook",
       color: "hover:bg-purple-700",
     },
     {
       icon: <FaLinkedinIn />,
-      href: "#",
+      href: "https://www.linkedin.com/company/taxlegitt/",
       label: "LinkedIn",
       color: "hover:bg-purple-800",
     },
     {
       icon: <FaYoutube />,
-      href: "#",
+      href: "https://www.youtube.com/channel/UC4s7kcn1qt7np_Ccce5hmHA",
       label: "YouTube",
       color: "hover:bg-red-600",
     },
@@ -81,14 +81,14 @@ const Footer = () => {
       {/* Main Container with Overlap */}
       <div className="relative mt-32">
         {/* Call to Action Banner (Will overlap on footer) */}
-        <div className="absolute -top-16 w-full z-40">
+        <div className="relative sm:absolute sm:-top-16 w-full z-40 mb-8 sm:mb-0">
           <section className="relative w-full">
             {/* Main Banner Box */}
             <div
               className="
         max-w-6xl mx-auto relative z-10 
         bg-[#E6D3E6] rounded-2xl 
-        px-8 md:px-16 py-0
+        px-8 md:px-16 py-6 sm:py-0
         flex flex-col md:flex-row items-center justify-between 
         shadow-2xl
         transform hover:scale-[1.02] transition-transform duration-300
@@ -103,16 +103,24 @@ const Footer = () => {
                   height={260}
                   unoptimized
                   className="
-            object-contain drop-shadow-2xl 
-            -mt-20 md:-mt-24   /* 💥 THIS MAKES IMAGE FLOAT ABOVE */
-            z-20 relative
-          "
+      object-contain drop-shadow-2xl
+      -mt-6 sm:-mt-12 md:-mt-20
+      z-20 relative
+
+      /* 🔥 RESPONSIVE SIZE CONTROL */
+      w-[140px] 
+      sm:w-[180px] 
+      md:w-[220px] 
+      lg:w-[260px]
+
+      h-auto
+    "
                 />
               </div>
 
               {/* CENTER TEXT */}
-              <div className="flex-1 text-center md:text-left text-black px-4 md:px-8">
-                <h2 className="text-3xl md:text-4xl font-bold leading-tight mb-3">
+              <div className="flex-1 text-center md:text-left text-slate-800 px-4 lg:px-8">
+                <h2 className=" lg:text-4xl text-xl font-bold leading-tight mb-3">
                   Ready to Start Your Journey?
                 </h2>
               </div>
@@ -123,12 +131,12 @@ const Footer = () => {
                   className="
             group relative w-full md:w-auto
             bg-white text-purple-700 font-bold 
-            px-6 md:px-10 py-3 md:py-4 rounded-lg md:rounded-xl 
+            px-4 lg:px-8 py-2 lg:py-4 rounded-lg md:rounded-xl 
             shadow-lg hover:shadow-2xl 
             transition-all duration-300
             hover:scale-105 active:scale-95
-            flex items-center justify-center md:justify-start gap-2 md:gap-3
-            text-sm md:text-base
+            flex items-center justify-center md:justify-start gap-1 lg:gap-2
+            text-sm lg:text-base
           "
                 >
                   <span>TALK TO A SPECIALIST</span>
@@ -151,9 +159,9 @@ const Footer = () => {
         </div>
 
         {/* Footer (Will have 25% overlap) */}
-        <footer className="relative z-30 bg-gray-900 pt-24 pb-8">
+        <footer className="relative z-30 bg-gray-900 pt-10 sm:pt-24 pb-8">
           {/* Main Footer Content */}
-          <div className="container mx-auto px-4 pt-12 pb-4">
+          <div className="container mx-auto px-4 pt-6 sm:pt-12 pb-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
               {/* Company Info */}
               <div className="lg:col-span-2 space-y-6">
