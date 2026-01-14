@@ -6,7 +6,7 @@ import { z } from "zod";
 import { revalidateBlogPage, revalidateContentPage } from "@/lib/revalidate";
 
 const metaDataSchema = z.object({
-  pageType: z.enum(["SERVICE", "BLOG"]),
+  pageType: z.enum(["SERVICE", "BLOG", "GENERIC"]),
   pageId: z.string().min(1),
   metaBlock: z.string(),
 });
@@ -47,11 +47,11 @@ async function revalidateMetaTarget(pageType: MetaPageType, pageId: string) {
   if (pageType === "GENERIC") {
     const genericPage = await prisma.genericPage.findUnique({
       where: { id: pageId },
-      select: { slug: true, region: true },
+      select: { region: true, navbarItem: { select: { href: true } } },
     });
 
-    if (genericPage?.slug) {
-      revalidateContentPage(genericPage.slug, genericPage.region);
+    if (genericPage?.navbarItem?.href) {
+      revalidateContentPage(genericPage.navbarItem.href, genericPage.region);
     }
   }
 }

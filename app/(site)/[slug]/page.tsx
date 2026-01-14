@@ -192,6 +192,7 @@ import { prisma } from "@/lib/prisma";
 
 import { IndiaHero } from "@/components/ServiceHeroSection/india-hero";
 import { ServicePageView } from "@/components/service-page/service-page-view";
+import { GenericPageView } from "@/components/generic-page/generic-page-view";
 import { FAQSection } from "@/components/faq/faq-section";
 import Footer from "@/components/footer";
 import { MetaDataRenderer } from "@/components/seo/meta-data-renderer";
@@ -217,13 +218,16 @@ type PageProps = {
 ------------------------------------------------- */
 const parseMetaCached = cache(parseMetaBlockForMetadata);
 
+const normalizeSlug = (value: string) => value.replace(/^\/+/, "");
+
 /* -------------------------------------------------
    FAST SHELL (MIN DB)
 ------------------------------------------------- */
-async function getServiceShell(slug: string, region: Region) {
+async function getPageShell(slug: string, region: Region) {
+  const normalizedSlug = normalizeSlug(slug);
   const navbarItem = await prisma.navbarItem.findFirst({
     where: {
-      href: `/${slug}`,
+      href: `/${normalizedSlug}`,
       region,
       isActive: true,
     },
@@ -237,24 +241,33 @@ async function getServiceShell(slug: string, region: Region) {
 
   if (!navbarItem) return null;
 
-  const servicePage = await prisma.servicePage.findUnique({
-    where: { navbarItemId: navbarItem.id },
-    select: { id: true, status: true },
-  });
+  const [servicePage, genericPage] = await Promise.all([
+    prisma.servicePage.findUnique({
+      where: { navbarItemId: navbarItem.id },
+      select: { id: true, status: true },
+    }),
+    prisma.genericPage.findFirst({
+      where: {
+        navbarItemId: navbarItem.id,
+        region,
+      },
+      select: { id: true, status: true, title: true, content: true },
+    }),
+  ]);
 
-  if (!servicePage) return null;
+  if (!servicePage && !genericPage) return null;
 
   const metaData = await prisma.metaData.findUnique({
     where: {
       pageType_pageId: {
-        pageType: "SERVICE",
-        pageId: servicePage.id,
+        pageType: servicePage ? "SERVICE" : "GENERIC",
+        pageId: servicePage ? servicePage.id : genericPage!.id,
       },
     },
     select: { metaBlock: true },
   });
 
-  return { navbarItem, servicePage, metaData };
+  return { navbarItem, servicePage, genericPage, metaData };
 }
 
 /* -------------------------------------------------
@@ -264,7 +277,7 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const shell = await getServiceShell(slug, Region.INDIA);
+  const shell = await getPageShell(slug, Region.INDIA);
 
   if (!shell) return { title: "Page Not Found" };
 
@@ -311,68 +324,81 @@ export default async function ServicePage({ params }: PageProps) {
   const { slug } = await params;
 
   /* ---------- FAST SHELL ---------- */
-  const shell = await getServiceShell(slug, Region.INDIA);
+  const shell = await getPageShell(slug, Region.INDIA);
   if (!shell) notFound();
 
-  const { navbarItem, servicePage, metaData } = shell;
+  const { navbarItem, servicePage, genericPage, metaData } = shell;
 
-  /* ---------- FETCH FULL DATA ONCE ---------- */
-  const serviceData = await getServiceContentCached(
-    navbarItem.id,
-    servicePage.id
-  );
+  const serviceData = servicePage
+    ? await getServiceContentCached(navbarItem.id, servicePage.id)
+    : null;
 
   return (
     <>
       {metaData?.metaBlock && (
         <MetaDataRenderer
-          pageType="SERVICE"
-          pageId={servicePage.id}
+          pageType={servicePage ? "SERVICE" : "GENERIC"}
+          pageId={servicePage ? servicePage.id : genericPage!.id}
           metaBlock={metaData.metaBlock}
         />
       )}
 
       <div className="min-h-screen bg-white text-black">
         <main className="pt-[89px]">
-          {/* HERO */}
-          {serviceData.hero?.status === "PUBLISHED" && (
-            <IndiaHero
-              hero={serviceData.hero}
-              breadcrumbParent={
-                navbarItem.parent?.label || navbarItem.groupLabel || "Services"
-              }
-              breadcrumbCurrent={navbarItem.label}
-            />
-          )}
-
-          {/* SERVICE CONTENT */}
-          <Suspense fallback={<SectionSkeleton />}>
-            {servicePage.status === "PUBLISHED" &&
-              serviceData.sections?.length > 0 && (
-                <ServicePageView sections={serviceData.sections} />
-              )}
-          </Suspense>
-
-          {/* FAQ */}
-          <Suspense fallback={<SectionSkeleton />}>
-            {serviceData.faq?.status === "PUBLISHED" &&
-              serviceData.faq.questions?.length > 0 && (
-                <FAQSection
-                  questions={serviceData.faq.questions}
-                  region="INDIA"
+          {servicePage && serviceData ? (
+            <>
+              {/* HERO */}
+              {serviceData.hero?.status === "PUBLISHED" && (
+                <IndiaHero
+                  hero={serviceData.hero}
+                  breadcrumbParent={
+                    navbarItem.parent?.label ||
+                    navbarItem.groupLabel ||
+                    "Services"
+                  }
+                  breadcrumbCurrent={navbarItem.label}
                 />
               )}
-          </Suspense>
 
-          {/* RELATED BLOGS */}
-          <Suspense fallback={null}>
-            <RelatedBlogsSection
-              blogs={await getRelatedBlogsCached(
-                navbarItem.label,
-                Region.INDIA
-              )}
-            />
-          </Suspense>
+              {/* SERVICE CONTENT */}
+              <Suspense fallback={<SectionSkeleton />}>
+                {servicePage.status === "PUBLISHED" &&
+                  serviceData.sections?.length > 0 && (
+                    <ServicePageView sections={serviceData.sections} />
+                  )}
+              </Suspense>
+
+              {/* FAQ */}
+              <Suspense fallback={<SectionSkeleton />}>
+                {serviceData.faq?.status === "PUBLISHED" &&
+                  serviceData.faq.questions?.length > 0 && (
+                    <FAQSection
+                      questions={serviceData.faq.questions}
+                      region="INDIA"
+                    />
+                  )}
+              </Suspense>
+
+              {/* RELATED BLOGS */}
+              <Suspense fallback={null}>
+                <RelatedBlogsSection
+                  blogs={await getRelatedBlogsCached(
+                    navbarItem.label,
+                    Region.INDIA
+                  )}
+                />
+              </Suspense>
+            </>
+          ) : genericPage && genericPage.status === "PUBLISHED" ? (
+            <GenericPageView genericPage={genericPage} />
+          ) : (
+            <section className="mx-auto max-w-6xl px-6 py-12">
+              <h1 className="text-4xl font-semibold">{navbarItem.label}</h1>
+              <p className="mt-4 text-zinc-600">
+                Content for this page is coming soon.
+              </p>
+            </section>
+          )}
         </main>
 
         <Footer />

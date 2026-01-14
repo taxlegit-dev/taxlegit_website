@@ -1,14 +1,6 @@
 import Link from "next/link";
-import { Region, PageKey } from "@prisma/client";
-import { RichContent } from "@/components/rich-text/rich-content";
-import { getStaticPage } from "@/lib/queries";
-import type { RichTextDocument } from "@/types/rich-text";
 
 export default async function UsHomePage() {
-  const region = Region.US;
-  const [page] = await Promise.all([getStaticPage(region, PageKey.HOME)]);
-  const heroContent = page?.content as RichTextDocument | null;
-
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <main className="pt-[89px] mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-12">
@@ -18,13 +10,12 @@ export default async function UsHomePage() {
               United States
             </p>
             <h1 className="text-4xl font-semibold leading-tight">
-              {page?.title ?? "Taxlegit US"}
+              Taxlegit US
             </h1>
-            {heroContent && (
-              <div className="max-w-2xl text-slate-200">
-                <RichContent document={heroContent} theme="dark" />
-              </div>
-            )}
+            <div className="max-w-2xl text-slate-200">
+              Expert-led registration, accounting, valuation, and compliance
+              services tailored for US businesses.
+            </div>
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/us/about"
@@ -39,7 +30,7 @@ export default async function UsHomePage() {
       <footer className="border-t border-white/10">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-8 text-sm text-slate-400">
           <p>© {new Date().getFullYear()} Taxlegit. US Region</p>
-          <p>Admin controlled content</p>
+          <p>Static content</p>
         </div>
       </footer>
     </div>

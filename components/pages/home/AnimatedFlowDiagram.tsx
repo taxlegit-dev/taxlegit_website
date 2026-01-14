@@ -81,6 +81,7 @@ export default function CashManagementDiagram() {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isHovered, setIsHovered] = useState(false);
   const [isAutoActive, setIsAutoActive] = useState(false);
+  const [hoveredFeatureId, setHoveredFeatureId] = useState<number | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -211,32 +212,39 @@ export default function CashManagementDiagram() {
                 <stop offset="50%" stopColor="#8b5cf6" stopOpacity="1" />
                 <stop offset="100%" stopColor="#7c3aed" stopOpacity="1" />
               </linearGradient>
-              
+
               <radialGradient id="bulletGradient">
                 <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
                 <stop offset="30%" stopColor="#e9d5ff" stopOpacity="1" />
                 <stop offset="100%" stopColor="#a855f7" stopOpacity="0.6" />
               </radialGradient>
-              
+
               <filter id="glow">
-                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feGaussianBlur stdDeviation="2" result="coloredBlur" />
                 <feMerge>
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
             </defs>
-            
+
             {features.map((f) => (
               <g key={f.id}>
+                {/** highlight line when global hover/auto or card hover */}
+                {(() => {
+                  const isActive =
+                    isHovered || isAutoActive || hoveredFeatureId === f.id;
+                  return (
+                    <>
                 <path
                   d={getPath(f)}
-                  stroke="#afbadfff"
-                  strokeWidth="2"
+                  stroke="url(#lineGradient)"
+                  strokeOpacity="0.75"
+                  strokeWidth="2.5"
                   fill="none"
                   className="transition-all duration-300"
                 />
-                {(isHovered || isAutoActive) && (
+                {isActive && (
                   <>
                     <path
                       d={getPath(f)}
@@ -248,7 +256,7 @@ export default function CashManagementDiagram() {
                       className="animate-dash-line"
                       filter="url(#glow)"
                     />
-                    
+
                     {/* Bullets moving forward then backward */}
                     {[1, 2, 3].map((bulletNum) => (
                       <circle
@@ -276,7 +284,7 @@ export default function CashManagementDiagram() {
                         />
                       </circle>
                     ))}
-                    
+
                     <path
                       id={`path-${f.id}`}
                       d={getPath(f)}
@@ -285,6 +293,9 @@ export default function CashManagementDiagram() {
                     />
                   </>
                 )}
+                </>
+                  );
+                })()}
               </g>
             ))}
           </svg>
@@ -317,6 +328,10 @@ export default function CashManagementDiagram() {
             tabIndex={f.link ? 0 : -1}
             // onClick={() => handleCardClick(f)}
             onKeyDown={(event) => handleKeyDown(event, f)}
+            onMouseEnter={() => setHoveredFeatureId(f.id)}
+            onMouseLeave={() => setHoveredFeatureId(null)}
+            onFocus={() => setHoveredFeatureId(f.id)}
+            onBlur={() => setHoveredFeatureId(null)}
             className={`absolute z-10 w-44 rounded-xl bg-white border border-slate-200 shadow-md px-4 py-3 text-sm transition-all hover:-translate-y-1 hover:shadow-xl ${
               f.link ? "cursor-pointer" : "cursor-default"
             }`}

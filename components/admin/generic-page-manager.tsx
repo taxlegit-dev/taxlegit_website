@@ -42,12 +42,12 @@ function tryParseEditorJson(content: string): OutputData | null {
 
 type GenericPageManagerProps = {
   region: "INDIA" | "US";
-  selectedSlug?: string;
+  selectedNavbarItemId?: string;
   existingGenericPage?: GenericPage | null;
   genericNavbarItems: NavbarItem[];
   allGenericPages: {
     id: string;
-    slug: string | null;
+    navbarItemId: string | null;
     title: string;
     status: ContentStatus;
     updatedAt: Date;
@@ -56,17 +56,15 @@ type GenericPageManagerProps = {
 
 const genericPageFormSchema = z.object({
   id: z.string().optional(),
-  slug: z.string().min(1, "Slug is required"),
   title: z.string().min(1, "Title is required"),
   content: z.string().min(1, "Content is required"),
-  status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]).optional(),
 });
 
 type GenericPageForm = z.infer<typeof genericPageFormSchema>;
 
 export function GenericPageManager({
   region,
-  selectedSlug,
+  selectedNavbarItemId,
   existingGenericPage,
   genericNavbarItems,
   allGenericPages,
@@ -75,15 +73,21 @@ export function GenericPageManager({
   const searchParams = useSearchParams();
   const [saving, setSaving] = useState(false);
   const [editorData, setEditorData] = useState<OutputData | null>(null);
+  const [editorKey, setEditorKey] = useState(0);
   const { query } = useAdminSearch();
   const normalizedQuery = query.trim().toLowerCase();
-  const pageBySlug = useMemo(
-    () => new Map(allGenericPages.map((page) => [page.slug || "", page])),
-    [allGenericPages]
-  );
+  const pageByNavbarItemId = useMemo(() => {
+    const map = new Map<string, (typeof allGenericPages)[number]>();
+    allGenericPages.forEach((page) => {
+      if (page.navbarItemId) {
+        map.set(page.navbarItemId, page);
+      }
+    });
+    return map;
+  }, [allGenericPages]);
   const filteredNavbarItems = normalizedQuery
     ? genericNavbarItems.filter((item) => {
-        const matchingPage = pageBySlug.get(item.href || "");
+        const matchingPage = pageByNavbarItemId.get(item.id);
         const target = `${item.label ?? ""} ${item.href ?? ""} ${
           matchingPage?.title ?? ""
         }`.toLowerCase();
@@ -94,10 +98,8 @@ export function GenericPageManager({
   const form = useForm<GenericPageForm>({
     resolver: zodResolver(genericPageFormSchema),
     defaultValues: {
-      slug: selectedSlug || "",
       title: "",
       content: "",
-      status: "DRAFT",
     },
   });
 
@@ -105,10 +107,8 @@ export function GenericPageManager({
     if (existingGenericPage) {
       form.reset({
         id: existingGenericPage.id,
-        slug: existingGenericPage.slug || "",
         title: existingGenericPage.title,
         content: existingGenericPage.content as string,
-        status: existingGenericPage.status,
       });
 
       // Parse content for editor
@@ -116,17 +116,17 @@ export function GenericPageManager({
       if (content) {
         const parsed = tryParseEditorJson(content);
         setEditorData(parsed);
+        setEditorKey((prev) => prev + 1);
       }
-    } else if (selectedSlug) {
+    } else if (selectedNavbarItemId) {
       form.reset({
-        slug: selectedSlug,
         title: "",
         content: "",
-        status: "DRAFT",
       });
       setEditorData(null);
+      setEditorKey((prev) => prev + 1);
     }
-  }, [existingGenericPage, selectedSlug, form]);
+  }, [existingGenericPage, selectedNavbarItemId, form]);
 
   // Update editor data when content changes
   useEffect(() => {
@@ -139,23 +139,27 @@ export function GenericPageManager({
     return () => subscription.unsubscribe();
   }, [form]);
 
-  const handleEditPage = (slug: string) => {
+  const handleEditPage = (navbarItemId: string) => {
     const next = new URLSearchParams(searchParams?.toString() ?? "");
-    next.set("slug", slug);
+    next.set("navbarItemId", navbarItemId);
     router.push(`/admin/generic-pages?${next.toString()}`);
   };
 
   const handleBackToList = () => {
     const next = new URLSearchParams(searchParams?.toString() ?? "");
-    next.delete("slug");
+    next.delete("navbarItemId");
     router.push(`/admin/generic-pages?${next.toString()}`);
   };
 
   const handleSave = async () => {
     const data = form.getValues();
+    if (!selectedNavbarItemId) {
+      toast.error("Please select a generic page first");
+      return;
+    }
 
-    if (!data.slug.trim() || !data.title.trim() || !data.content.trim()) {
-      toast.error("Please fill in slug, title and content");
+    if (!data.title.trim() || !data.content.trim()) {
+      toast.error("Please fill in title and content");
       return;
     }
 
@@ -170,22 +174,22 @@ export function GenericPageManager({
 
       if (isNewPage) {
         payload = {
-          slug: data.slug,
+          navbarItemId: selectedNavbarItemId,
           region,
           title: data.title,
           content: data.content,
-          status: data.status || "DRAFT",
+          status: "PUBLISHED",
         };
         url = "/api/admin/generic-pages";
         method = "POST";
       } else {
         payload = {
           id: existingGenericPage.id,
-          slug: data.slug,
+          navbarItemId: selectedNavbarItemId,
           region,
           title: data.title,
           content: data.content,
-          status: data.status,
+          status: "PUBLISHED",
         };
         url = "/api/admin/generic-pages";
         method = "PUT";
@@ -222,7 +226,7 @@ export function GenericPageManager({
     }
   };
 
-  if (!selectedSlug) {
+  if (!selectedNavbarItemId) {
     return (
       <div className="space-y-6">
         <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
@@ -237,11 +241,11 @@ export function GenericPageManager({
               <p className="text-sm text-slate-500">No matches found.</p>
             ) : (
               filteredNavbarItems.map((item) => {
-                const correspondingPage = pageBySlug.get(item.href || "");
+              const correspondingPage = pageByNavbarItemId.get(item.id);
                 return (
                   <button
                     key={item.id}
-                    onClick={() => handleEditPage(item.href || "")}
+                    onClick={() => handleEditPage(item.id)}
                     className="w-full text-left rounded-lg border border-slate-200 p-4 hover:bg-slate-50 transition"
                   >
                     <div className="flex items-center justify-between">
@@ -297,11 +301,6 @@ export function GenericPageManager({
                   ? "Edit Generic Page"
                   : "Create Generic Page"}
               </h2>
-              {selectedSlug && (
-                <p className="text-sm text-slate-600 mt-1">
-                  Slug: <span className="font-semibold">{selectedSlug}</span>
-                </p>
-              )}
             </div>
             <button
               onClick={handleBackToList}
@@ -329,23 +328,6 @@ export function GenericPageManager({
           <div className="grid grid-cols-1 gap-6">
             <div>
               <label className="block text-sm font-semibold text-slate-900 mb-2">
-                Slug <span className="text-red-500">*</span>
-              </label>
-              <input
-                {...form.register("slug")}
-                className="w-full rounded-lg border border-slate-200 px-4 py-3 bg-slate-50"
-                placeholder="Enter page slug (e.g., about-us)"
-                readOnly
-              />
-              {form.formState.errors.slug && (
-                <p className="text-xs text-red-600 mt-1">
-                  {form.formState.errors.slug.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">
                 Page Title <span className="text-red-500">*</span>
               </label>
               <input
@@ -361,50 +343,39 @@ export function GenericPageManager({
             </div>
             <input type="hidden" {...form.register("id")} />
 
-            <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">
-                Status
-              </label>
-              <select
-                {...form.register("status")}
-                className="w-full rounded-lg border border-slate-200 px-4 py-3"
-              >
-                <option value="DRAFT">Draft</option>
-                <option value="PUBLISHED">Published</option>
-                <option value="ARCHIVED">Archived</option>
-              </select>
-            </div>
 
             <div>
               <label className="block text-sm font-semibold text-slate-900 mb-2">
                 Content <span className="text-red-500">*</span>
               </label>
-              <EditorJsEditor
-                key={`${existingGenericPage?.id || "new"}-${selectedSlug}`}
-                value={editorData}
-                onChange={(value) => {
-                  form.setValue("content", JSON.stringify(value), {
-                    shouldDirty: true,
-                    shouldValidate: false,
-                  });
-                }}
-                placeholder="Enter page content"
-                onImageUpload={async (file) => {
-                  const formData = new FormData();
-                  formData.append("file", file);
-                  formData.append("region", region);
-                  const response = await fetch("/api/admin/upload", {
-                    method: "POST",
-                    body: formData,
-                  });
-                  const result = await response.json();
-                  if (!response.ok) {
-                    throw new Error(result.error || "Upload failed");
-                  }
-                  return result.url;
-                }}
-                region={region}
-              />
+              {(!existingGenericPage || editorData) && (
+                <EditorJsEditor
+                  key={`${existingGenericPage?.id || "new"}-${selectedNavbarItemId}-${editorKey}`}
+                  value={editorData}
+                  onChange={(value) => {
+                    form.setValue("content", JSON.stringify(value), {
+                      shouldDirty: true,
+                      shouldValidate: false,
+                    });
+                  }}
+                  placeholder="Enter page content"
+                  onImageUpload={async (file) => {
+                    const formData = new FormData();
+                    formData.append("file", file);
+                    formData.append("region", region);
+                    const response = await fetch("/api/admin/upload", {
+                      method: "POST",
+                      body: formData,
+                    });
+                    const result = await response.json();
+                    if (!response.ok) {
+                      throw new Error(result.error || "Upload failed");
+                    }
+                    return result.url;
+                  }}
+                  region={region}
+                />
+              )}
               {form.formState.errors.content && (
                 <p className="text-xs text-red-600 mt-1">
                   {form.formState.errors.content.message}

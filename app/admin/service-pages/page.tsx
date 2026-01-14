@@ -46,8 +46,17 @@ export default async function AdminServicePagesPage({
    * 3️⃣ DERIVED VALUES (NO EXTRA DB CALL)
    */
   const existingServicePage = selectedNavbarItemId
-    ? servicePageLinks.find((sp) => sp.navbarItemId === selectedNavbarItemId) ||
-      null
+    ? await prisma.servicePage.findFirst({
+        where: {
+          navbarItemId: selectedNavbarItemId,
+          region: selectedRegion,
+        },
+        include: {
+          sections: {
+            orderBy: { order: "asc" },
+          },
+        },
+      })
     : null;
 
   const navbarItem = selectedNavbarItemId

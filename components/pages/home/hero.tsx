@@ -51,7 +51,10 @@ export default function HeroSection() {
 
           {/* Subheading */}
           <p className="mt-6 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            CEmpower your registration with AI-driven expertise and smart business solutions. Committed to excellence, we provide expert-led registration, accounting, valuation, ICFR, and subsidy services to help your business grow with compliance and confidence.
+            Empower your registration with AI-driven expertise and smart
+            business solutions. Committed to excellence, we provide expert-led
+            registration, accounting, valuation, ICFR, and subsidy services to
+            help your business grow with compliance and confidence.
           </p>
         </div>
         <div className="w-full flex justify-center">
