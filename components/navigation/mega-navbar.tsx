@@ -49,6 +49,11 @@ function MegaNavbarContent({
   const [openMobileItem, setOpenMobileItem] = useState<string | null>(null);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
+  const handleMobileNavClick = () => {
+    setIsMobileMenuOpen(false);
+    setOpenMobileItem(null);
+  };
+
   const mappedRegion = toSupportedRegion(region);
   const regionPrefix = region === Region.US ? "/us" : "";
 
@@ -282,7 +287,7 @@ function MegaNavbarContent({
             {/* Backdrop */}
             <div
               className="fixed inset-0 z-[998] md:hidden"
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={handleMobileNavClick}
             />
 
             {/* Drawer */}
@@ -320,7 +325,7 @@ function MegaNavbarContent({
                                   <li key={sub.id} className="list-none">
                                     <Link
                                       href={`${regionPrefix}${sub.href}`}
-                                      onClick={() => setIsMobileMenuOpen(false)}
+                                      onClick={handleMobileNavClick}
                                       className="block rounded-lg px-3 py-2 text-[13px] font-medium text-zinc-800 hover:bg-[#E6D3E6]"
                                     >
                                       {sub.label}
@@ -335,7 +340,7 @@ function MegaNavbarContent({
                       <Link
                         key={item.id}
                         href={`${regionPrefix}${item.href}`}
-                        onClick={() => setIsMobileMenuOpen(false)}
+                        onClick={handleMobileNavClick}
                         className="block rounded-xl bg-white/85 px-4 py-2.5 text-[14px] font-semibold text-zinc-900 shadow-sm"
                       >
                         {item.label}
@@ -348,6 +353,7 @@ function MegaNavbarContent({
                     <RegionSwitcher currentRegion={mappedRegion} />
                     <Link
                       href="tel:+918929218091"
+                      onClick={handleMobileNavClick}
                       className="flex h-[42px] w-full items-center justify-center rounded-xl bg-purple-600 text-[14px] font-semibold text-white shadow-sm hover:bg-purple-700"
                     >
                       Schedule a call

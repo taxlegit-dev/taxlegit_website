@@ -49,14 +49,18 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
   }, [sortedSections]);
 
   useEffect(() => {
+    const scrollContainer = tocScrollRef.current;
     const activeButton = tocButtonRefs.current[activeSection];
-    if (activeButton) {
-      activeButton.scrollIntoView({
-        behavior: "smooth",
-        inline: "center",
-        block: "nearest",
-      });
-    }
+    if (!scrollContainer || !activeButton) return;
+
+    const targetLeft =
+      activeButton.offsetLeft -
+      (scrollContainer.clientWidth - activeButton.clientWidth) / 2;
+
+    scrollContainer.scrollTo({
+      left: Math.max(0, targetLeft),
+      behavior: "smooth",
+    });
   }, [activeSection]);
 
   const scrollToSection = (index: number) => {
@@ -82,7 +86,7 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
       {/* Sticky TOC Bar - Below Fixed Navbar with Blur Effect */}
       <div
         ref={tocRef}
-        className="sticky top-[110px] z-40 mt-4 w-full max-w-6xl mx-auto rounded-xl border border-slate-200 bg-white/80 backdrop-blur-md shadow-sm"
+        className="sticky top-[110px] z-40 mt-4 w-fit max-w-full mx-auto rounded-xl border border-slate-200 bg-white/80 backdrop-blur-md shadow-sm"
       >
         <div
           ref={tocScrollRef}
@@ -118,7 +122,7 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
               sectionRefs.current[index] = el;
             }}
             id={`section-${section.id}`}
-            className="mb-10 scroll-mt-24"
+            className="mb-10 "
           >
             {/* Content */}
             {(() => {
