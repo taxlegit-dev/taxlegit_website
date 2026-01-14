@@ -50,14 +50,14 @@ export default function RunningLogoCarousel() {
             {[...logos, ...logos].map((logo, index) => (
               <div
                 key={index}
-                className="flex-shrink-0 bg-white/70 backdrop-blur-md border border-purple-100 rounded-xl px-6 py-4 shadow-sm hover:shadow-md transition"
+                className="flex-shrink-0 bg-white/70 backdrop-blur-md border border-purple-100 rounded-xl px-4 py-3 sm:px-6 sm:py-4 shadow-sm hover:shadow-md transition"
               >
                 <Image
                   src={logo}
                   alt="Brand logo"
                   width={96}
                   height={48}
-                  className="h-12 w-auto object-contain transition"
+                  className="h-8 sm:h-12 w-auto object-contain transition"
                 />
               </div>
             ))}

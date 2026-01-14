@@ -19,12 +19,11 @@ type MediaRow = {
 
 export default function MediaMentions() {
   const rows = data.rows as MediaRow[];
-  const [showAll, setShowAll] = useState(false);
-  const [currentBatch, setCurrentBatch] = useState(0);
-  const itemsPerBatch = 8;
-
-  // Calculate total batches
-  const totalBatches = Math.ceil(rows.length / itemsPerBatch);
+  const itemsPerBatch = 4;
+  const [visibleCount, setVisibleCount] = useState(itemsPerBatch);
+  const [screenSize, setScreenSize] = useState<
+    "mobile" | "tablet" | "laptop" | "desktop"
+  >("desktop");
 
   // Initialize AOS
   useEffect(() => {
@@ -32,30 +31,36 @@ export default function MediaMentions() {
       duration: 800,
       once: false,
       mirror: true,
+      disable: () => window.innerWidth < 640,
     });
   }, []);
 
-  // Auto-rotate through batches
   useEffect(() => {
-    if (showAll) return;
-
-    const interval = setInterval(() => {
-      setCurrentBatch((prev) => (prev + 1) % totalBatches);
-    }, 9000); // Change every 9 seconds
-
-    return () => clearInterval(interval);
-  }, [showAll, totalBatches]);
+    const updateScreen = () => {
+      const width = window.innerWidth;
+      if (width < 640) {
+        setScreenSize("mobile");
+      } else if (width < 1024) {
+        setScreenSize("tablet");
+      } else if (width < 1280) {
+        setScreenSize("laptop");
+      } else {
+        setScreenSize("desktop");
+      }
+    };
+    updateScreen();
+    window.addEventListener("resize", updateScreen);
+    return () => window.removeEventListener("resize", updateScreen);
+  }, []);
 
   // Get items to display
-  const displayedItems = showAll
-    ? rows
-    : rows.slice(
-        currentBatch * itemsPerBatch,
-        (currentBatch + 1) * itemsPerBatch
-      );
+  const displayedItems = rows.slice(0, visibleCount);
+  const canLoadMore = visibleCount < rows.length;
 
   // Helper function to determine animation based on position in row
   const getAnimation = (index: number) => {
+    if (screenSize === "mobile") return undefined;
+    if (screenSize === "tablet" || screenSize === "laptop") return "fade-up";
     const positionInRow = index % 4;
     // First two items (0, 1) fade-right, last two (2, 3) fade-left
     return positionInRow < 2 ? "fade-right" : "fade-left";
@@ -133,33 +138,19 @@ export default function MediaMentions() {
               </Link>
             ))}
           </div>
-
-          {/* Pagination Dots - Only show when not showing all */}
-          {!showAll && (
-            <div className="flex justify-center gap-2 mb-8 mt-8">
-              {Array.from({ length: totalBatches }).map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentBatch(index)}
-                  className={`h-2 rounded-full transition-all ${
-                    index === currentBatch
-                      ? "w-8 bg-purple-700"
-                      : "w-2 bg-gray-300 hover:bg-gray-400"
-                  }`}
-                  aria-label={`View batch ${index + 1}`}
-                />
-              ))}
-            </div>
-          )}
         </div>
 
         {/* CTA Button */}
         <div className="flex justify-center mt-12 md:mt-16">
           <button
-            onClick={() => setShowAll(!showAll)}
+            onClick={() => {
+              setVisibleCount((prev) =>
+                prev >= rows.length ? itemsPerBatch : prev + itemsPerBatch
+              );
+            }}
             className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-700 to-purple-400 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
           >
-            {showAll ? (
+            {!canLoadMore ? (
               <>
                 <svg
                   className="w-5 h-5"
@@ -178,9 +169,7 @@ export default function MediaMentions() {
               </>
             ) : (
               <>
-                <span className="text-base md:text-lg">
-                  View All Media Mentions
-                </span>
+                <span className="text-base md:text-lg">View more</span>
                 <div className="relative w-6 h-6 flex items-center justify-center">
                   <div className="absolute inset-0 bg-white/20 rounded-full group-hover:scale-110 transition-transform duration-300"></div>
                   <svg

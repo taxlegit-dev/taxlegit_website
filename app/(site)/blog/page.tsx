@@ -8,16 +8,17 @@ import FeaturedBlog from "@/components/pages/Blog/FeaturedBlog";
 import BlogGroups from "@/components/pages/Blog/BlogGroups";
 
 type BlogListingPageProps = {
-  searchParams?: {
+  searchParams?: Promise<{
     q?: string;
-  };
+  }>;
 };
 
 export default async function BlogListingPage({
   searchParams,
 }: BlogListingPageProps) {
   const region = Region.INDIA;
-  const query = (searchParams?.q ?? "").trim().toLowerCase();
+  const params = await searchParams;
+  const query = (params?.q ?? "").trim().toLowerCase();
 
   const blogs = await prisma.blog.findMany({
     where: {

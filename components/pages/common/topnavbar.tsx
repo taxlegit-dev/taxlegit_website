@@ -11,7 +11,7 @@ const TopNavbar = () => {
         {/* left Side - Social Media */}
         <div className="flex items-center gap-4">
           <a
-            href="#"
+            href="https://www.facebook.com/Taxlegitt/"
             className="hover:text-blue-400 transition"
             aria-label="Facebook"
           >
@@ -19,7 +19,7 @@ const TopNavbar = () => {
           </a>
 
           <a
-            href="#"
+            href="https://www.linkedin.com/company/taxlegitt/"
             className="hover:text-blue-300 transition"
             aria-label="LinkedIn"
           >
@@ -27,7 +27,7 @@ const TopNavbar = () => {
           </a>
 
           <a
-            href="#"
+            href="https://www.youtube.com/channel/UC4s7kcn1qt7np_Ccce5hmHA"
             className="hover:text-red-500 transition"
             aria-label="YouTube"
           >
@@ -42,7 +42,7 @@ const TopNavbar = () => {
             className="flex items-center gap-1 hover:text-green-400 transition"
           >
             <FaWhatsapp className="w-4 h-4" />
-            <span>WhatsApp</span>
+            <span className="hidden sm:inline">WhatsApp</span>
           </a>
 
           <a
@@ -50,7 +50,7 @@ const TopNavbar = () => {
             className="flex items-center gap-1 hover:text-yellow-500 transition"
           >
             <Mail className="w-4 h-4" />
-            <span>121@taxlegit.com</span>
+            <span className="hidden sm:inline">121@taxlegit.com</span>
           </a>
 
           <a
@@ -58,7 +58,7 @@ const TopNavbar = () => {
             className="flex items-center gap-1 hover:text-gray-100 transition"
           >
             <Phone className="w-4 h-4" />
-            <span>+91 8929218091</span>
+            <span className="hidden sm:inline">+91 8929218091</span>
           </a>
         </div>
       </div>

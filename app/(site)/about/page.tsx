@@ -1,7 +1,7 @@
 import AboutCompanyHero from "@/components/pages/about/aboutHero";
 import RunningLogoCarousel from "@/components/pages/common/RunningLogoCarousel";
 import MissionVisionValues from "@/components/pages/about/MissionStatement";
-import Ceo from "@/components/pages/about/ceo";
+// import Ceo from "@/components/pages/about/ceo";
 import RecentBlogsSection from "@/components/pages/home/RecentBlogsSection";
 import WhyChooseTaxlegit from "@/components/pages/home/WhyTaxlegit";
 import Footer from "@/components/footer";
@@ -14,7 +14,7 @@ export default function AboutPage() {
         <AboutUsSection />
         <RunningLogoCarousel />
         <MissionVisionValues />
-        <Ceo />
+        {/* <Ceo /> */}
         <WhyChooseTaxlegit />
         <RecentBlogsSection />
         <Footer />
