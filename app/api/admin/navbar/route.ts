@@ -7,7 +7,7 @@ import {
   updateNavItemSchema,
   reorderNavItemsSchema,
 } from "@/lib/validators";
-import { revalidateNavbarItems } from "@/lib/revalidate";
+import { revalidateContentPage, revalidateNavbarItems } from "@/lib/revalidate";
 
 const navTypeMap: Record<"LINK" | "DROPDOWN", NavbarItemType> = {
   LINK: NavbarItemType.LINK,
@@ -247,6 +247,10 @@ export async function PUT(request: Request) {
   });
 
   revalidateNavbarItems(existingItem.region);
+  revalidateContentPage(existingItem.href, existingItem.region);
+  if (item.href && item.href !== existingItem.href) {
+    revalidateContentPage(item.href, item.region);
+  }
 
   return NextResponse.json({ item });
 }
@@ -292,6 +296,7 @@ export async function DELETE(request: Request) {
     // Revalidate after successful deletion
     try {
       await revalidateNavbarItems(region);
+      revalidateContentPage(existingItem.href, region);
     } catch (revalidateError) {
       console.error("Revalidation error:", revalidateError);
       // Continue even if revalidation fails

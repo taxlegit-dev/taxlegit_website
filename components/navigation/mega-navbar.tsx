@@ -234,52 +234,66 @@ function MegaNavbarContent({
 
         {/* ✅ DESKTOP DROPDOWN PANEL ONLY (md and above) */}
         <div className="hidden md:block">
-          {hoveredItem &&
-            displayItems
-              .filter((it) => it.type === "DROPDOWN" && it.id === hoveredItem)
-              .map((item) => (
-                <div
-                  key={item.id}
-                  onMouseEnter={() => openMenu(item.id)}
-                  onMouseLeave={closeMenu}
-                  className="fixed left-1/2 top-[110px] z-[9999] w-[95vw] max-w-[900px] -translate-x-1/2 rounded-xl border border-zinc-100 bg-white/95 p-6 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-sm md:p-8"
-                  style={{
-                    maxHeight: "calc(100vh - 150px)",
-                    overflowY: "auto",
-                  }}
-                >
-                  <div
-                    className={
-                      item.id === "static-other"
-                        ? "grid grid-cols-1 gap-3"
-                        : "grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3"
-                    }
-                  >
-                    {item.groups.map((group, i) => (
-                      <div key={i} className="space-y-2">
-                        {group.label && (
-                          <h3 className="border-b border-zinc-100 pb-2 text-[14px] font-semibold uppercase tracking-wider text-zinc-500">
-                            {group.label}
-                          </h3>
-                        )}
-                        <ul>
-                          {group.items.map((subItem) => (
-                            <li key={subItem.id}>
-                              <Link
-                                href={`${regionPrefix}${subItem.href}`}
-                                className="block rounded-lg px-3 py-2 text-[14px] font-medium text-zinc-700 transition hover:bg-[#E6D3E6] hover:text-black"
-                              >
-                                {subItem.label}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+  {hoveredItem &&
+    displayItems
+      .filter((it) => it.type === "DROPDOWN" && it.id === hoveredItem)
+      .map((item) => {
+        const totalLinks = item.groups.reduce(
+          (acc, group) => acc + group.items.length,
+          0
+        );
+
+        const isSmallMenu = totalLinks <= 5; // threshold
+
+        return (
+          <div
+            key={item.id}
+            onMouseEnter={() => openMenu(item.id)}
+            onMouseLeave={closeMenu}
+            className={`fixed left-1/2 top-[110px] z-[9999] -translate-x-1/2 rounded-xl border border-zinc-100 bg-white/95 p-6 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-sm md:p-8
+              ${isSmallMenu
+                ? "w-auto min-w-[260px] max-w-[420px]"
+                : "w-[95vw] max-w-[900px]"
+              }`}
+            style={{
+              maxHeight: "calc(100vh - 150px)",
+              overflowY: "auto",
+            }}
+          >
+            <div
+              className={
+                isSmallMenu
+                  ? "grid grid-cols-1 gap-3"
+                  : "grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3"
+              }
+            >
+              {item.groups.map((group, i) => (
+                <div key={i} className="space-y-2">
+                  {group.label && (
+                    <h3 className="border-b border-zinc-100 pb-2 text-[14px] font-semibold uppercase tracking-wider text-zinc-500">
+                      {group.label}
+                    </h3>
+                  )}
+                  <ul>
+                    {group.items.map((subItem) => (
+                      <li key={subItem.id}>
+                        <Link
+                          href={`${regionPrefix}${subItem.href}`}
+                          className="block rounded-lg px-3 py-2 text-[14px] font-medium text-zinc-700 transition hover:bg-[#E6D3E6] hover:text-black"
+                        >
+                          {subItem.label}
+                        </Link>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
               ))}
-        </div>
+            </div>
+          </div>
+        );
+      })}
+</div>
+
 
         {/* ✅ MOBILE MENU DRAWER (ONLY small screens) */}
         {isMobileMenuOpen && (

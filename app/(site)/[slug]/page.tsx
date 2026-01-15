@@ -36,6 +36,8 @@ type PageProps = {
 const parseMetaCached = cache(parseMetaBlockForMetadata);
 
 const normalizeSlug = (value: string) => value.replace(/^\/+/, "");
+const getServicePageTag = (region: Region, slug: string) =>
+  `service-page:${region}:${slug}`;
 
 /* -------------------------------------------------
    FAST SHELL (MIN DB)
@@ -88,10 +90,11 @@ async function fetchPageShell(normalizedSlug: string, region: Region) {
 
 function getPageShellCached(slug: string, region: Region) {
   const normalizedSlug = normalizeSlug(slug);
+  const tag = getServicePageTag(region, normalizedSlug);
   return unstable_cache(
     () => fetchPageShell(normalizedSlug, region),
     ["service-page-shell", region, normalizedSlug],
-    { revalidate: 3600 }
+    { revalidate: 3600, tags: [tag] }
   )();
 }
 
@@ -122,12 +125,16 @@ async function fetchServiceContent(
 
 function getServiceContentCached(
   navbarItemId: string,
-  servicePageId: string
+  servicePageId: string,
+  slug: string,
+  region: Region
 ) {
+  const normalizedSlug = normalizeSlug(slug);
+  const tag = getServicePageTag(region, normalizedSlug);
   return unstable_cache(
     () => fetchServiceContent(navbarItemId, servicePageId),
     ["service-page-content", navbarItemId, servicePageId],
-    { revalidate: 3600 }
+    { revalidate: 3600, tags: [tag] }
   )();
 }
 
@@ -201,7 +208,12 @@ export default async function ServicePage({ params, searchParams }: PageProps) {
   const serviceData = servicePage
     ? isPreview
       ? await fetchServiceContent(navbarItem.id, servicePage.id)
-      : await getServiceContentCached(navbarItem.id, servicePage.id)
+      : await getServiceContentCached(
+          navbarItem.id,
+          servicePage.id,
+          normalizedSlug,
+          Region.INDIA
+        )
     : null;
 
   return (

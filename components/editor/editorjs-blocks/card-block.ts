@@ -24,6 +24,15 @@ export default class ContentCardsBlock implements BlockTool {
   private api: API;
   private block?: BlockAPI;
 
+  private decodeHtmlEntities(value: string) {
+    if (!value || !value.includes("&")) {
+      return value;
+    }
+    const textarea = document.createElement("textarea");
+    textarea.innerHTML = value;
+    return textarea.value;
+  }
+
   static get toolbox() {
     return {
       title: "Content Cards",
@@ -170,6 +179,16 @@ export default class ContentCardsBlock implements BlockTool {
     card: { icon: string; heading: string; description: string },
     index: number
   ): HTMLElement {
+    const decodedHeading = this.decodeHtmlEntities(card.heading);
+    const decodedDescription = this.decodeHtmlEntities(card.description);
+    if (decodedHeading !== card.heading) {
+      this.data.cards[index].heading = decodedHeading;
+      card.heading = decodedHeading;
+    }
+    if (decodedDescription !== card.description) {
+      this.data.cards[index].description = decodedDescription;
+      card.description = decodedDescription;
+    }
     const cardWrapper = document.createElement("div");
     cardWrapper.className = "card-item";
     cardWrapper.style.cssText =
@@ -213,6 +232,7 @@ export default class ContentCardsBlock implements BlockTool {
       "width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;";
     headingInput.addEventListener("input", () => {
       this.data.cards[index].heading = headingInput.value;
+      this.notifyChange();
     });
 
     // Description textarea
@@ -229,6 +249,7 @@ export default class ContentCardsBlock implements BlockTool {
       "width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; resize: vertical; font-family: inherit;";
     descriptionTextarea.addEventListener("input", () => {
       this.data.cards[index].description = descriptionTextarea.value;
+      this.notifyChange();
     });
 
     cardWrapper.appendChild(cardHeader);
@@ -245,6 +266,11 @@ export default class ContentCardsBlock implements BlockTool {
     card: { icon: string; heading: string; description: string },
     index: number
   ): HTMLElement {
+    const decodedIcon = this.decodeHtmlEntities(card.icon);
+    if (decodedIcon !== card.icon) {
+      this.data.cards[index].icon = decodedIcon;
+      card.icon = decodedIcon;
+    }
     const iconSection = document.createElement("div");
     iconSection.style.cssText = "margin-top: 10px;";
 
@@ -262,7 +288,8 @@ export default class ContentCardsBlock implements BlockTool {
       "width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; margin-bottom: 8px;";
     iconUrlInput.addEventListener("input", () => {
       this.data.cards[index].icon = iconUrlInput.value;
-      this.updateIconPreview(iconPreview, card.icon);
+      this.updateIconPreview(iconPreview, this.data.cards[index].icon);
+      this.notifyChange();
     });
 
     // File upload input
@@ -279,6 +306,7 @@ export default class ContentCardsBlock implements BlockTool {
           this.data.cards[index].icon = url;
           iconUrlInput.value = url;
           this.updateIconPreview(iconPreview, url);
+          this.notifyChange();
         } catch (error) {
           console.error("Icon upload failed:", error);
           alert("Icon upload failed. Please try again or use a URL.");
@@ -288,6 +316,7 @@ export default class ContentCardsBlock implements BlockTool {
         this.data.cards[index].icon = url;
         iconUrlInput.value = url;
         this.updateIconPreview(iconPreview, url);
+        this.notifyChange();
       }
     });
 
@@ -356,18 +385,11 @@ export default class ContentCardsBlock implements BlockTool {
 
   save(): ContentCardsBlockData {
     return {
-      cards: this.data.cards
-        .filter(
-          (card) =>
-            card.heading.trim() !== "" ||
-            card.description.trim() !== "" ||
-            card.icon.trim() !== ""
-        )
-        .map((card) => ({
-          icon: card.icon,
-          heading: card.heading,
-          description: card.description,
-        })),
+      cards: this.data.cards.map((card) => ({
+        icon: card.icon,
+        heading: card.heading,
+        description: card.description,
+      })),
       cardsPerRow: this.data.cardsPerRow,
     };
   }

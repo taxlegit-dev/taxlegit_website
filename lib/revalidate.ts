@@ -3,6 +3,8 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { Region } from "@prisma/client";
 
 const normalizeSlug = (hrefOrSlug: string) => hrefOrSlug.replace(/^\/+/, "").trim();
+const getServicePageTag = (region: Region, slug: string) =>
+  `service-page:${region}:${slug}`;
 
 export function revalidateContentPage(
   hrefOrSlug: string | null | undefined,
@@ -12,6 +14,7 @@ export function revalidateContentPage(
   const slug = normalizeSlug(hrefOrSlug);
   if (!slug) return;
   const path = region === Region.US ? `/us/${slug}` : `/${slug}`;
+  revalidateTag(getServicePageTag(region, slug), "max");
   revalidatePath(path);
 }
 

@@ -23,6 +23,17 @@ function normalizeUrl(url?: string): string {
   return `https://${url}`;
 }
 
+function decodeHtmlEntities(value?: string): string {
+  if (!value) return "";
+  return value
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&#x27;/g, "'")
+    .replace(/&#x2F;/g, "/");
+}
+
 // Helper function to extract text-align from HTML
 function extractVideoId(url: string): string | null {
   const patterns = [
@@ -271,7 +282,7 @@ function renderBlock(
   theme: "light" | "dark",
   fullBleedColumns: boolean
 ): React.ReactNode {
-  const textColor = theme === "dark" ? "text-slate-300" : "text-slate-700";
+  const textColor = theme === "dark" ? "text-slate-300" : "text-black";
   const headingColor = theme === "dark" ? "text-slate-50" : "text-slate-800";
   const cardBg = theme === "dark" ? "bg-slate-900" : "bg-white";
   const borderColor =
@@ -395,7 +406,7 @@ function renderBlock(
                         <td
                           key={cellIdx}
                           className={`px-4 py-3 text-sm ${
-                            rowIdx === 0 ? "font-medium" : ""
+                            rowIdx === 0 ? "font-bold text-black" : ""
                           } ${textColor}`}
                           style={cellAlign} // Apply alignment
                           dangerouslySetInnerHTML={{ __html: cell }}
@@ -750,11 +761,11 @@ function renderBlock(
       return (
         <section key={block.id} className="py-5">
           <div className={`grid grid-cols-1 ${gridColsClass} gap-6`}>
-            {cards.map((card, idx) => (
-              <div
-                key={idx}
-                className={`rounded-xl border ${borderColor} ${cardBg} p-5 shadow-sm`}
-                role="button"
+              {cards.map((card, idx) => (
+                <div
+                  key={idx}
+                  className={`rounded-xl border ${borderColor} ${cardBg} p-5 shadow-sm`}
+                  role="button"
                 tabIndex={0}
                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                 onKeyDown={(event) => {
@@ -768,7 +779,7 @@ function renderBlock(
                   <div className="mb-4 flex justify-center">
                     <Image
                       src={normalizeUrl(card.icon)}
-                      alt={card.heading || "Card icon"}
+                      alt={decodeHtmlEntities(card.heading) || "Card icon"}
                       width={64}
                       height={64}
                       unoptimized
@@ -780,12 +791,14 @@ function renderBlock(
                   <h3
                     className={`text-lg font-semibold text-center ${headingColor}`}
                   >
-                    {card.heading}
+                    {decodeHtmlEntities(card.heading)}
                   </h3>
                 )}
                 {card.description && (
-                  <p className={`mt-2 text-md leading-relaxed   ${textColor}`}>
-                    {card.description}
+                  <p
+                    className={`mt-2 text-md leading-relaxed  text-center  ${textColor}`}
+                  >
+                    {decodeHtmlEntities(card.description)}
                   </p>
                 )}
               </div>
