@@ -6,8 +6,8 @@ import Footer from "@/components/footer";
 
 export default function AboutCompanyHero() {
   return (
-    <>
-      <section className="relative h-[400px] w-full overflow-hidden mt-[89px]">
+    <div className="bg-white">
+      <section className="relative h-[400px] w-full overflow-hidden mt-[89px] ">
         {/* Background Image */}
         <Image
           src="/about/hero2.png" // 👉 replace with your image path
@@ -114,25 +114,14 @@ export default function AboutCompanyHero() {
             </div>
 
             {/* RIGHT – FORM (IMPORTED) */}
-            <div className="rounded-2xl bg-purple-50 p-8 shadow-xl">
+            <div className="">
               {/* Imported Form */}
               <ContactForm />
-
-              {/* Submit Button (if button is outside form) */}
-              {/* Otherwise remove this */}
-              {/* 
-            <button className="mt-6 inline-flex items-center gap-2 rounded-full bg-purple-600 px-8 py-3 text-white font-semibold hover:bg-purple-700 transition">
-              Send Your Message
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-purple-600">
-                →
-              </span>
-            </button> 
-            */}
             </div>
           </div>
         </div>
       </section>
       <Footer />
-    </>
+    </div>
   );
 }

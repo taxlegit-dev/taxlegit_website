@@ -20,6 +20,8 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
   const [activeSection, setActiveSection] = useState(0);
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
   const tocRef = useRef<HTMLDivElement>(null);
+  const tocScrollRef = useRef<HTMLDivElement>(null);
+  const tocButtonRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   // Sort sections by order
   const sortedSections = [...sections].sort((a, b) => a.order - b.order);
@@ -46,6 +48,21 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [sortedSections]);
 
+  useEffect(() => {
+    const scrollContainer = tocScrollRef.current;
+    const activeButton = tocButtonRefs.current[activeSection];
+    if (!scrollContainer || !activeButton) return;
+
+    const targetLeft =
+      activeButton.offsetLeft -
+      (scrollContainer.clientWidth - activeButton.clientWidth) / 2;
+
+    scrollContainer.scrollTo({
+      left: Math.max(0, targetLeft),
+      behavior: "smooth",
+    });
+  }, [activeSection]);
+
   const scrollToSection = (index: number) => {
     const element = sectionRefs.current[index];
     if (element) {
@@ -71,11 +88,17 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
         ref={tocRef}
         className="sticky top-[110px] z-40 mt-4 w-fit max-w-full mx-auto rounded-xl border border-slate-200 bg-white/80 backdrop-blur-md shadow-sm"
       >
-        <div className="max-w-full px-4">
-          <div className="flex w-fit max-w-full items-center gap-2 lg:gap-8 overflow-x-auto whitespace-nowrap scrollbar-hide py-2">
+        <div
+          ref={tocScrollRef}
+          className="max-w-full px-4 overflow-x-auto scrollbar-hide"
+        >
+          <div className="flex w-max items-center gap-2 lg:gap-8 whitespace-nowrap py-2">
             {sortedSections.map((section, index) => (
               <button
                 key={section.id}
+                ref={(el) => {
+                  tocButtonRefs.current[index] = el;
+                }}
                 onClick={() => scrollToSection(index)}
                 className={`whitespace-nowrap px-3 py-1 text-md   transition-all duration-200 ${
                   activeSection === index
@@ -99,7 +122,7 @@ export function ServicePageView({ sections }: ServicePageViewProps) {
               sectionRefs.current[index] = el;
             }}
             id={`section-${section.id}`}
-            className="mb-10 scroll-mt-24"
+            className="mb-10 "
           >
             {/* Content */}
             {(() => {
