@@ -140,7 +140,12 @@ function MegaNavbarContent({
                     href: "/contact-us",
                     order: 2,
                   },
-                  { id: "other-about", label: "About", href: "/about", order: 3 },
+                  {
+                    id: "other-about",
+                    label: "About",
+                    href: "/about",
+                    order: 3,
+                  },
                   { id: "other-blog", label: "Blog", href: "/blog", order: 4 },
                 ],
               },
@@ -163,10 +168,10 @@ function MegaNavbarContent({
             className="flex shrink-0 items-center gap-2.5"
           >
             <Image
-              src="/logo/taxlegitlogo.webp"
+              src="/logo/logo.png"
               alt="Taxlegit Logo"
-              width={70}
-              height={70}
+              width={50}
+              height={50}
               priority
             />
           </Link>
@@ -234,66 +239,66 @@ function MegaNavbarContent({
 
         {/* ✅ DESKTOP DROPDOWN PANEL ONLY (md and above) */}
         <div className="hidden md:block">
-  {hoveredItem &&
-    displayItems
-      .filter((it) => it.type === "DROPDOWN" && it.id === hoveredItem)
-      .map((item) => {
-        const totalLinks = item.groups.reduce(
-          (acc, group) => acc + group.items.length,
-          0
-        );
+          {hoveredItem &&
+            displayItems
+              .filter((it) => it.type === "DROPDOWN" && it.id === hoveredItem)
+              .map((item) => {
+                const totalLinks = item.groups.reduce(
+                  (acc, group) => acc + group.items.length,
+                  0
+                );
 
-        const isSmallMenu = totalLinks <= 5; // threshold
+                const isSmallMenu = totalLinks <= 5; // threshold
 
-        return (
-          <div
-            key={item.id}
-            onMouseEnter={() => openMenu(item.id)}
-            onMouseLeave={closeMenu}
-            className={`fixed left-1/2 top-[110px] z-[9999] -translate-x-1/2 rounded-xl border border-zinc-100 bg-white/95 p-6 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-sm md:p-8
-              ${isSmallMenu
-                ? "w-auto min-w-[260px] max-w-[420px]"
-                : "w-[95vw] max-w-[900px]"
-              }`}
-            style={{
-              maxHeight: "calc(100vh - 150px)",
-              overflowY: "auto",
-            }}
-          >
-            <div
-              className={
+                return (
+                  <div
+                    key={item.id}
+                    onMouseEnter={() => openMenu(item.id)}
+                    onMouseLeave={closeMenu}
+                    className={`fixed left-1/2 top-[110px] z-[9999] -translate-x-1/2 rounded-xl border border-zinc-100 bg-white/95 p-6 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-sm md:p-8
+              ${
                 isSmallMenu
-                  ? "grid grid-cols-1 gap-3"
-                  : "grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3"
-              }
-            >
-              {item.groups.map((group, i) => (
-                <div key={i} className="space-y-2">
-                  {group.label && (
-                    <h3 className="border-b border-zinc-100 pb-2 text-[14px] font-semibold uppercase tracking-wider text-zinc-500">
-                      {group.label}
-                    </h3>
-                  )}
-                  <ul>
-                    {group.items.map((subItem) => (
-                      <li key={subItem.id}>
-                        <Link
-                          href={`${regionPrefix}${subItem.href}`}
-                          className="block rounded-lg px-3 py-2 text-[14px] font-medium text-zinc-700 transition hover:bg-[#E6D3E6] hover:text-black"
-                        >
-                          {subItem.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      })}
-</div>
-
+                  ? "w-auto min-w-[260px] max-w-[420px]"
+                  : "w-[95vw] max-w-[900px]"
+              }`}
+                    style={{
+                      maxHeight: "calc(100vh - 150px)",
+                      overflowY: "auto",
+                    }}
+                  >
+                    <div
+                      className={
+                        isSmallMenu
+                          ? "grid grid-cols-1 gap-3"
+                          : "grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3"
+                      }
+                    >
+                      {item.groups.map((group, i) => (
+                        <div key={i} className="space-y-2">
+                          {group.label && (
+                            <h3 className="border-b border-zinc-100 pb-2 text-[14px] font-semibold uppercase tracking-wider text-zinc-500">
+                              {group.label}
+                            </h3>
+                          )}
+                          <ul>
+                            {group.items.map((subItem) => (
+                              <li key={subItem.id}>
+                                <Link
+                                  href={`${regionPrefix}${subItem.href}`}
+                                  className="block rounded-lg px-3 py-2 text-[14px] font-medium text-zinc-700 transition hover:bg-[#E6D3E6] hover:text-black"
+                                >
+                                  {subItem.label}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+        </div>
 
         {/* ✅ MOBILE MENU DRAWER (ONLY small screens) */}
         {isMobileMenuOpen && (
@@ -310,7 +315,10 @@ function MegaNavbarContent({
                 <div className="mx-auto max-w-[500px] space-y-2">
                   {displayItems.map((item) =>
                     item.type === "DROPDOWN" ? (
-                      <div key={item.id} className="rounded-xl bg-white/85 shadow-sm">
+                      <div
+                        key={item.id}
+                        className="rounded-xl bg-white/85 shadow-sm"
+                      >
                         <button
                           onClick={() => toggleMobileItem(item.id)}
                           className="flex w-full items-center justify-between rounded-xl px-4 py-2.5 text-[14px] font-semibold text-zinc-900"

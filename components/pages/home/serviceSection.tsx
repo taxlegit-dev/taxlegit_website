@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import {
   Building2,
@@ -460,17 +460,42 @@ export default function ServiceSection() {
                         {/* CTA Button */}
                         {selectedService.href && (
                           <div className="animate-fade-in-delayed-2 mt-auto pt-0">
-                            <a
-                              href={selectedService.href}
-                              className="group relative inline-flex items-center gap-3 px-5 lg:px-10 lg:py-4 py-2 bg-gradient-to-r from-purple-600 via-purple-800 to-purple-800 text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 overflow-hidden"
-                            >
-                              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                              <span className="relative z-10 tracking-wide lg:text-md text-sm">
-                                Explore Detailed
-                              </span>
-                              <ArrowRight className="w-5 h-5 relative z-10 transition-transform duration-300 group-hover:translate-x-2" />
-                              <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                            </a>
+                            <div className="flex flex-nowrap items-center gap-4">
+                              {/* Purple CTA – Explore More */}
+                              <Link
+                                href={selectedService.href}
+                                className="group relative inline-flex items-center justify-center gap-3 text-center
+        px-5 lg:px-10 lg:py-4 py-2
+        bg-gradient-to-r from-purple-600 via-purple-800 to-purple-800
+        text-white rounded-2xl font-bold shadow-xl
+        hover:shadow-2xl transition-all duration-300
+        hover:scale-105 overflow-hidden whitespace-nowrap"
+                              >
+                                <div className="absolute inset-0 bg-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <span className="relative z-10 tracking-wide lg:text-md text-sm">
+                                  Explore more
+                                </span>
+                                <ArrowRight className="w-5 h-5 relative z-10 transition-transform duration-300 group-hover:translate-x-2" />
+                                <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                              </Link>
+
+                              {/* White CTA – Get Quotation */}
+                              <Link
+                                href="/calculateQuote"
+                                className="group relative inline-flex items-center justify-center gap-3 text-center
+        px-5 lg:px-10 lg:py-4 py-2
+        bg-white text-purple-700 border-2 border-purple-700
+        rounded-2xl font-bold shadow-xl
+        hover:shadow-2xl transition-all duration-300
+        hover:scale-105 overflow-hidden whitespace-nowrap"
+                              >
+                                <span className="relative z-10 tracking-wide lg:text-md text-sm">
+                                  Get Quotation
+                                </span>
+                                <ArrowRight className="w-5 h-5 relative z-10 text-purple-700 transition-transform duration-300 group-hover:translate-x-2" />
+                                <div className="absolute inset-0 bg-purple-600/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                              </Link>
+                            </div>
                           </div>
                         )}
                       </div>
