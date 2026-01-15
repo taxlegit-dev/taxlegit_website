@@ -22,6 +22,8 @@ import TextColorInlineTool from "./editorjs-blocks/text-color-inline-tool";
 import TextAlignTune from "./editorjs-blocks/text-align-tune";
 import CTAButtonBlock from "./editorjs-blocks/cta-button-block";
 
+import CustomLinkInlineTool from "./editorjs-blocks/custom-link-inline-tool";
+
 const sanitizeHtml = (html: string) => {
   if (!html) {
     return html;
@@ -225,12 +227,12 @@ export function EditorJsEditor({
       tools: {
         paragraph: {
           class: Paragraph as unknown as never,
-          inlineToolbar: ["bold", "italic", "link", "fontSize", "textColor"],
+          inlineToolbar: ["bold", "italic", "customLink", "fontSize", "textColor"],
           tunes: ["textAlignTune"],
         },
         header: {
           class: Header as unknown as never,
-          inlineToolbar: ["bold", "italic", "link", "fontSize", "textColor"],
+          inlineToolbar: ["bold", "italic", "customLink", "fontSize", "textColor"],
           tunes: ["textAlignTune"],
           config: {
             placeholder: "Section title",
@@ -240,12 +242,12 @@ export function EditorJsEditor({
         },
         list: {
           class: List as unknown as never,
-          inlineToolbar: ["bold", "italic", "link", "fontSize", "textColor"],
+          inlineToolbar: ["bold", "italic", "customLink", "fontSize", "textColor"],
           tunes: ["textAlignTune"],
         },
         table: {
           class: Table as unknown as never,
-          inlineToolbar: ["bold", "italic", "link", "fontSize", "textColor"],
+          inlineToolbar: ["bold", "italic", "customLink", "fontSize", "textColor"],
           tunes: ["textAlignTune"],
           config: {
             rows: 2,
@@ -326,6 +328,10 @@ export function EditorJsEditor({
         cta: {
           class: CTAButtonBlock as unknown as never,
         },
+        customLink: {
+          class: CustomLinkInlineTool as unknown as never,
+        },
+
       },
       onChange: async () => {
         if (editor) {
