@@ -148,16 +148,16 @@ export function FAQSection({ questions, region }: FAQSectionProps) {
 
       <section
         className={`py-16 relative overflow-hidden ${isIndia
-            ? "bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 animate-gradient"
+            ? "bg-gradient-to-br from-purple-50 via-purple-50 to-indigo-50 animate-gradient"
             : "bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 animate-gradient"
           }`}
-        data-aos="fade-left"
+        data-aos="fade-up"
       >
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className={`absolute top-20 left-10 w-72 h-72 rounded-full blur-3xl opacity-20 ${isIndia ? "bg-purple-400" : "bg-purple-600"
             }`} style={{ animation: "float 8s ease-in-out infinite" }} />
-          <div className={`absolute bottom-20 right-10 w-96 h-96 rounded-full blur-3xl opacity-20 ${isIndia ? "bg-pink-400" : "bg-pink-600"
+          <div className={`absolute bottom-20 right-10 w-96 h-96 rounded-full blur-3xl opacity-20 ${isIndia ? "bg-purple-400" : "bg-purple-600"
             }`} style={{ animation: "float 10s ease-in-out infinite reverse" }} />
         </div>
 
@@ -190,8 +190,8 @@ export function FAQSection({ questions, region }: FAQSectionProps) {
               Frequently Asked{" "}
               <span
                 className={`${isIndia
-                    ? "bg-gradient-to-r from-purple-600 to-pink-600"
-                    : "bg-gradient-to-r from-purple-400 to-pink-400"
+                    ? "bg-gradient-to-r from-purple-600 to-purple-600"
+                    : "bg-gradient-to-r from-purple-400 to-purple-400"
                   } bg-clip-text text-transparent`}
               >
                 Questions

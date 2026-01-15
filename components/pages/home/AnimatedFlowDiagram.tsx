@@ -1,13 +1,9 @@
 "use client";
 import React, { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  FiBarChart2,
-  FiFileText,
-  FiDollarSign,
-  FiTrendingUp,
-  FiCreditCard,
-} from "react-icons/fi";
+import { GiArchiveRegister } from "react-icons/gi";
+import { FaChartLine,FaFileInvoiceDollar, FaClipboardList, FaFileContract, FaHandHoldingUsd   } from "react-icons/fa";
+
 
 type Feature = {
   id: number;
@@ -26,7 +22,7 @@ const features: Feature[] = [
     side: "left",
     x: 15,
     y: 18,
-    icon: <FiBarChart2 size={20} />,
+    icon: <GiArchiveRegister size={20} />,
     link: "/services/pvt",
   },
   {
@@ -35,7 +31,7 @@ const features: Feature[] = [
     side: "left",
     x: 15,
     y: 36,
-    icon: <FiFileText size={20} />,
+    icon: <FaFileContract  size={20} />,
     link: "/services/tds-return",
   },
   {
@@ -44,7 +40,7 @@ const features: Feature[] = [
     side: "right",
     x: 85,
     y: 18,
-    icon: <FiDollarSign size={20} />,
+    icon: <FaHandHoldingUsd size={20} />,
     link: "/services/section-8",
   },
   {
@@ -53,7 +49,7 @@ const features: Feature[] = [
     side: "right",
     x: 85,
     y: 35,
-    icon: <FiTrendingUp size={20} />,
+    icon: <FaChartLine  size={20} />,
     link: "/services/audit-itr",
   },
   {
@@ -62,7 +58,7 @@ const features: Feature[] = [
     side: "right",
     x: 85,
     y: 54,
-    icon: <FiCreditCard size={20} />,
+    icon: <FaFileInvoiceDollar  size={20} />,
     link: "/services/llp",
   },
   {
@@ -71,7 +67,7 @@ const features: Feature[] = [
     side: "left",
     x: 15,
     y: 55,
-    icon: <FiCreditCard size={20} />,
+    icon: <FaClipboardList  size={20} />,
     link: "/services/ngo-darpan",
   },
 ];
@@ -303,17 +299,26 @@ export default function CashManagementDiagram() {
 
         {/* CENTER AI BOX */}
         <div
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          className="absolute left-1/2 top-[35%] -translate-x-1/2 -translate-y-1/2
-                        w-26 h-20 rounded-2xl bg-purple-600 text-white
-                        flex flex-col items-center justify-center
-                        shadow-xl z-10 text-center px-1 cursor-pointer
-                        transition-all duration-300 hover:scale-110 hover:shadow-2xl"
-        >
-          <div className="font-semibold text-lg">Popular</div>
-          <div className="text-sm opacity-90">service</div>
-        </div>
+  onMouseEnter={() => setIsHovered(true)}
+  onMouseLeave={() => setIsHovered(false)}
+  className="absolute left-1/2 top-[35%] -translate-x-1/2 -translate-y-1/2
+             w-[140px] h-[82px] rounded-2xl
+             bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-700
+             text-white flex flex-col items-center justify-center
+             shadow-[0_15px_50px_rgba(88,28,135,0.45)]
+             z-10 text-center px-2 cursor-pointer
+             border border-white/20 backdrop-blur-sm
+             transition-all duration-300 hover:scale-110 hover:shadow-[0_20px_60px_rgba(88,28,135,0.6)]"
+>
+  <div className="text-lg font-extrabold tracking-wide">Popular</div>
+  <div className="text-xs opacity-90 uppercase tracking-[0.2em]">
+    Service
+  </div>
+
+  {/* soft glow */}
+  <div className="absolute inset-0 rounded-2xl bg-white/10 opacity-0 hover:opacity-100 transition-opacity duration-300" />
+</div>
+
 
         {/* FEATURE CARDS */}
         {features.map((f) => (
