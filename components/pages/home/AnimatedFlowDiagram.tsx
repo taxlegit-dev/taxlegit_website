@@ -36,7 +36,7 @@ const features: Feature[] = [
   },
   {
     id: 4,
-    title: "SUBSIDY",
+    title: "INCENTIVES",
     side: "right",
     x: 85,
     y: 18,
@@ -45,7 +45,7 @@ const features: Feature[] = [
   },
   {
     id: 5,
-    title: "VALUATION",
+    title: "OUTSOURCING",
     side: "right",
     x: 85,
     y: 35,
@@ -54,7 +54,7 @@ const features: Feature[] = [
   },
   {
     id: 6,
-    title: "ACCOUNTING",
+    title: "VALUATION",
     side: "right",
     x: 85,
     y: 54,
@@ -63,7 +63,7 @@ const features: Feature[] = [
   },
   {
     id: 3,
-    title: "ICFR",
+    title: "ADVISORY",
     side: "left",
     x: 15,
     y: 55,
@@ -232,64 +232,64 @@ export default function CashManagementDiagram() {
                     isHovered || isAutoActive || hoveredFeatureId === f.id;
                   return (
                     <>
-                <path
-                  d={getPath(f)}
-                  stroke="url(#lineGradient)"
-                  strokeOpacity="0.75"
-                  strokeWidth="2.5"
-                  fill="none"
-                  className="transition-all duration-300"
-                />
-                {isActive && (
-                  <>
-                    <path
-                      d={getPath(f)}
-                      stroke="url(#lineGradient)"
-                      strokeWidth="3"
-                      fill="none"
-                      strokeDasharray="2000"
-                      strokeDashoffset="2000"
-                      className="animate-dash-line"
-                      filter="url(#glow)"
-                    />
+                      <path
+                        d={getPath(f)}
+                        stroke="url(#lineGradient)"
+                        strokeOpacity="0.75"
+                        strokeWidth="2.5"
+                        fill="none"
+                        className="transition-all duration-300"
+                      />
+                      {isActive && (
+                        <>
+                          <path
+                            d={getPath(f)}
+                            stroke="url(#lineGradient)"
+                            strokeWidth="3"
+                            fill="none"
+                            strokeDasharray="2000"
+                            strokeDashoffset="2000"
+                            className="animate-dash-line"
+                            filter="url(#glow)"
+                          />
 
-                    {/* Bullets moving forward then backward */}
-                    {[1, 2, 3].map((bulletNum) => (
-                      <circle
-                        key={`bullet-${f.id}-${bulletNum}`}
-                        r="4"
-                        fill="url(#bulletGradient)"
-                        filter="url(#glow)"
-                      >
-                        <animateMotion
-                          dur="3s"
-                          repeatCount="indefinite"
-                          begin={`${(bulletNum - 1) * 1}s`}
-                          keyPoints="0;1;0"
-                          keyTimes="0;0.5;1"
-                          calcMode="linear"
-                        >
-                          <mpath href={`#path-${f.id}`} />
-                        </animateMotion>
-                        <animate
-                          attributeName="opacity"
-                          values="1;0.5;1"
-                          dur="3s"
-                          repeatCount="indefinite"
-                          begin={`${(bulletNum - 1) * 1}s`}
-                        />
-                      </circle>
-                    ))}
+                          {/* Bullets moving forward then backward */}
+                          {[1, 2, 3].map((bulletNum) => (
+                            <circle
+                              key={`bullet-${f.id}-${bulletNum}`}
+                              r="4"
+                              fill="url(#bulletGradient)"
+                              filter="url(#glow)"
+                            >
+                              <animateMotion
+                                dur="3s"
+                                repeatCount="indefinite"
+                                begin={`${(bulletNum - 1) * 1}s`}
+                                keyPoints="0;1;0"
+                                keyTimes="0;0.5;1"
+                                calcMode="linear"
+                              >
+                                <mpath href={`#path-${f.id}`} />
+                              </animateMotion>
+                              <animate
+                                attributeName="opacity"
+                                values="1;0.5;1"
+                                dur="3s"
+                                repeatCount="indefinite"
+                                begin={`${(bulletNum - 1) * 1}s`}
+                              />
+                            </circle>
+                          ))}
 
-                    <path
-                      id={`path-${f.id}`}
-                      d={getPath(f)}
-                      fill="none"
-                      stroke="none"
-                    />
-                  </>
-                )}
-                </>
+                          <path
+                            id={`path-${f.id}`}
+                            d={getPath(f)}
+                            fill="none"
+                            stroke="none"
+                          />
+                        </>
+                      )}
+                    </>
                   );
                 })()}
               </g>
