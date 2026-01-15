@@ -131,6 +131,13 @@ export function ServicePageManager({
   const selectedItem = navItems.find(
     (item) => item.id === (selectedItemId || selectedNavbarItemId)
   );
+  const previewHref =
+    selectedItem?.href && selectedItem.href.startsWith("/")
+      ? `${region === "US" ? "/us" : ""}${selectedItem.href}`
+      : null;
+  const previewUrl = previewHref
+    ? `${previewHref}${previewHref.includes("?") ? "&" : "?"}preview=1`
+    : null;
 
   const form = useForm<ServicePageForm>({
     resolver: zodResolver(servicePageFormSchema),
@@ -461,6 +468,27 @@ export function ServicePageManager({
               )}
             </div>
             <div className="flex items-center gap-2">
+              {previewUrl && (
+                <button
+                  onClick={() => window.open(previewUrl, "_blank")}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg transition"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 12H9m12 0A9 9 0 113 12a9 9 0 0121 0z"
+                    />
+                  </svg>
+                  Preview Page
+                </button>
+              )}
               {existingServicePage && (
                 <button
                   onClick={() => setShowDeleteDialog(true)}

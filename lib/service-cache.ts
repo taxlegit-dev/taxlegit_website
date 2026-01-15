@@ -9,14 +9,17 @@ type ServiceCache = {
 
 export async function getServiceContentCached(
   navbarItemId: string,
-  servicePageId: string
+  servicePageId: string,
+  options?: { bypassCache?: boolean }
 ): Promise<ServiceCache> {
   const cacheKey = `service:${navbarItemId}`;
 
-  // 1️⃣ Try Redis
-  const cached = await redis.get<ServiceCache>(cacheKey);
-  if (cached) {
-    return cached;
+  if (!options?.bypassCache) {
+    // 1️⃣ Try Redis
+    const cached = await redis.get<ServiceCache>(cacheKey);
+    if (cached) {
+      return cached;
+    }
   }
 
   // 2️⃣ Fetch from Supabase (Prisma)
@@ -35,8 +38,10 @@ export async function getServiceContentCached(
 
   const data = { hero, sections, faq };
 
-  // 3️⃣ Cache for 24 hours
-  await redis.set(cacheKey, data, { ex: 20 });
+  if (!options?.bypassCache) {
+    // 3️⃣ Cache for 24 hours
+    await redis.set(cacheKey, data, { ex: 20 });
+  }
 
   return data;
 }

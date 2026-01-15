@@ -250,7 +250,6 @@ model GenericPage {
 }
 
 
-
 enum Role {
   ADMIN
   USER
