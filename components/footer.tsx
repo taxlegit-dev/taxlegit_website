@@ -203,7 +203,7 @@ const Footer = () => {
                         Registered Office
                       </p>
                       <p className="text-gray-400 text-sm">
-                        Supertech Astralis, Sector-94,
+                        office no. - 1117 , 11th floor, Supertech Astralis, Sector-94,
                         <br />
                         Noida, Uttar Pradesh - 201301
                       </p>
@@ -328,7 +328,7 @@ const Footer = () => {
             {/* Bottom Bar */}
             <div className="flex flex-col items-center justify-center py-2">
               <p className="text-gray-500 text-sm text-center">
-                © {new Date().getFullYear()} Taxlegit. All rights reserved.
+                © {new Date().getFullYear()} Taxlegit Consulting Private Limited. All rights reserved.
               </p>
             </div>
           </div>
