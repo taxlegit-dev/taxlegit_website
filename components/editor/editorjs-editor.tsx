@@ -220,8 +220,8 @@ export function EditorJsEditor({
       placeholder: placeholder,
       data:
         initialValueRef.current &&
-        typeof initialValueRef.current === "object" &&
-        "blocks" in initialValueRef.current
+          typeof initialValueRef.current === "object" &&
+          "blocks" in initialValueRef.current
           ? initialValueRef.current
           : undefined,
       tools: {
@@ -268,30 +268,30 @@ export function EditorJsEditor({
           tunes: ["imageLink"],
           config: onImageUploadRef.current
             ? {
-                uploader: {
-                  async uploadByFile(file: File) {
-                    // Use ref to get latest upload handler
-                    if (!onImageUploadRef.current) {
-                      throw new Error("Image upload handler not provided");
-                    }
-                    const url = await onImageUploadRef.current(file);
-                    return {
-                      success: 1,
-                      file: { url },
-                    };
-                  },
+              uploader: {
+                async uploadByFile(file: File) {
+                  // Use ref to get latest upload handler
+                  if (!onImageUploadRef.current) {
+                    throw new Error("Image upload handler not provided");
+                  }
+                  const url = await onImageUploadRef.current(file);
+                  return {
+                    success: 1,
+                    file: { url },
+                  };
                 },
-                captionPlaceholder: "Optional caption",
-                withBorder: true,
-                withBackground: false,
-                stretched: false,
-              }
-            : {
-                captionPlaceholder: "Optional caption",
-                withBorder: true,
-                withBackground: false,
-                stretched: false,
               },
+              captionPlaceholder: "Optional caption",
+              withBorder: true,
+              withBackground: false,
+              stretched: false,
+            }
+            : {
+              captionPlaceholder: "Optional caption",
+              withBorder: true,
+              withBackground: false,
+              stretched: false,
+            },
         },
         imageLink: {
           class: ImageLinkTune as unknown as never,
@@ -303,26 +303,26 @@ export function EditorJsEditor({
           class: ColumnBlock as unknown as never,
           config: onImageUploadRef.current
             ? {
-                imageUploadHandler: async (file: File) => {
-                  if (!onImageUploadRef.current) {
-                    throw new Error("Image upload handler not provided");
-                  }
-                  return onImageUploadRef.current(file);
-                },
-              }
+              imageUploadHandler: async (file: File) => {
+                if (!onImageUploadRef.current) {
+                  throw new Error("Image upload handler not provided");
+                }
+                return onImageUploadRef.current(file);
+              },
+            }
             : undefined,
         },
         contentCards: {
           class: ContentCardsBlock as unknown as never,
           config: onImageUploadRef.current
             ? {
-                imageUploadHandler: async (file: File) => {
-                  if (!onImageUploadRef.current) {
-                    throw new Error("Image upload handler not provided");
-                  }
-                  return onImageUploadRef.current(file);
-                },
-              }
+              imageUploadHandler: async (file: File) => {
+                if (!onImageUploadRef.current) {
+                  throw new Error("Image upload handler not provided");
+                }
+                return onImageUploadRef.current(file);
+              },
+            }
             : undefined,
         },
         cta: {
@@ -388,6 +388,18 @@ export function EditorJsEditor({
         <div ref={holderRef} id={editorId} />
       </div>
       <style jsx global>{`
+      .ce-header {
+  font-weight: 700;
+  color: #111827;
+  margin: 12px 0;
+}
+
+h1.ce-header { font-size: 32px; }
+h2.ce-header { font-size: 26px; }
+h3.ce-header { font-size: 22px; }
+h4.ce-header { font-size: 18px; }
+h5.ce-header { font-size: 16px; }
+h6.ce-header { font-size: 14px; }
         .codex-editor {
           min-height: 300px;
         }
