@@ -69,13 +69,6 @@ export default function RunningLogoCarousel() {
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
             Be the one next
           </p>
-          <Link
-            href="/calculateQuote"
-            className="sparkle-button relative inline-flex items-center justify-center rounded-2xl bg-purple-600 px-8 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-purple-700"
-          >
-            Get Quote Instantly
-            <span className="sparkle-base" aria-hidden="true" />
-          </Link>
         </div>
       </div>
 

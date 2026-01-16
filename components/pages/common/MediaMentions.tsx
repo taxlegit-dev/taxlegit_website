@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import data from "@/data/mediaMentions.json";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type MediaRow = {
   no: number;
@@ -19,52 +18,94 @@ type MediaRow = {
 
 export default function MediaMentions() {
   const rows = data.rows as MediaRow[];
-  const itemsPerBatch = 4;
-  const [visibleCount, setVisibleCount] = useState(itemsPerBatch);
+
   const [screenSize, setScreenSize] = useState<
     "mobile" | "tablet" | "laptop" | "desktop"
   >("desktop");
 
-  // Initialize AOS
-  useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: false,
-      mirror: true,
-      disable: () => window.innerWidth < 640,
-    });
-  }, []);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
+  // ✅ viewport ref to calculate width
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const [viewportWidth, setViewportWidth] = useState(0);
+
+  // ✅ Detect screen size
   useEffect(() => {
     const updateScreen = () => {
       const width = window.innerWidth;
-      if (width < 640) {
-        setScreenSize("mobile");
-      } else if (width < 1024) {
-        setScreenSize("tablet");
-      } else if (width < 1280) {
-        setScreenSize("laptop");
-      } else {
-        setScreenSize("desktop");
-      }
+      if (width < 640) setScreenSize("mobile");
+      else if (width < 1024) setScreenSize("tablet");
+      else if (width < 1280) setScreenSize("laptop");
+      else setScreenSize("desktop");
     };
+
     updateScreen();
     window.addEventListener("resize", updateScreen);
     return () => window.removeEventListener("resize", updateScreen);
   }, []);
 
-  // Get items to display
-  const displayedItems = rows.slice(0, visibleCount);
-  const canLoadMore = visibleCount < rows.length;
+  // ✅ Cards per view
+  const perView = useMemo(() => {
+    if (screenSize === "mobile") return 1;
+    if (screenSize === "tablet") return 2;
+    return 3; // laptop + desktop
+  }, [screenSize]);
 
-  // Helper function to determine animation based on position in row
-  const getAnimation = (index: number) => {
-    if (screenSize === "mobile") return undefined;
-    if (screenSize === "tablet" || screenSize === "laptop") return "fade-up";
-    const positionInRow = index % 4;
-    // First two items (0, 1) fade-right, last two (2, 3) fade-left
-    return positionInRow < 2 ? "fade-right" : "fade-left";
+  // ✅ Gap in px (tailwind gap-6 = 24px, gap-8 = 32px)
+  const gap = useMemo(() => {
+    return screenSize === "desktop" || screenSize === "laptop" ? 32 : 24;
+  }, [screenSize]);
+
+  // ✅ Measure viewport width
+  useEffect(() => {
+    const measure = () => {
+      if (!viewportRef.current) return;
+      setViewportWidth(viewportRef.current.offsetWidth);
+    };
+
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  // ✅ Card width (exact math so 3 cards always fit)
+  const cardWidth = useMemo(() => {
+    if (!viewportWidth) return 0;
+    const totalGap = gap * (perView - 1);
+    return (viewportWidth - totalGap) / perView;
+  }, [viewportWidth, perView, gap]);
+
+  // ✅ Clamp index
+  useEffect(() => {
+    const maxIndex = Math.max(0, rows.length - perView);
+    setCurrentIndex((prev) => Math.min(prev, maxIndex));
+  }, [perView, rows.length]);
+
+  const maxIndex = Math.max(0, rows.length - perView);
+
+  // ✅ Next / Prev (slide by 1 card, not 3)
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
   };
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
+  };
+
+  // ✅ Auto slide
+  useEffect(() => {
+    const interval = setInterval(() => {
+      handleNext();
+    }, 2500);
+
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [perView, rows.length, maxIndex]);
+
+  // ✅ TranslateX exact
+  const translateX = useMemo(() => {
+    return currentIndex * (cardWidth + gap);
+  }, [currentIndex, cardWidth, gap]);
 
   return (
     <section className="w-full bg-white py-8 md:py-16 lg:py-20">
@@ -80,115 +121,89 @@ export default function MediaMentions() {
           </p>
         </div>
 
-        {/* Logo Grid */}
+        {/* ✅ Carousel */}
         <div className="relative">
-          <div
-            className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 transition-all duration-500`}
-          >
-            {displayedItems.map((item, index) => (
-              <Link
-                key={`${item.no}-${index}`}
-                href={item.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group block h-full"
+          <div className="relative overflow-x-hidden overflow-y-visible px-0 md:px-16">
+            {/* LEFT ARROW */}
+            <button
+  onClick={handlePrev}
+  className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 z-20
+             h-12 w-12 items-center justify-center rounded-full
+             bg-white shadow-lg
+             text-purple-600
+             hover:bg-purple-800 hover:text-white
+             transform hover:scale-110 active:scale-95
+             transition-all duration-300"
+  aria-label="Previous"
+>
+  <ChevronLeft className="w-6 h-6" />
+</button>
+
+{/* RIGHT ARROW */}
+<button
+  onClick={handleNext}
+  className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-20
+             h-12 w-12 items-center justify-center rounded-full
+             bg-white shadow-lg
+             text-purple-600
+             hover:bg-purple-700 hover:text-white
+             transform hover:scale-110 active:scale-95
+             transition-all duration-300"
+  aria-label="Next"
+>
+  <ChevronRight className="w-6 h-6" />
+</button>
+
+
+            {/* ✅ VIEWPORT */}
+            <div ref={viewportRef}>
+              {/* TRACK */}
+              <div
+                className="flex transition-transform duration-700 ease-in-out"
+                style={{
+                  transform: `translateX(-${translateX}px)`,
+                  gap: `${gap}px`,
+                }}
               >
-                <article
-                  data-aos={getAnimation(index)}
-                  className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-purple-100 hover:-translate-y-2 h-full flex flex-col p-6"
-                >
-                  {/* Logo Image */}
-                  <div className="flex items-center justify-center h-24 mb-4">
-                    <Image
-                      src={item.logo_url}
-                      alt={item.media}
-                      width={160}
-                      height={60}
-                      className="object-contain transition-all duration-500 group-hover:scale-110 max-h-full"
-                      unoptimized
-                    />
-                  </div>
-
-                  {/* Media Info */}
-                  <div className="mt-auto text-center">
-                    <h3 className="text-sm font-semibold text-slate-700 mb-1">
-                      {item.media}
-                    </h3>
-                    <p className="text-xs text-gray-500 mb-2">
-                      {item.media_type}
-                    </p>
-                    <div className="flex items-center justify-center gap-1.5 text-xs text-purple-600 font-medium">
-                      <svg
-                        className="w-3.5 h-3.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                        />
-                      </svg>
-                      {item.potential_audiences}
-                    </div>
-                  </div>
-                </article>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* CTA Button */}
-        <div className="flex justify-center mt-12 md:mt-16">
-          <button
-            onClick={() => {
-              setVisibleCount((prev) =>
-                prev >= rows.length ? itemsPerBatch : prev + itemsPerBatch
-              );
-            }}
-            className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-700 to-purple-400 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-          >
-            {!canLoadMore ? (
-              <>
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-                Show Less
-              </>
-            ) : (
-              <>
-                <span className="text-base md:text-lg">View more</span>
-                <div className="relative w-6 h-6 flex items-center justify-center">
-                  <div className="absolute inset-0 bg-white/20 rounded-full group-hover:scale-110 transition-transform duration-300"></div>
-                  <svg
-                    className="w-4 h-4 relative z-10 transition-transform duration-300 group-hover:translate-x-0.5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                {rows.map((item, index) => (
+                  <Link
+                    key={`${item.no}-${index}`}
+                    href={item.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0"
+                    style={{ width: `${cardWidth}px` }}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M13 7l5 5m0 0l-5 5m5-5H6"
-                    />
-                  </svg>
-                </div>
-              </>
-            )}
-          </button>
+                    <article className="group bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:border-purple-100 hover:-translate-y-2 h-full flex flex-col p-6">
+                      <div className="flex items-center justify-center h-32 mb-4">
+                        <Image
+                          src={item.logo_url}
+                          alt={item.media}
+                          width={180}
+                          height={80}
+                          className="object-contain transition-all duration-500 group-hover:scale-110 max-h-full w-auto"
+                          unoptimized
+                        />
+                      </div>
+
+                      <div className="mt-auto text-center">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-1">
+                          {item.media}
+                        </h3>
+                        <p className="text-xs text-gray-500 mb-2">
+                          {item.media_type}
+                        </p>
+
+                        <div className="flex items-center justify-center gap-1.5 text-xs text-purple-600 font-medium">
+                          {item.potential_audiences}
+                        </div>
+                      </div>
+                    </article>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

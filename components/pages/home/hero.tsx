@@ -1,68 +1,82 @@
 "use client";
+
 import AIGenerator from "../common/AIResultBox";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AOS from "aos";
 
 export default function HeroSection() {
+  const fullText = "Solution";
+  const [typedText, setTypedText] = useState("");
+  const [index, setIndex] = useState(0);
+
   useEffect(() => {
     AOS.init({
       duration: 800,
     });
   }, []);
 
+  // Typing animation ONLY for "Solution"
+  useEffect(() => {
+    if (index < fullText.length) {
+      const timer = setTimeout(() => {
+        setTypedText((prev) => prev + fullText[index]);
+        setIndex((prev) => prev + 1);
+      }, 120);
+
+      return () => clearTimeout(timer);
+    }
+  }, [index]);
+
   return (
-    <>
-      <section className="w-full bg-white pt-16 px-6">
-        <div className="mx-auto max-w-6xl text-center">
-          <a
-            href="https://aarambh.taxlegit.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 mb-4 px-4 py-1.5
-             rounded-full border border-purple-200 bg-purple-50
-             text-sm font-medium text-purple-700
-             hover:bg-purple-100 transition"
+    <section className="w-full bg-white pt-16 px-6">
+      <div className="mx-auto max-w-6xl text-center">
+        <a
+          href="https://aarambh.taxlegit.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 mb-4 px-4 py-1.5
+          rounded-full border border-purple-200 bg-purple-50
+          text-sm font-medium text-purple-700
+          hover:bg-purple-100 transition"
+        >
+          <span
+            className="flex items-center gap-1 px-2 py-0.5 rounded-full
+            bg-purple-600 text-white text-xs font-semibold"
           >
-            {/* NEW badge */}
-            <span
-              className="flex items-center gap-1 px-2 py-0.5 rounded-full
-                   bg-purple-600 text-white text-xs font-semibold"
-            >
-              ✨ NEW
-            </span>
+            ✨ NEW
+          </span>
+          <span>Register with AI</span>
+          <span className="text-purple-600">→</span>
+        </a>
 
-            {/* Text */}
-            <span>Register with AI</span>
+        {/* Heading */}
+        <h1
+          className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight"
+          data-aos="zoom-in"
+        >
+          Tax Worry business <span className="text-gray-400">worry</span>
+          <br />
+          we are <span className="text-gray-400">the</span>{" "}
+          <span className="text-purple-600">
+            {typedText}
+            <span className="animate-pulse">|</span>
+          </span>
+        </h1>
 
-            {/* Arrow */}
-            <span className="text-purple-600">→</span>
-          </a>
+        {/* Subheading */}
+        <p className="mt-6 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+          Empower your registration with AI-driven expertise and smart business
+          solutions. Committed to excellence, we provide expert-led
+          registration, accounting, valuation, ICFR, and subsidy services to
+          help your business grow with compliance and confidence.
+        </p>
+      </div>
 
-          {/* Heading */}
-          <h1
-            className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight"
-            data-aos="zoom-in"
-          >
-            Tax Worry business <span className="text-gray-400">worry</span>
-            <br />
-            we are <span className="text-gray-400">the</span>{" "}
-            <span className="text-purple-600">Solution</span>
-          </h1>
-
-          {/* Subheading */}
-          <p className="mt-6 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            Empower your registration with AI-driven expertise and smart
-            business solutions. Committed to excellence, we provide expert-led
-            registration, accounting, valuation, ICFR, and subsidy services to
-            help your business grow with compliance and confidence.
-          </p>
+      <div className="w-full flex justify-center">
+        <div className="w-full max-w-lg">
+          <AIGenerator />
         </div>
-        <div className="w-full flex justify-center">
-          <div className="w-full max-w-lg">
-            <AIGenerator />
-          </div>
-        </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }
