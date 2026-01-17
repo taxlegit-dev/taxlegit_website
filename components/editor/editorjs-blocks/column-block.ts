@@ -13,6 +13,7 @@ const decodeHtml = (html: string): string => {
 
 export interface ColumnBlockData extends BlockToolData {
   imageUrl: string;
+  imageAltText?: string;
   youtubeUrl?: string;
   imagePosition: "left" | "right";
   heading: string;
@@ -26,6 +27,7 @@ export default class ColumnBlock implements BlockTool {
   private data: ColumnBlockData;
   private wrapper: HTMLElement | null = null;
   private imageUrlInput: HTMLInputElement | null = null;
+  private imageAltInput: HTMLInputElement | null = null;
   private youtubeUrlInput: HTMLInputElement | null = null;
   private imageFileInput: HTMLInputElement | null = null;
   private imagePreview: HTMLElement | null = null;
@@ -57,6 +59,7 @@ export default class ColumnBlock implements BlockTool {
   }) {
     this.data = {
       imageUrl: data?.imageUrl || "",
+      imageAltText: data?.imageAltText || "",
       youtubeUrl: data?.youtubeUrl || "",
       imagePosition: data?.imagePosition || "left",
       heading: data?.heading || "",
@@ -144,6 +147,18 @@ export default class ColumnBlock implements BlockTool {
       this.updateImagePreview();
     });
 
+    // Image alt text input
+    this.imageAltInput = document.createElement("input");
+    this.imageAltInput.type = "text";
+    this.imageAltInput.value = this.data.imageAltText || "";
+    this.imageAltInput.placeholder = "Alt text (optional)";
+    this.imageAltInput.style.cssText =
+      "width: 100%; padding: 8px; font-size: 14px; margin-bottom: 8px;";
+    this.imageAltInput.addEventListener("input", () => {
+      this.data.imageAltText = this.imageAltInput?.value || "";
+      this.updateImagePreview();
+    });
+
     // YouTube URL input
     this.youtubeUrlInput = document.createElement("input");
     this.youtubeUrlInput.type = "text";
@@ -198,6 +213,7 @@ export default class ColumnBlock implements BlockTool {
 
     imageSection.appendChild(imageLabel);
     imageSection.appendChild(this.imageUrlInput);
+    imageSection.appendChild(this.imageAltInput);
     imageSection.appendChild(this.youtubeUrlInput);
     fileInputContainer.appendChild(this.imageFileInput);
     imageSection.appendChild(fileInputContainer);
@@ -379,9 +395,9 @@ export default class ColumnBlock implements BlockTool {
       ? `
       <img 
         src="${url}" 
-        alt="Preview" 
+        alt="${this.data.imageAltText || "Preview"}" 
         style="width: 100%; height: auto; display: block; max-height: 300px; object-fit: contain;"
-        onerror="this.style.display='none'; this.parentElement.innerHTML='<p style=\\'color: red; font-size: 12px; padding: 10px;\\'>Invalid image URL</p>';"
+        onerror="this.style.display='none'; this.parentElement.innerHTML='<p style=\\'color: red; font-size: 12px; padding: 10px;\\'>Invalid image URL</p>'"
       />
     `
       : "";
@@ -474,6 +490,7 @@ export default class ColumnBlock implements BlockTool {
   save(): ColumnBlockData {
     return {
       imageUrl: this.imageUrlInput?.value || "",
+      imageAltText: this.imageAltInput?.value || "",
       youtubeUrl: this.youtubeUrlInput?.value || "",
       imagePosition: this.data.imagePosition,
       heading: this.headingInput?.value || "",
@@ -487,6 +504,7 @@ export default class ColumnBlock implements BlockTool {
   static get sanitize() {
     return {
       imageUrl: {},
+      imageAltText: {},
       youtubeUrl: {},
       imagePosition: {},
       heading: {},

@@ -7,6 +7,7 @@ import { Region } from "@prisma/client";
 import { RegionSwitcher } from "@/components/navigation/region-switcher";
 import { toSupportedRegion } from "@/lib/regions";
 import Image from "next/image";
+import ScheduleCallButton from "../Integration/Calendly";
 
 type NavbarItem = {
   id: string;
@@ -224,12 +225,13 @@ function MegaNavbarContent({
 
           {/* Right Section */}
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-            <Link
+            {/* <Link
               href="tel:+918929218091"
               className="hidden h-[44px] items-center gap-2.5 rounded-[6px] bg-purple-600 px-5 text-[15px] font-semibold text-white shadow-sm hover:bg-purple-700 md:flex"
             >
               Schedule a call
-            </Link>
+            </Link> */}
+            <ScheduleCallButton />
 
             {/* ✅ MOBILE HAMBURGER ONLY (ONLY small screens) */}
             <button
