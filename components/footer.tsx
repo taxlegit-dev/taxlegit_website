@@ -46,7 +46,7 @@ const Footer = () => {
   const companyLinks = [
     { name: "About Us", href: "about" },
     { name: "Blog", href: "blogs" },
-    { name: "Contact Us", href: "facontact-us" },
+    { name: "Contact Us", href: "contact-us" },
   ];
 
   const legalLinks = [
