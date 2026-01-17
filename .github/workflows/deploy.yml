@@ -10,18 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Decode SSH Key (create key.pem)
-        run: |
-          echo "${{ secrets.EC2_SSH_KEY_B64 }}" | base64 -d > /home/runner/work/_temp/key.pem
-          chmod 600 /home/runner/work/_temp/key.pem
-
       - name: SSH and Deploy
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           port: 22
-          key_path: /github/runner_temp/key.pem
+          key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
           script: |
             cd /var/www/app/taxlegit_website
