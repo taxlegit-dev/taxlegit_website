@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import AOS from "aos";
 
 export default function HeroSection() {
-  const fullText = "Solution";
+  const fullText = "Directions";
   const [typedText, setTypedText] = useState("");
   const [index, setIndex] = useState(0);
 
@@ -54,9 +54,8 @@ export default function HeroSection() {
           className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight"
           data-aos="zoom-in"
         >
-          Tax Worry Business <span className="text-gray-400">Worry</span>
+          From Decisions <span className="text-gray-400">to</span>
           <br />
-          We Are <span className="text-gray-400">The</span>{" "}
           <span className="text-purple-600">
             {typedText}
             <span className="animate-pulse">|</span>
@@ -65,10 +64,11 @@ export default function HeroSection() {
 
         {/* Subheading */}
         <p className="mt-6 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-          Empower your registration with AI-driven expertise and smart business
-          solutions. Committed to excellence, we provide expert-led
-          registration, accounting, valuation, ICFR, and subsidy services to
-          help your business grow with compliance and confidence.
+          Helping businesses move beyond fragmented services and reactive
+          choices. From entity setup, licenses, and compliance to valuation,
+          process building and sustainable risk free advisory to businesses,
+          Taxlegit Group brings everything together so leaders can see clearly,
+          decide confidently, and move decisively.
         </p>
       </div>
 

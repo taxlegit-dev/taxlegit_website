@@ -615,13 +615,13 @@ function renderBlock(
                 {decodeHtml(columnData.heading)}
               </h3>
             )}
-            {/* {columnData.description && (
+            {columnData.description && (
               <ReadMoreText
                 text={columnData.description}
                 className={`mb-4 text-lg ${textColor}`}
                 wordLimit={WORD_LIMIT2}
               />
-            )} */}
+            )}
             {columnData.description && (
               <p className={`mb-6 text-slate-800  text-lg`}>
                 {decodeHtml(columnData.description)}
@@ -761,11 +761,11 @@ function renderBlock(
       return (
         <section key={block.id} className="py-5">
           <div className={`grid grid-cols-1 ${gridColsClass} gap-6`}>
-              {cards.map((card, idx) => (
-                <div
-                  key={idx}
-                  className={`rounded-xl border ${borderColor} ${cardBg} p-5 shadow-sm`}
-                  role="button"
+            {cards.map((card, idx) => (
+              <div
+                key={idx}
+                className={`rounded-xl border ${borderColor} ${cardBg} p-5 shadow-sm`}
+                role="button"
                 tabIndex={0}
                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                 onKeyDown={(event) => {
