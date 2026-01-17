@@ -54,9 +54,9 @@ export default function HeroSection() {
           className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight"
           data-aos="zoom-in"
         >
-          Tax Worry business <span className="text-gray-400">worry</span>
+          Tax Worry Business <span className="text-gray-400">Worry</span>
           <br />
-          we are <span className="text-gray-400">the</span>{" "}
+          We Are <span className="text-gray-400">The</span>{" "}
           <span className="text-purple-600">
             {typedText}
             <span className="animate-pulse">|</span>
