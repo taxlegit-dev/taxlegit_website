@@ -562,6 +562,7 @@ function renderBlock(
         points?: string[];
         ctaText?: string;
         ctaUrl?: string;
+        imageAltText?: string;
       };
 
       const flexDirection =
@@ -583,7 +584,7 @@ function renderBlock(
               <div className="relative w-full max-w-[500px] aspect-[5/3] overflow-hidden rounded-lg">
                 <Image
                   src={columnData.imageUrl}
-                  alt={columnData.heading || "Column image"}
+                  alt={columnData.imageAltText || columnData.heading || "Column image"}
                   width={500}
                   height={300}
                   className="max-w-full max-h-full object-contain"
@@ -739,6 +740,7 @@ function renderBlock(
       const cardsData = block.data as {
         cards?: Array<{
           icon?: string;
+          iconAltText?: string;
           heading?: string;
           description?: string;
         }>;
@@ -779,7 +781,7 @@ function renderBlock(
                   <div className="mb-4 flex justify-center">
                     <Image
                       src={normalizeUrl(card.icon)}
-                      alt={decodeHtmlEntities(card.heading) || "Card icon"}
+                      alt={card.iconAltText || decodeHtmlEntities(card.heading) || "Card icon"}
                       width={64}
                       height={64}
                       unoptimized

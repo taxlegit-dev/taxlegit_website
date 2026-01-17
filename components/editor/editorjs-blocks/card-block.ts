@@ -9,6 +9,7 @@ import type {
 export interface ContentCardsBlockData extends BlockToolData {
   cards: Array<{
     icon: string;
+    iconAltText?: string;
     heading: string;
     description: string;
   }>;
@@ -54,8 +55,8 @@ export default class ContentCardsBlock implements BlockTool {
   }) {
     this.data = {
       cards: data?.cards || [
-        { icon: "", heading: "", description: "" },
-        { icon: "", heading: "", description: "" },
+        { icon: "", iconAltText: "", heading: "", description: "" },
+        { icon: "", iconAltText: "", heading: "", description: "" },
       ],
       cardsPerRow: data?.cardsPerRow || 3,
     };
@@ -176,7 +177,7 @@ export default class ContentCardsBlock implements BlockTool {
   }
 
   private createCardElement(
-    card: { icon: string; heading: string; description: string },
+    card: { icon: string; iconAltText?: string; heading: string; description: string },
     index: number
   ): HTMLElement {
     const decodedHeading = this.decodeHtmlEntities(card.heading);
@@ -263,7 +264,7 @@ export default class ContentCardsBlock implements BlockTool {
   }
 
   private createIconSection(
-    card: { icon: string; heading: string; description: string },
+    card: { icon: string; iconAltText?: string; heading: string; description: string },
     index: number
   ): HTMLElement {
     const decodedIcon = this.decodeHtmlEntities(card.icon);
@@ -288,7 +289,24 @@ export default class ContentCardsBlock implements BlockTool {
       "width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; margin-bottom: 8px;";
     iconUrlInput.addEventListener("input", () => {
       this.data.cards[index].icon = iconUrlInput.value;
-      this.updateIconPreview(iconPreview, this.data.cards[index].icon);
+      this.updateIconPreview(iconPreview, this.data.cards[index].icon, this.data.cards[index].iconAltText);
+      this.notifyChange();
+    });
+
+    const iconAltLabel = document.createElement("label");
+    iconAltLabel.textContent = "Icon alt text:";
+    iconAltLabel.style.cssText =
+      "display: block; font-size: 12px; font-weight: 500; margin-top: 6px; margin-bottom: 4px;";
+
+    const iconAltInput = document.createElement("input");
+    iconAltInput.type = "text";
+    iconAltInput.value = card.iconAltText || "";
+    iconAltInput.placeholder = "Alt text for icon (optional)";
+    iconAltInput.style.cssText =
+      "width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; margin-bottom: 8px;";
+    iconAltInput.addEventListener("input", () => {
+      this.data.cards[index].iconAltText = iconAltInput.value;
+      this.updateIconPreview(iconPreview, this.data.cards[index].icon, this.data.cards[index].iconAltText);
       this.notifyChange();
     });
 
@@ -305,7 +323,7 @@ export default class ContentCardsBlock implements BlockTool {
           const url = await this.imageUploadHandler(file);
           this.data.cards[index].icon = url;
           iconUrlInput.value = url;
-          this.updateIconPreview(iconPreview, url);
+          this.updateIconPreview(iconPreview, url, this.data.cards[index].iconAltText);
           this.notifyChange();
         } catch (error) {
           console.error("Icon upload failed:", error);
@@ -315,7 +333,7 @@ export default class ContentCardsBlock implements BlockTool {
         const url = URL.createObjectURL(file);
         this.data.cards[index].icon = url;
         iconUrlInput.value = url;
-        this.updateIconPreview(iconPreview, url);
+        this.updateIconPreview(iconPreview, url, this.data.cards[index].iconAltText);
         this.notifyChange();
       }
     });
@@ -328,15 +346,21 @@ export default class ContentCardsBlock implements BlockTool {
 
     iconSection.appendChild(iconLabel);
     iconSection.appendChild(iconUrlInput);
+    iconSection.appendChild(iconAltLabel);
+    iconSection.appendChild(iconAltInput);
     iconSection.appendChild(fileInput);
     iconSection.appendChild(iconPreview);
 
-    this.updateIconPreview(iconPreview, card.icon);
+    this.updateIconPreview(iconPreview, card.icon, card.iconAltText);
 
     return iconSection;
   }
 
-  private updateIconPreview(previewElement: HTMLElement, iconUrl: string) {
+  private updateIconPreview(
+    previewElement: HTMLElement,
+    iconUrl: string,
+    iconAltText?: string
+  ) {
     if (!iconUrl) {
       previewElement.innerHTML =
         '<span style="color: #999; font-size: 12px;">No icon uploaded</span>';
@@ -346,7 +370,7 @@ export default class ContentCardsBlock implements BlockTool {
     previewElement.innerHTML = `
       <img 
         src="${iconUrl}" 
-        alt="Icon preview" 
+        alt="${iconAltText || "Icon preview"}" 
         style="width: 60px; height: 60px; object-fit: contain; display: inline-block;"
         onerror="this.parentElement.innerHTML='<span style=\\'color: red; font-size: 12px;\\'>Invalid icon URL</span>';"
       />
@@ -356,6 +380,7 @@ export default class ContentCardsBlock implements BlockTool {
   private addCard() {
     this.data.cards.push({
       icon: "",
+      iconAltText: "",
       heading: "",
       description: "",
     });
@@ -387,6 +412,7 @@ export default class ContentCardsBlock implements BlockTool {
     return {
       cards: this.data.cards.map((card) => ({
         icon: card.icon,
+        iconAltText: card.iconAltText || "",
         heading: card.heading,
         description: card.description,
       })),
