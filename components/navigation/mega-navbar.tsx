@@ -146,7 +146,12 @@ function MegaNavbarContent({
                     href: "/about",
                     order: 3,
                   },
-                  { id: "other-blog", label: "Blog", href: "/blog", order: 4 },
+                  {
+                    id: "other-blog",
+                    label: "Blogs",
+                    href: "/blogs",
+                    order: 4,
+                  },
                 ],
               },
             ],
