@@ -9,12 +9,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://taxlegit.com";
 
   // ✅ Static pages (add more if needed)
-  const staticUrls: MetadataRoute.Sitemap = [
-    {
-      url: `${baseUrl}/`,
-      lastModified: new Date(),
-    },
-  ];
+const staticUrls: MetadataRoute.Sitemap = [
+  {
+    url: `${baseUrl}`,
+    lastModified: new Date(),
+  },
+  {
+    url: `${baseUrl}/nameCheck`,
+    lastModified: new Date(),
+  },
+  {
+    url: `${baseUrl}/calculateQuote`,
+    lastModified: new Date(),
+  },
+  {
+    url: `${baseUrl}/contact-us`,
+    lastModified: new Date(),
+  },
+  {
+    url: `${baseUrl}/about`,
+    lastModified: new Date(),
+  },
+  {
+    url: `${baseUrl}/blogs`,
+    lastModified: new Date(),
+  },
+];
 
   // ✅ Published Navbar pages (SERVICE + GENERIC)
   const navbarItems = await prisma.navbarItem.findMany({
