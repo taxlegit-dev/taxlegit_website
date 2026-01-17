@@ -18,35 +18,35 @@ const Footer = () => {
   const popularRegistration = [
     {
       name: "Private Limited Company",
-      href: "/private-limited-company-registration",
+      href: "private-limited-company-registration",
     },
     {
       name: "One Person company Registration",
-      href: "#/one-person-company-registration",
+      href: "one-person-company-registration",
     },
     {
       name: "Section 8 Company Registration",
-      href: "/section-8-company-registration",
+      href: "section-8-company-registration",
     },
     { name: "Company Registration In India", href: "/company-registration" },
     {
       name: "Public Limited Company",
-      href: "/public-limited-company-registration",
+      href: "public-limited-company-registration",
     },
   ];
 
   const popularLicenses = [
-    { name: "GST Registration", href: "/gst-registration" },
-    { name: "Startup India Registration", href: "/startupindia-registration" },
-    { name: "ISO Registration", href: "/iso-registration" },
-    { name: "FSSAI Registration", href: "/fssai-registration" },
-    { name: "MSME Registratio", href: "/msme-registration" },
+    { name: "GST Registration", href: "gst-registration" },
+    { name: "Startup India Registration", href: "startupindia-registration" },
+    { name: "ISO Registration", href: "iso-registration" },
+    { name: "FSSAI Registration", href: "fssai-registration" },
+    { name: "MSME Registratio", href: "msme-registration" },
   ];
 
   const companyLinks = [
-    { name: "About Us", href: "/about" },
-    { name: "Blog", href: "/blogs" },
-    { name: "Contact Us", href: "/contact-us" },
+    { name: "About Us", href: "about" },
+    { name: "Blog", href: "blogs" },
+    { name: "Contact Us", href: "contact-us" },
   ];
 
   const legalLinks = [
