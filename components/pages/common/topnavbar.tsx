@@ -7,9 +7,9 @@ import { FaWhatsapp } from "react-icons/fa";
 const TopNavbar = () => {
   return (
     <div className="fixed top-0 left-0 right-0 z-[60] w-full bg-purple-800 text-white text-md">
-      <div className="max-w-7xl mx-auto flex h-10 items-center justify-between px-4 lg:px-0">
+      <div className="max-w-7xl mx-auto flex h-10 items-center justify-end sm:justify-between px-4 lg:px-0">
         {/* left Side - Social Media */}
-        <div className="flex items-center gap-4">
+        <div className="hidden sm:flex items-center gap-4">
           <a
             href="https://www.facebook.com/Taxlegitt/"
             className="hover:text-blue-400 transition"
@@ -35,7 +35,7 @@ const TopNavbar = () => {
           </a>
         </div>
         {/* right Side - Contact Info */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 sm:ml-auto">
           <a
             href="https://wa.me/918929218091"
             target="_blank"

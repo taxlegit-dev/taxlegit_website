@@ -16,25 +16,37 @@ import Image from "next/image";
 
 const Footer = () => {
   const popularRegistration = [
-    { name: "Private Limited Company", href: "#pvt-ltd" },
-    { name: "GST Registration", href: "#gst" },
-    { name: "Public Limited Company", href: "#public-ltd" },
-    { name: "One Person Company", href: "#opc" },
-    { name: "FSSAI Registration", href: "#fssai" },
+    {
+      name: "Private Limited Company",
+      href: "/private-limited-company-registration",
+    },
+    {
+      name: "One Person company Registration",
+      href: "#/one-person-company-registration",
+    },
+    {
+      name: "Section 8 Company Registration",
+      href: "/section-8-company-registration",
+    },
+    { name: "Company Registration In India", href: "/company-registration" },
+    {
+      name: "Public Limited Company",
+      href: "/public-limited-company-registration",
+    },
   ];
 
   const popularLicenses = [
-    { name: "Trademark Registration", href: "#trademark" },
-    { name: "ISO Certification", href: "#iso" },
-    { name: "LLP Registration", href: "#llp" },
-    { name: "GEM Registration", href: "#gem" },
-    { name: "Digital Signature", href: "#dsc" },
+    { name: "GST Registration", href: "/gst-registration" },
+    { name: "Startup India Registration", href: "/startupindia-registration" },
+    { name: "ISO Registration", href: "/iso-registration" },
+    { name: "FSSAI Registration", href: "/fssai-registration" },
+    { name: "MSME Registratio", href: "/msme-registration" },
   ];
 
   const companyLinks = [
-    { name: "About Us", href: "about" },
-    { name: "Blog", href: "blog" },
-    { name: "Contact Us", href: "contact-us" },
+    { name: "About Us", href: "/about" },
+    { name: "Blog", href: "/blogs" },
+    { name: "Contact Us", href: "/contact-us" },
   ];
 
   const legalLinks = [
@@ -203,7 +215,8 @@ const Footer = () => {
                         Registered Office
                       </p>
                       <p className="text-gray-400 text-sm">
-                        office no. - 1117 , 11th floor, Supertech Astralis, Sector-94,
+                        office no. - 1117 , 11th floor, Supertech Astralis,
+                        Sector-94,
                         <br />
                         Noida, Uttar Pradesh - 201301
                       </p>
@@ -328,7 +341,8 @@ const Footer = () => {
             {/* Bottom Bar */}
             <div className="flex flex-col items-center justify-center py-2">
               <p className="text-gray-500 text-sm text-center">
-                © {new Date().getFullYear()} Taxlegit Consulting Private Limited. All rights reserved.
+                © {new Date().getFullYear()} Taxlegit Consulting Private
+                Limited. All rights reserved.
               </p>
             </div>
           </div>
