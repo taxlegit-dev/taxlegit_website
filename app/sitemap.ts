@@ -93,7 +93,7 @@ const staticUrls: MetadataRoute.Sitemap = [
   const blogUrls: MetadataRoute.Sitemap = blogs
     .filter((b) => b.slug)
     .map((blog) => ({
-      url: `${baseUrl}/blog/${blog.slug}`,
+      url: `${baseUrl}/blogs/${blog.slug}`,
       lastModified: blog.updatedAt || new Date(),
     }));
 

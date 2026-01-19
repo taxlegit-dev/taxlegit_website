@@ -76,7 +76,7 @@ export default async function AuthorCard({
             {recentBlogs.map((blog) => (
               <Link
                 key={blog.id}
-                href={`/blog/${blog.slug || blog.id}`}
+                href={`/blogs/${blog.slug || blog.id}`}
                 className="group flex items-start gap-3 rounded-lg p-2 transition-colors hover:bg-slate-50"
               >
                 {/* Blog Image */}

@@ -164,7 +164,7 @@ export default function FeaturedBlog({ blog }: FeaturedBlogProps) {
 
           {/* CTA */}
           <Link
-            href={`/blog/${blog.slug || blog.id}`}
+            href={`/blogs/${blog.slug || blog.id}`}
             className="inline-block  text-sm sm:text-base font-semibold text-indigo-600 hover:text-indigo-500 transition-colors"
           >
             Read Article →

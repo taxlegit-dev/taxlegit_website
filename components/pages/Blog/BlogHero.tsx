@@ -16,7 +16,7 @@ export default function BlogHero() {
       next.delete("q");
     }
     const queryString = next.toString();
-    router.replace(queryString ? `/blog?${queryString}` : "/blog", {
+    router.replace(queryString ? `/blogs?${queryString}` : "/blogs", {
       scroll: false,
     });
   };
