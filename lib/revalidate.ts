@@ -25,12 +25,12 @@ export function revalidateBlogPage(
   if (!slugOrId) return;
   const slug = normalizeSlug(slugOrId);
   if (!slug) return;
-  const path = region === Region.US ? `/us/blog/${slug}` : `/blog/${slug}`;
+  const path = region === Region.US ? `/us/blog/${slug}` : `/blogs/${slug}`;
   revalidatePath(path);
 }
 
 export function revalidateBlogListing(region: Region) {
-  const path = region === Region.US ? "/us/blog" : "/blog";
+  const path = region === Region.US ? "/us/blog" : "/blogs";
   revalidatePath(path);
 }
 

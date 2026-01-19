@@ -45,7 +45,7 @@ export function RelatedBlogsSection({
           {blogs.map((blog) => (
             <Link
               key={blog.id}
-              href={`/blog/${blog.slug ?? blog.id}`}
+              href={`/blogs/${blog.slug ?? blog.id}`}
               className="group block h-full"
             >
               <article
