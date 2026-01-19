@@ -36,14 +36,14 @@ const TopNavbar = () => {
         </div>
         {/* right Side - Contact Info */}
         <div className="flex items-center gap-4 sm:ml-auto">
-          <a
+          {/* <a
             href="https://wa.me/918929218091"
             target="_blank"
             className="flex items-center gap-1 hover:text-green-400 transition"
           >
             <FaWhatsapp className="w-4 h-4" />
             <span className="hidden sm:inline">WhatsApp</span>
-          </a>
+          </a> */}
 
           <a
             href="mailto:121@taxlegit.com"
