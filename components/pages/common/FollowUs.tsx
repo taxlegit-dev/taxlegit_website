@@ -1,26 +1,42 @@
-import { Facebook, Twitter, Instagram, Pin } from "lucide-react";
+import {
+  FaInstagram,
+  FaTwitter,
+  FaFacebookF,
+  FaYoutube,
+  FaLinkedinIn,
+  FaPhoneAlt,
+  FaMapMarkerAlt,
+  FaChevronRight,
+  FaEnvelope,
+  FaWhatsapp,
+} from "react-icons/fa";
 import Link from "next/link";
 
 const socials = [
   {
     name: "Facebook",
-    href: "https://facebook.com",
-    icon: Facebook,
+    href: "https://www.facebook.com/Taxlegitt/",
+    icon: FaFacebookF,
   },
   {
     name: "Twitter",
-    href: "https://twitter.com",
-    icon: Twitter,
+    href: "https://x.com/taxlegit",
+    icon: FaTwitter,
   },
   {
     name: "Instagram",
-    href: "https://instagram.com",
-    icon: Instagram,
+    href: "https://www.instagram.com/taxlegit_/",
+    icon: FaInstagram,
   },
   {
-    name: "Pinterest",
+    name: "LinkedIn",
     href: "https://pinterest.com",
-    icon: Pin,
+    icon: FaLinkedinIn,
+  },
+  {
+    name: "Youtube",
+    href: "https://www.youtube.com/channel/UC4s7kcn1qt7np_Ccce5hmHA",
+    icon: FaYoutube,
   },
 ];
 
