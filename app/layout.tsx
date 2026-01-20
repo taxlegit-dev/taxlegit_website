@@ -4,6 +4,7 @@ import { ProviderTree } from "@/components/providers/provider-tree";
 import "aos/dist/aos.css";
 import ZohoChat from "@/components/zoho/ZohoChat";
 import { Suspense } from "react";
+import GoogleAnalytics from "@/components/Integration/GoogleAnalytics";
 
 export const metadata: Metadata = {
   title: "Taxlegit | Compliance and Registration",
@@ -20,6 +21,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-white text-black antialiased">
+        <GoogleAnalytics />
         <ProviderTree>
           {children}
         </ProviderTree>

@@ -143,8 +143,8 @@ function MegaNavbarContent({
                   },
                   {
                     id: "other-about",
-                    label: "About",
-                    href: "/about",
+                    label: "About Us",
+                    href: "/about-us",
                     order: 3,
                   },
                   {
