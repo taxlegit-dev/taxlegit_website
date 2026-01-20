@@ -83,9 +83,9 @@ const HowWeWork: React.FC = () => {
       <div className="max-w-6xl mx-auto lg:px-0 px-5">
         {/* Header Section */}
         <div className="text-center mb-16" data-aos="fade-down">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
             How Do We <span className="text-purple-600">Work?</span>
-          </h1>
+          </h2>
         </div>
 
         {/* Steps Section */}
