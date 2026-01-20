@@ -3,12 +3,7 @@ import {
   FaTwitter,
   FaFacebookF,
   FaYoutube,
-  FaLinkedinIn,
-  FaPhoneAlt,
-  FaMapMarkerAlt,
-  FaChevronRight,
-  FaEnvelope,
-  FaWhatsapp,
+  FaLinkedinIn
 } from "react-icons/fa";
 import Link from "next/link";
 
