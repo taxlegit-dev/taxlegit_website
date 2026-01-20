@@ -60,3 +60,25 @@ export async function GET(request: Request) {
 
   return NextResponse.json({ items: structuredItems, region });
 }
+
+// POST - Fetch services for contact form
+export async function POST(request: Request) {
+  const { region } = await request.json();
+  const regionEnum = region === "US" ? Region.US : Region.INDIA;
+
+  const services = await prisma.navbarItem.findMany({
+    where: {
+      region: regionEnum,
+      isActive: true,
+      pageType: "SERVICE",
+    },
+    select: {
+      label: true,
+    },
+    orderBy: { order: "asc" },
+  });
+
+  const serviceLabels = services.map((s) => s.label);
+
+  return NextResponse.json({ services: serviceLabels });
+}

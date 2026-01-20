@@ -1,33 +1,49 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Star } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
-const services = [
-  "TDS Return Filing Online",
-  "GST Returns Filing Online",
-  "Income Tax Returns",
-  "Vendor Reconciliation",
-  "Due Diligence",
-  "Public Limited Company Registration",
-  "Section 8 Company Registration",
-  "Sole Proprietorship Registration",
-  "Trademark Renewal",
-  "PF Registration",
-  "LEI Registration",
-  "Shop and Establishment Registration",
-  "Legal Metrology Registration",
-];
 
-export default function ContactForm() {
+type ContactFormProps = {
+  defaultService?: string;
+};
+
+export default function ContactForm({ defaultService }: ContactFormProps) {
+  const [services, setServices] = useState<string[]>([]);
   const [form, setForm] = useState({
     name: "",
     phone: "",
     email: "",
-    service: "",
+    service: defaultService || "",
   });
 
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const res = await fetch("/api/navbar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ region: "INDIA" }), // Assuming India for now
+        });
+        const data = await res.json();
+        setServices(data.services);
+      } catch (error) {
+        console.error("Failed to fetch services:", error);
+        // Fallback to empty array
+        setServices([]);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
+  useEffect(() => {
+    if (defaultService) {
+      setForm((prev) => ({ ...prev, service: defaultService }));
+    }
+  }, [defaultService]);
 
   const scriptURL =
     "https://script.google.com/macros/s/AKfycbwM1c1uA_14bmQjKoHFS6u0Fr7qnnEiJlX9o_hf4kNjFzX47wEnSD5fkGKowKc9-ELM3Q/exec"; // 👈 IMPORTANT
