@@ -3,6 +3,7 @@
 import AIGenerator from "../common/AIResultBox";
 import { useEffect, useState } from "react";
 import AOS from "aos";
+import Script from "next/script";
 
 export default function HeroSection() {
   const fullText = "Directions";
@@ -51,11 +52,38 @@ export default function HeroSection() {
 
         {/* Heading */}
         <h1
-          className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight"
+          className="flex flex-wrap items-center justify-center 
+  text-4xl lg:text-6xl font-bold text-gray-900 leading-tight tracking-tight"
           data-aos="zoom-in"
         >
-          From Decisions <span className="text-gray-400">to</span>
-          <br />
+          <span>Decisions to </span>
+
+          {/* Plane animation */}
+          <span className="relative items-center w-28 md:w-36 h-10 overflow-visible hidden md:inline-flex mx-4">
+            <Script
+              src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.11/dist/dotlottie-wc.js"
+              type="module"
+              strategy="afterInteractive"
+            />
+
+            <dotlottie-wc
+              src="https://lottie.host/49990532-65d1-44c1-a4e0-b63df7d276d0/GyecJU3BoB.lottie"
+              autoplay
+              loop
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                top: "4%",
+                left: "-5px",
+                transform: "translateY(-50%)",
+                width: "160px",
+                height: "48px",
+                pointerEvents: "none",
+                zIndex: 0,
+              }}
+            />
+          </span>
+
           <span className="text-purple-600">
             {typedText}
             <span className="animate-pulse">|</span>
@@ -63,7 +91,7 @@ export default function HeroSection() {
         </h1>
 
         {/* Subheading */}
-        <p className="mt-6 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+        <p className="mt-6 text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
           Helping businesses move beyond fragmented services and reactive
           choices. From entity setup, licenses, and compliance to valuation,
           process building and sustainable risk free advisory to businesses,
