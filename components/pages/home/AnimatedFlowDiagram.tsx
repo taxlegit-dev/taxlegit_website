@@ -2,8 +2,13 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { GiArchiveRegister } from "react-icons/gi";
-import { FaChartLine,FaFileInvoiceDollar, FaClipboardList, FaFileContract, FaHandHoldingUsd   } from "react-icons/fa";
-
+import {
+  FaChartLine,
+  FaFileInvoiceDollar,
+  FaClipboardList,
+  FaFileContract,
+  FaHandHoldingUsd,
+} from "react-icons/fa";
 
 type Feature = {
   id: number;
@@ -31,7 +36,7 @@ const features: Feature[] = [
     side: "left",
     x: 15,
     y: 36,
-    icon: <FaFileContract  size={20} />,
+    icon: <FaFileContract size={20} />,
     link: "/services/tds-return",
   },
   {
@@ -49,7 +54,7 @@ const features: Feature[] = [
     side: "right",
     x: 85,
     y: 35,
-    icon: <FaChartLine  size={20} />,
+    icon: <FaChartLine size={20} />,
     link: "/services/audit-itr",
   },
   {
@@ -58,7 +63,7 @@ const features: Feature[] = [
     side: "right",
     x: 85,
     y: 54,
-    icon: <FaFileInvoiceDollar  size={20} />,
+    icon: <FaFileInvoiceDollar size={20} />,
     link: "/services/llp",
   },
   {
@@ -67,7 +72,7 @@ const features: Feature[] = [
     side: "left",
     x: 15,
     y: 55,
-    icon: <FaClipboardList  size={20} />,
+    icon: <FaClipboardList size={20} />,
     link: "/services/ngo-darpan",
   },
 ];
@@ -151,7 +156,7 @@ export default function CashManagementDiagram() {
 
   const handleKeyDown = (
     event: React.KeyboardEvent<HTMLDivElement>,
-    feature: Feature
+    feature: Feature,
   ) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
@@ -299,26 +304,23 @@ export default function CashManagementDiagram() {
 
         {/* CENTER AI BOX */}
         <div
-  onMouseEnter={() => setIsHovered(true)}
-  onMouseLeave={() => setIsHovered(false)}
-  className="absolute left-1/2 top-[35%] -translate-x-1/2 -translate-y-1/2
-             w-[140px] h-[82px] rounded-2xl
-             bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-700
-             text-white flex flex-col items-center justify-center
-             shadow-[0_15px_50px_rgba(88,28,135,0.45)]
-             z-10 text-center px-2 cursor-pointer
-             border border-white/20 backdrop-blur-sm
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className="absolute left-1/2 top-[35%] -translate-x-1/2 -translate-y-1/2
+             w-[140px] h-[72px] rounded-2xl
+             bg-slate-200
+             text-slate-800 flex flex-col items-center justify-center
+             z-10 text-center cursor-pointer
              transition-all duration-300 hover:scale-110 hover:shadow-[0_20px_60px_rgba(88,28,135,0.6)]"
->
-  <div className="text-lg font-extrabold tracking-wide">Popular</div>
-  <div className="text-xs opacity-90 uppercase tracking-[0.2em]">
-    Service
-  </div>
+        >
+          <div className="text-lg font-extrabold tracking-wide">Popular</div>
+          <div className="text-xs opacity-90 uppercase tracking-[0.2em]">
+            Service
+          </div>
 
-  {/* soft glow */}
-  <div className="absolute inset-0 rounded-2xl bg-white/10 opacity-0 hover:opacity-100 transition-opacity duration-300" />
-</div>
-
+          {/* soft glow */}
+          <div className="absolute inset-0 rounded-2xl bg-white/10 opacity-0 hover:opacity-100 transition-opacity duration-300" />
+        </div>
 
         {/* FEATURE CARDS */}
         {features.map((f) => (

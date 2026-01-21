@@ -56,9 +56,10 @@ export default function HeroSection() {
   text-4xl lg:text-6xl font-bold text-gray-900 leading-tight tracking-tight"
           data-aos="zoom-in"
         >
-          <span>Decisions to&nbsp;</span>
+          <span>Decisions</span>
+          <span className="text-gray-500">&nbsp;to&nbsp;</span>
 
-          <span className="text-purple-600">
+          <span className="bg-gradient-to-r from-purple-600 via-fuchsia-500 to-blue-600 bg-clip-text text-transparent">
             {typedText}
             <span className="animate-pulse">|</span>
           </span>
