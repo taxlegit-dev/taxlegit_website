@@ -3,10 +3,10 @@
 import AIGenerator from "../common/AIResultBox";
 import { useEffect, useState } from "react";
 import AOS from "aos";
-import Script from "next/script";
+// import Script from "next/script";
 
 export default function HeroSection() {
-  const fullText = "Directions";
+  const fullText = " Directions ";
   const [typedText, setTypedText] = useState("");
   const [index, setIndex] = useState(0);
 
@@ -56,33 +56,7 @@ export default function HeroSection() {
   text-4xl lg:text-6xl font-bold text-gray-900 leading-tight tracking-tight"
           data-aos="zoom-in"
         >
-          <span>Decisions to </span>
-
-          {/* Plane animation */}
-          <span className="relative items-center w-28 md:w-36 h-10 overflow-visible hidden md:inline-flex mx-4">
-            <Script
-              src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.11/dist/dotlottie-wc.js"
-              type="module"
-              strategy="afterInteractive"
-            />
-
-            <dotlottie-wc
-              src="https://lottie.host/49990532-65d1-44c1-a4e0-b63df7d276d0/GyecJU3BoB.lottie"
-              autoplay
-              loop
-              aria-hidden="true"
-              style={{
-                position: "absolute",
-                top: "4%",
-                left: "-5px",
-                transform: "translateY(-50%)",
-                width: "160px",
-                height: "48px",
-                pointerEvents: "none",
-                zIndex: 0,
-              }}
-            />
-          </span>
+          <span>Decisions to&nbsp;</span>
 
           <span className="text-purple-600">
             {typedText}
