@@ -3,9 +3,10 @@
 import AIGenerator from "../common/AIResultBox";
 import { useEffect, useState } from "react";
 import AOS from "aos";
+// import Script from "next/script";
 
 export default function HeroSection() {
-  const fullText = "Directions";
+  const fullText = " Directions ";
   const [typedText, setTypedText] = useState("");
   const [index, setIndex] = useState(0);
 
@@ -51,19 +52,21 @@ export default function HeroSection() {
 
         {/* Heading */}
         <h1
-          className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight"
+          className="flex flex-wrap items-center justify-center 
+  text-4xl lg:text-6xl font-bold text-gray-900 leading-tight tracking-tight"
           data-aos="zoom-in"
         >
-          From Decisions <span className="text-gray-400">to</span>
-          <br />
-          <span className="text-purple-600">
+          <span>Decisions</span>
+          <span className="text-gray-500">&nbsp;to&nbsp;</span>
+
+          <span className="bg-gradient-to-r from-purple-600 via-fuchsia-500 to-blue-600 bg-clip-text text-transparent">
             {typedText}
             <span className="animate-pulse">|</span>
           </span>
         </h1>
 
         {/* Subheading */}
-        <p className="mt-6 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+        <p className="mt-6 text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
           Helping businesses move beyond fragmented services and reactive
           choices. From entity setup, licenses, and compliance to valuation,
           process building and sustainable risk free advisory to businesses,
