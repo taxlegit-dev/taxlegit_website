@@ -145,9 +145,9 @@ export default function ReviewSlider() {
             </span>
           </div>
 
-          <h1 className="text-2xl lg:text-5xl font-bold mb-4 text-slate-700">
+          <h2 className="text-2xl lg:text-5xl font-bold mb-4 text-slate-700">
             Based on 131 reviews
-          </h1>
+          </h2>
         </div>
 
         {/* Slider */}

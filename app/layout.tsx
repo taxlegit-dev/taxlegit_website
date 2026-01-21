@@ -6,6 +6,7 @@ import ZohoChat from "@/components/zoho/ZohoChat";
 import { Suspense } from "react";
 import Script from "next/script";
 import Image from "next/image";
+import GoogleAnalytics from "@/components/Integration/GoogleAnalytics";
 
 export const metadata: Metadata = {
   title: "Taxlegit | Compliance and Registration",
@@ -66,6 +67,8 @@ fbq('track', 'PageView');`}
           />
         </noscript>
         {/* End Google Tag Manager (noscript) */}
+        <ProviderTree>{children}</ProviderTree>
+        <GoogleAnalytics />
         <ProviderTree>{children}</ProviderTree>
         <Suspense fallback={null}>
           <ZohoChat />

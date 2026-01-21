@@ -197,7 +197,7 @@ export function IndiaHero({
           {/* Right Contact Form - Static */}
           <div className="flex justify-end lg:col-span-2" id="contact-form">
             <div className="w-full max-w-sm">
-              <ContactForm />
+              <ContactForm defaultService={breadcrumbCurrent || undefined} />
               {/* CTAs + Rating */}
               <div className="flex flex-wrap items-center pt-4 ml-2">
                 <Link

@@ -468,7 +468,7 @@ export default function ServiceSection() {
         {/* Header Section */}
         <div className="text-center mb-2 md:mb-4">
           <div className="overflow-hidden">
-            <h1
+            <h2
               className={` text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-6 md:mb-8 leading-tight transition-all duration-1000 ${
                 isVisible
                   ? "opacity-100 translate-y-0"
@@ -479,7 +479,7 @@ export default function ServiceSection() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-700">
                 With Precision{" "}
               </span>
-            </h1>
+            </h2>
           </div>
         </div>
 

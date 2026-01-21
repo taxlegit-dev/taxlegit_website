@@ -1,0 +1,36 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH and Deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          port: 22
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
+          script: |
+            cd /var/www/app/taxlegit_website
+
+            echo "=== Reset server code to GitHub main ==="
+            git fetch origin main
+            git reset --hard origin/main
+            git clean -fd
+
+            echo "=== Install dependencies ==="
+            npm ci
+
+            echo "=== Build app ==="
+            NODE_OPTIONS="--max-old-space-size=2048" npm run build
+
+            echo "=== Restart pm2 ==="
+            pm2 restart taxlegit-app --update-env

@@ -58,7 +58,7 @@ const Footer = () => {
   const socialLinks = [
     {
       icon: <FaInstagram />,
-      href: "#",
+      href: "https://www.instagram.com/taxlegit_/",
       label: "Instagram",
       color: "hover:bg-purple-600",
     },
