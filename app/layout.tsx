@@ -5,7 +5,6 @@ import "aos/dist/aos.css";
 import ZohoChat from "@/components/zoho/ZohoChat";
 import { Suspense } from "react";
 import Script from "next/script";
-import Image from "next/image";
 import GoogleAnalytics from "@/components/Integration/GoogleAnalytics";
 
 export const metadata: Metadata = {
@@ -46,7 +45,8 @@ fbq('init', '2029483147623028');
 fbq('track', 'PageView');`}
         </Script>
         <noscript>
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             height="1"
             width="1"
             style={{ display: "none" }}
@@ -69,7 +69,6 @@ fbq('track', 'PageView');`}
         {/* End Google Tag Manager (noscript) */}
         <ProviderTree>{children}</ProviderTree>
         <GoogleAnalytics />
-        <ProviderTree>{children}</ProviderTree>
         <Suspense fallback={null}>
           <ZohoChat />
         </Suspense>
