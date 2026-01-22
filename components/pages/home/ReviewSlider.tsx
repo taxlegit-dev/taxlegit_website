@@ -20,7 +20,7 @@ const reviews: Review[] = [
     company: "SAMPOORAN-VIKASH FOUNDATION",
     rating: 5,
     text: "Managing accounts used to be hassel for me but taxlegit made it very simple and everything organized for me. Strongly recommend them for startups and SMEs.",
-    image: "/review4.jpg",
+    image: "/images/review4.jpg",
   },
   {
     id: 2,
@@ -28,7 +28,7 @@ const reviews: Review[] = [
     company: "KUDRAKI FOUNDATION",
     rating: 4,
     text: "I choose Taxlegit for my company registration and the entire process is so smooth and seamless. I highly recommend Taxlegit for company registration.",
-    image: "/review1.jpg",
+    image: "/images/review1.jpg",
   },
   {
     id: 3,
@@ -36,7 +36,7 @@ const reviews: Review[] = [
     company: "Shakti Sadhya Trust",
     rating: 5,
     text: "As an NRI looking to invest in India, I was worried about the legal and compliance complexities. TaxLegit handled everything efficiently, including company setup, approvals, and ongoing compliance. Their team is knowledgeable, responsive, and reliable. A trusted partner for anyone investing in India.",
-    image: "/review2.jpg",
+    image: "/images/review2.jpg",
   },
   {
     id: 4,
@@ -44,7 +44,7 @@ const reviews: Review[] = [
     company: "Dhruvi-ILLUMINATING FUTURES FOUNDATION",
     rating: 5,
     text: "TaxLegit manages all our accounting and tax compliance. Their team is extremely thorough, ensuring every filing is accurate and on time. Working with them gives us peace of mind and saves us a lot of time. Professional, efficient, and highly recommended.",
-    image: "/review5.jpg",
+    image: "/images/review5.jpg",
   },
   {
     id: 5,
@@ -52,7 +52,7 @@ const reviews: Review[] = [
     company: "ESAHAYAK FOUNDATION",
     rating: 5,
     text: "We set up our Section 8 company with TaxLegit, and the support we received was outstanding. They guided us through registration, compliance, and all legal formalities. Their expertise made a complex process simple and stress-free. Truly a reliable partner for social enterprises.",
-    image: "/review3.jpg",
+    image: "/images/review3.jpg",
   },
   {
     id: 6,
@@ -60,7 +60,7 @@ const reviews: Review[] = [
     company: "DR R P DHAWAN WELFARE FOUNDATION",
     rating: 4,
     text: "I registered my startup through TaxLegit, and the process was seamless from start to finish. The team guided me through every step, from company registration to GST compliance. Highly professional and trustworthy service. I would definitely recommend them to any entrepreneur looking to start a business in India.",
-    image: "/review6.jpg",
+    image: "/images/review6.jpg",
   },
 ];
 
