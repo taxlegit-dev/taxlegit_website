@@ -12,7 +12,6 @@ import { ServicePageView } from "@/components/service-page/service-page-view";
 import { GenericPageView } from "@/components/generic-page/generic-page-view";
 import { FAQSection } from "@/components/faq/faq-section";
 import Footer from "@/components/footer";
-import { MetaDataRenderer } from "@/components/seo/meta-data-renderer";
 import { parseMetaBlockForMetadata } from "@/lib/seo-utils";
 import { getRelatedBlogsCached } from "@/lib/query/related-blogs";
 import { RelatedBlogsSection } from "@/components/related-blogs/RelatedBlogsSection";
@@ -38,6 +37,21 @@ const parseMetaCached = cache(parseMetaBlockForMetadata);
 const normalizeSlug = (value: string) => value.replace(/^\/+/, "");
 const getServicePageTag = (region: Region, slug: string) =>
   `service-page:${region}:${slug}`;
+
+function extractJsonLd(htmlString: string) {
+  const jsonLdScripts: string[] = [];
+  const jsonLdRegex =
+    /<script\s+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  let scriptMatch;
+
+  while ((scriptMatch = jsonLdRegex.exec(htmlString)) !== null) {
+    if (scriptMatch[1]) {
+      jsonLdScripts.push(scriptMatch[1].trim());
+    }
+  }
+
+  return jsonLdScripts;
+}
 
 /* -------------------------------------------------
    FAST SHELL (MIN DB)
@@ -215,16 +229,19 @@ export default async function ServicePage({ params, searchParams }: PageProps) {
           Region.INDIA
         )
     : null;
+  const jsonLdScripts = metaData?.metaBlock
+    ? extractJsonLd(metaData.metaBlock)
+    : [];
 
   return (
     <>
-      {metaData?.metaBlock && (
-        <MetaDataRenderer
-          pageType={servicePage ? "SERVICE" : "GENERIC"}
-          pageId={servicePage ? servicePage.id : genericPage!.id}
-          metaBlock={metaData.metaBlock}
+      {jsonLdScripts.map((jsonLd, index) => (
+        <script
+          key={`jsonld-${index}`}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLd }}
         />
-      )}
+      ))}
 
       <div className="min-h-screen bg-white text-black">
         <main className="pt-[89px]">

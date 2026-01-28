@@ -7,7 +7,6 @@ import { UsHero } from "@/components/ServiceHeroSection/us-hero";
 import { ServicePageView } from "@/components/service-page/service-page-view";
 import { GenericPageView } from "@/components/generic-page/generic-page-view";
 import { FAQSection } from "@/components/faq/faq-section";
-import { MetaDataRenderer } from "@/components/seo/meta-data-renderer";
 import { parseMetaBlockForMetadata } from "@/lib/seo-utils";
 import Footer from "@/components/footer";
 
@@ -102,6 +101,21 @@ const getMetaDataByPage = unstable_cache(
   ["meta-data-by-page"],
   { revalidate: 300 }
 );
+
+function extractJsonLd(htmlString: string) {
+  const jsonLdScripts: string[] = [];
+  const jsonLdRegex =
+    /<script\s+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  let scriptMatch;
+
+  while ((scriptMatch = jsonLdRegex.exec(htmlString)) !== null) {
+    if (scriptMatch[1]) {
+      jsonLdScripts.push(scriptMatch[1].trim());
+    }
+  }
+
+  return jsonLdScripts;
+}
 
 export async function generateMetadata({
   params,
@@ -226,18 +240,20 @@ export default async function UsDynamicPage({ params }: DynamicPageProps) {
     metaPageType && metaPageId
       ? await getMetaDataByPage(metaPageType, metaPageId)
       : null;
+  const jsonLdScripts = metaData?.metaBlock
+    ? extractJsonLd(metaData.metaBlock)
+    : [];
 
   return (
     <>
-      {/* Render meta tags server-side */}
-      {metaPageType && metaPageId && (
-        <MetaDataRenderer
-          pageType={metaPageType}
-          pageId={metaPageId}
-          metaBlock={metaData?.metaBlock}
+      {jsonLdScripts.map((jsonLd, index) => (
+        <script
+          key={`jsonld-${index}`}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLd }}
         />
-      )}
-        <div className="min-h-screen bg-slate-950 text-white">
+      ))}
+      <div className="min-h-screen bg-slate-950 text-white">
           <main>
           {hero && hero.status === "PUBLISHED" && <UsHero hero={hero} />}
           {servicePage &&

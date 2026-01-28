@@ -7,7 +7,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { MetaDataRenderer } from "@/components/seo/meta-data-renderer";
 import { parseMetaBlockForMetadata } from "@/lib/seo-utils";
 import AuthorCard from "@/components/pages/Blog/AuthorCard";
 import RecentBlogsSection from "@/components/pages/home/RecentBlogsSection";
@@ -25,6 +24,21 @@ const isValidImageSrc = (src?: string | null): src is string => {
     return false;
   }
 };
+
+function extractJsonLd(htmlString: string) {
+  const jsonLdScripts: string[] = [];
+  const jsonLdRegex =
+    /<script\s+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  let scriptMatch;
+
+  while ((scriptMatch = jsonLdRegex.exec(htmlString)) !== null) {
+    if (scriptMatch[1]) {
+      jsonLdScripts.push(scriptMatch[1].trim());
+    }
+  }
+
+  return jsonLdScripts;
+}
 
 type BlogDetailPageProps = {
   params: Promise<{ id: string }>;
@@ -100,6 +114,20 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
     notFound();
   }
 
+  const metaData = await prisma.metaData.findUnique({
+    where: {
+      pageType_pageId: {
+        pageType: "BLOG",
+        pageId: blog.id,
+      },
+    },
+    select: { metaBlock: true },
+  });
+
+  const jsonLdScripts = metaData?.metaBlock
+    ? extractJsonLd(metaData.metaBlock)
+    : [];
+
   let editorData: OutputData | null = null;
   try {
     const parsed = JSON.parse(blog.content);
@@ -121,7 +149,13 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
 
   return (
     <>
-      <MetaDataRenderer pageType="BLOG" pageId={blog.id} />
+      {jsonLdScripts.map((jsonLd, index) => (
+        <script
+          key={`jsonld-${index}`}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLd }}
+        />
+      ))}
 
       <div className="min-h-screen bg-white text-black">
         <main className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8">

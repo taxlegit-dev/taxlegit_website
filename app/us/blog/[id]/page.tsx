@@ -6,13 +6,27 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { MetaDataRenderer } from "@/components/seo/meta-data-renderer";
 import { parseMetaBlockForMetadata } from "@/lib/seo-utils";
 import { BlogViewCounter } from "@/components/pages/Blog/BlogViewCounter";
 
 type UsBlogDetailPageProps = {
   params: Promise<{ id: string }>;
 };
+
+function extractJsonLd(htmlString: string) {
+  const jsonLdScripts: string[] = [];
+  const jsonLdRegex =
+    /<script\s+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  let scriptMatch;
+
+  while ((scriptMatch = jsonLdRegex.exec(htmlString)) !== null) {
+    if (scriptMatch[1]) {
+      jsonLdScripts.push(scriptMatch[1].trim());
+    }
+  }
+
+  return jsonLdScripts;
+}
 
 export async function generateMetadata({
   params,
@@ -91,6 +105,20 @@ export default async function UsBlogDetailPage({
     notFound();
   }
 
+  const metaData = await prisma.metaData.findUnique({
+    where: {
+      pageType_pageId: {
+        pageType: "BLOG",
+        pageId: blog.id,
+      },
+    },
+    select: { metaBlock: true },
+  });
+
+  const jsonLdScripts = metaData?.metaBlock
+    ? extractJsonLd(metaData.metaBlock)
+    : [];
+
   // Try to parse content as Editor.js JSON
   let editorData: OutputData | null = null;
   try {
@@ -104,8 +132,13 @@ export default async function UsBlogDetailPage({
 
   return (
     <>
-      {/* Render meta tags server-side */}
-      <MetaDataRenderer pageType="BLOG" pageId={blog.id} />
+      {jsonLdScripts.map((jsonLd, index) => (
+        <script
+          key={`jsonld-${index}`}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLd }}
+        />
+      ))}
       <div className="min-h-screen bg-slate-950 text-white">
         <main className="mx-auto w-full max-w-4xl px-6 py-12">
           <Link
