@@ -47,12 +47,12 @@ export default function HeroPage() {
           </div>
         </div>
       </section>
-      <section className=" relative h-[400px] overflow-hidden py-10">
-        <iframe
-          src="https://taxlegit-calculator.vercel.app/"
-          className="w-full h-screen border-0"
-        />
-      </section>
+      <section className="relative min-h-screen w-full">
+  <iframe
+    src="https://taxlegit-calculator.vercel.app/"
+    className="w-full min-h-screen border-0"
+  />
+</section>
 
       {/* FOOTER */}
       <Footer />
